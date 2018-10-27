@@ -16,8 +16,8 @@ public class TecnobedeliasApplication extends Application {
 	public void start(Stage primaryStage) throws Exception {
 		// TODO Auto-generated method stub
 		try {
-			URL formUrl = new File(Constants.getLoginPackage() +"login.fxml").toURL();
-			URL cssUrl = new File(Constants.getLoginPackage() + "login.css").toURL();
+			URL formUrl = new File(Constants.getLoginPackage() +"Login.fxml").toURL();
+			URL cssUrl = new File(Constants.getLoginPackage() + "Login.css").toURL();
 			AnchorPane root = FXMLLoader.load(formUrl);
 			Scene scene = new Scene(root,600,400);
 			scene.getStylesheets().add(cssUrl.toExternalForm());

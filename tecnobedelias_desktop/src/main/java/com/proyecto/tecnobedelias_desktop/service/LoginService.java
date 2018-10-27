@@ -1,75 +1,75 @@
 package com.proyecto.tecnobedelias_desktop.service;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-//import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.nio.charset.StandardCharsets;
-//import org.json.JSONArray;
-//import com.sun.jersey.api.client.Client;
-//import com.sun.jersey.api.client.ClientResponse;
-//import com.sun.jersey.api.client.WebResource;
-
-//import org.json.HTTP;
-
-import com.proyecto.tecnobedelias_desktop.global.Constants;
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.exceptions.JWTDecodeException;
+import com.auth0.jwt.interfaces.DecodedJWT;
+import com.google.gson.JsonObject;
 import com.proyecto.tecnobedelias_desktop.global.Token;
-import com.sun.jersey.core.util.Base64;
+import com.proyecto.tecnobedelias_desktop.interfaces.ServiceInterface;
+import com.proyecto.tecnobedelias_desktop.model.Authorizacion;
+import com.proyecto.tecnobedelias_desktop.model.RespuestaApiLogin;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
 
 public class LoginService {
 
-	public String loginResponse(String username, String password) throws IOException {
-		URL url = new URL(Constants.getLoginServiceUrl());
-		URLConnection con = url.openConnection();
-		HttpURLConnection http = (HttpURLConnection)con;
-		http.setRequestMethod("POST"); // PUT is another valid option
-		http.setDoOutput(true);
-		String jsonToSend = "{\"username\":\"" + username + "\",\"password\":\"" + password + "\"}";
-		byte[] out = jsonToSend.getBytes(StandardCharsets.UTF_8);
-		int length = out.length;
+	public String loginResponse(String username, String password) {
+		Retrofit retro = Token.getInstance().getRetro();
+		JsonObject datos = new JsonObject();
+		datos.addProperty("username", username);
+		datos.addProperty("password", password);
+		ServiceInterface interfaz = retro.create(ServiceInterface.class);
+		Call<RespuestaApiLogin> respuesta = interfaz.obtenerRespuesta(datos);
+		respuesta.enqueue(new Callback<RespuestaApiLogin>() {
 
-		http.setFixedLengthStreamingMode(length);
-		http.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
-		http.connect();
-		try(OutputStream os = http.getOutputStream()) {
-		    os.write(out);
-		    String token = http.getHeaderField("Authorization").toString();
-		    String jwtToken = token.substring(7);
-	        System.out.println("------------ Decode JWT ------------");
-	        String[] split_string = jwtToken.split("\\.");
-	        String base64EncodedHeader = split_string[0];
-	        String base64EncodedBody = split_string[1];
-	        String base64EncodedSignature = split_string[2];
+			@Override
+			public void onResponse(Call<RespuestaApiLogin> call, Response<RespuestaApiLogin> response) {
+				// TODO Auto-generated method stub
+				if (response.isSuccessful()) {
+					String token = response.headers().get("Authorization");
+					try {
+						DecodedJWT jwt = JWT.decode(token.substring(7));
+						System.out.println("Subject: " + jwt.getSubject());
+						System.out.println("Token: " + jwt.getToken());
+						String rol = jwt.getClaims().get("roles").asList(Authorizacion.class).get(0).getAuthority();
+						System.out.println("Rol: " + rol);
+						if (rol != null) {
+							if (rol.equalsIgnoreCase("ROLE_FUNCIONARIO")) {
+								Token.getInstance().setToken(jwt.getToken());
+								Token.getInstance().setMensaje("BIENVENIDO");
+							} else {
+								Token.getInstance().setMensaje("ACCESO DENEGADO");
+							}
+						} else {
+							Token.getInstance().setMensaje("Usuario y contraseña incorrectos");
+						}
+					} catch (JWTDecodeException exception) {
+						exception.printStackTrace();
+					}
+				} else {
+					Token.getInstance().setMensaje("Usuario y contraseña incorrectos");
+				}
+			}
 
-	        System.out.println("~~~~~~~~~ JWT Header ~~~~~~~");
-	        Base64 base64Url = new Base64();
-	        String header = new String(base64Url.decode(base64EncodedHeader));
-	        System.out.println("JWT Header : " + header);
+			@Override
+			public void onFailure(Call<RespuestaApiLogin> call, Throwable t) {
+				// TODO Auto-generated method stub
+				t.printStackTrace();
+			}
 
-	        System.out.println("~~~~~~~~~ JWT Body ~~~~~~~");
-	        String body = new String(base64Url.decode(base64EncodedBody));
-	        System.out.println("JWT Body : "+body);
-
-	        int first = body.indexOf("ROLE");
-	        int last = body.lastIndexOf("\"");
-	        String rol = body.substring(first, last);
-	        System.out.println("Rol: " + rol);
-
-	        String sentencia;
-
-	        if(rol.equalsIgnoreCase("ROLE_FUNCIONARIO")) {
-	        	sentencia = "BIENVENIDO";
-	        	//Guardo el token globalmente
-	        	Token.getInstance().setToken(token.substring(7));
-	        }else {
-	        	sentencia = "ACCESO DENEGADO";
-	        }
-		    return sentencia;
+		});
+		if (respuesta.isExecuted()) {
+			try {
+				Thread.sleep(1000); //AVG 1000
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
-		// Do something with http.getInputStream()
-
+		System.out.println("Respuesta loginResponse -> " + Token.getInstance().getMensaje());
+		return Token.getInstance().getMensaje();
 	}
 
 }

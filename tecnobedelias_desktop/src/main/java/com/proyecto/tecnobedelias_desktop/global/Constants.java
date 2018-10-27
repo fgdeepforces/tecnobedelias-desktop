@@ -3,14 +3,29 @@ package com.proyecto.tecnobedelias_desktop.global;
 public class Constants {
 
 	private static final String LOGIN_PACKAGE = "src/main/java/com/proyecto/tecnobedelias_desktop/views/login/";
-	private static final String LOGIN_SERVICE_URL = "http://localhost:8080/login";
+	private static final String MAIN_PACKAGE = "src/main/java/com/proyecto/tecnobedelias_desktop/views/main/";
+	private static final String LOGIN_SERVICE_URL = "login";
+	private static final String LISTAR_CURSOS_SERVICE_URL = "curso/listar";
+	private static final String URL_BASE = "http://localhost:8080/";
 
 	public static String getLoginPackage() {
 		return LOGIN_PACKAGE;
 	}
 
 	public static String getLoginServiceUrl() {
-		return LOGIN_SERVICE_URL;
+		return URL_BASE + LOGIN_SERVICE_URL;
+	}
+
+	public static String getMainPackage() {
+		return MAIN_PACKAGE;
+	}
+
+	public static String getListarCursosServiceUrl() {
+		return URL_BASE + LISTAR_CURSOS_SERVICE_URL;
+	}
+
+	public static String getUrlBase() {
+		return URL_BASE;
 	}
 
 }

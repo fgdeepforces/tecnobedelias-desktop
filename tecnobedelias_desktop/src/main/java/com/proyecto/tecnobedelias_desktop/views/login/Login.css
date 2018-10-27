@@ -1,8 +1,7 @@
-/* JavaFX CSS - Leave this comment until you have at least create one rule which uses -fx-Property */
-/* @CHARSET "ISO-8859-1"; */
+@charset "ISO-8859-1";
 
 .jfx-button {
-     -jfx-button-type: RAISED;
-     -fx-background-color: #819FF7;
-     -fx-text-fill: white;
+	 -jfx-button-type: RAISED;
+	 -fx-background-color: #819FF7;
+	 -fx-text-fill: white;
 }
