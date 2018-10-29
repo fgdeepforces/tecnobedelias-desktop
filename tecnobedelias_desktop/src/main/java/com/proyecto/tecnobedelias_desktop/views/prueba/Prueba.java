@@ -154,6 +154,7 @@ public class Prueba implements Initializable{
 				dataCurso.add(entry);
 	        });
 		}
+		colIdCursos.setVisible(false);
 	}
 
 	private void inicializarTablaExamenes() {
@@ -180,6 +181,7 @@ public class Prueba implements Initializable{
 				dataExamen.add(entry);
 	        });
 		}
+		colIdExamenes.setVisible(false);
 	}
 
 	private void cursosPaneToFront() {

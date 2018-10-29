@@ -42,10 +42,10 @@ public class TablaCurso {
 		this.colActa = new SimpleObjectProperty<JFXButton>(new JFXButton("Acta"));
 		this.colCargarCalificaciones = new SimpleObjectProperty<JFXButton>(new JFXButton("Cargar Calificaciones"));
 
-		this.colEditar.get().setStyle("-fx-background-color: yellow;");
-		this.colEliminar.get().setStyle("-fx-background-color: red;");
-		this.colActa.get().setStyle("-fx-background-color: blue;");
-		this.colCargarCalificaciones.get().setStyle("-fx-background-color: orange;");
+		this.colEditar.get().setStyle("-fx-background-color: yellow; -fx-pref-width: 130px; -fx-pref-height: 50px;");
+		this.colEliminar.get().setStyle("-fx-background-color: red; -fx-pref-width: 130px; -fx-pref-height: 50px;");
+		this.colActa.get().setStyle("-fx-background-color: blue; -fx-pref-width: 130px; -fx-pref-height: 50px;");
+		this.colCargarCalificaciones.get().setStyle("-fx-background-color: orange; -fx-pref-width: 130px; -fx-pref-height: 50px;");
 
 	}
 

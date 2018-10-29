@@ -1,1 +1,20 @@
 @charset "ISO-8859-1";
+
+.table-row-cell {
+    -fx-cell-size: 50px;
+    -fx-alignment: CENTER-RIGHT;
+}
+
+.jfx-button {
+	-jfx-button-type: RAISED;
+	-fx-background-color: #63E183;
+	-fx-text-fill: white;
+}
+
+#btnCursos{
+	-fx-background-color: #FFBE33;
+}
+
+#btnExamenes{
+	-fx-background-color: #63AFE1;
+}

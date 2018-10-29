@@ -12,7 +12,7 @@
    <children>
       <BorderPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <top>
-            <JFXButton fx:id="btnLogout" onAction="#logoutButtonPushed" text="Log Out" BorderPane.alignment="TOP_RIGHT">
+            <JFXButton fx:id="btnLogout" onAction="#logoutButtonPushed" prefHeight="50.0" prefWidth="100.0" styleClass="jfx-button" stylesheets="@Prueba.css" text="Log Out" BorderPane.alignment="TOP_RIGHT">
                <font>
                   <Font size="18.0" />
                </font>
@@ -21,8 +21,8 @@
          <left>
             <VBox BorderPane.alignment="CENTER">
                <children>
-                  <JFXButton fx:id="btnCursos" onAction="#cursosButtonPushed" prefHeight="50.0" prefWidth="100.0" text="Cursos" />
-                  <JFXButton fx:id="btnExamenes" onAction="#examenesButtonPushed" prefHeight="50.0" prefWidth="100.0" text="Examenes" />
+                  <JFXButton id="btnCursos" fx:id="btnCursos" onAction="#cursosButtonPushed" prefHeight="50.0" prefWidth="100.0" stylesheets="@Prueba.css" text="Cursos" />
+                  <JFXButton id="btnExamenes" fx:id="btnExamenes" onAction="#examenesButtonPushed" prefHeight="50.0" prefWidth="100.0" stylesheets="@Prueba.css" text="Examenes" />
                </children>
                <BorderPane.margin>
                   <Insets top="25.0" />
@@ -43,7 +43,7 @@
                               </Label>
                            </top>
                            <center>
-                              <TableView id="tablaCursos" fx:id="tablaCursos" BorderPane.alignment="CENTER">
+                              <TableView id="tablaCursos" fx:id="tablaCursos" styleClass=".table-row-cell" stylesheets="@Prueba.css" BorderPane.alignment="CENTER">
                                 <columns>
                                   <TableColumn fx:id="colIdCursos" prefWidth="34.0" text="Id" />
                                     <TableColumn fx:id="colAsignaturaCursos" prefWidth="116.0" text="Asignatura" />
@@ -61,15 +61,15 @@
                               </TableView>
                            </center>
                            <bottom>
-                              <JFXButton fx:id="btnAgregarCurso" onAction="#btnAgregarCursoActionListener" prefHeight="50.0" prefWidth="100.0" text="Agregar" BorderPane.alignment="BOTTOM_RIGHT" />
+                              <JFXButton fx:id="btnAgregarCurso" onAction="#btnAgregarCursoActionListener" prefHeight="50.0" prefWidth="100.0" styleClass="jfx-button" stylesheets="@Prueba.css" text="Agregar" BorderPane.alignment="BOTTOM_RIGHT" />
                            </bottom>
                         </BorderPane>
                         <BorderPane id="examenesPane" fx:id="examenesPane" layoutX="10.0" layoutY="10.0">
                            <bottom>
-                              <JFXButton fx:id="btnAgregarExamen" onAction="#btnAgregarExamenActionListener" prefHeight="50.0" prefWidth="100.0" text="Agregar" BorderPane.alignment="BOTTOM_RIGHT" />
+                              <JFXButton fx:id="btnAgregarExamen" onAction="#btnAgregarExamenActionListener" prefHeight="50.0" prefWidth="100.0" styleClass="jfx-button" stylesheets="@Prueba.css" text="Agregar" BorderPane.alignment="BOTTOM_RIGHT" />
                            </bottom>
                            <center>
-                              <TableView id="tablaExamenes" fx:id="tablaExamenes" BorderPane.alignment="CENTER">
+                              <TableView id="tablaExamenes" fx:id="tablaExamenes" styleClass=".table-row-cell" stylesheets="@Prueba.css" BorderPane.alignment="CENTER">
                                  <columnResizePolicy>
                                     <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                                  </columnResizePolicy>
