@@ -10,14 +10,17 @@ import com.jfoenix.controls.JFXTextField;
 import com.proyecto.tecnobedelias_desktop.global.Constants;
 import com.proyecto.tecnobedelias_desktop.global.Token;
 import com.proyecto.tecnobedelias_desktop.service.LoginService;
+//import com.proyecto.tecnobedelias_desktop.views.main_form.MainFormView;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+//import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.layout.AnchorPane;
+//import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
 public class Login implements Initializable {
@@ -36,8 +39,20 @@ public class Login implements Initializable {
 			String mensaje = service.loginResponse(txtUser.getText(), txtPass.getText());
 			if (mensaje != null) {
 				if (mensaje.equalsIgnoreCase("BIENVENIDO")) {
-					URL formUrl = new File(Constants.getMainPackage() + "Main.fxml").toURL();
-					URL cssUrl = new File(Constants.getMainPackage() + "Main.css").toURL();
+					//TODO: NO BORRAR INICIO
+//					URL formUrl = new File(Constants.getMainPackage() + "Main.fxml").toURL();
+//					URL cssUrl = new File(Constants.getMainPackage() + "Main.css").toURL();
+//					AnchorPane root = FXMLLoader.load(formUrl);
+//					Scene scene = new Scene(root);
+//					scene.getStylesheets().add(cssUrl.toExternalForm());
+//					Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
+//					window.setScene(scene);
+//					window.setMaximized(true);
+//					window.show();
+					//TODO: NO BORRAR FIN
+
+					URL formUrl = new File(Constants.getPruebaPackage() + "Prueba.fxml").toURL();
+					URL cssUrl = new File(Constants.getPruebaPackage() + "Prueba.css").toURL();
 					AnchorPane root = FXMLLoader.load(formUrl);
 					Scene scene = new Scene(root);
 					scene.getStylesheets().add(cssUrl.toExternalForm());
@@ -45,6 +60,19 @@ public class Login implements Initializable {
 					window.setScene(scene);
 					window.setMaximized(true);
 					window.show();
+
+
+
+					//TODO: Perdida de tiempo al pedo con el framework
+//					URL cssUrl = new File(Constants.getMainFormPackage() + "MainForm.css").toURL();
+//					MainFormView mainForm = new MainFormView();
+//					Scene scene = new Scene(mainForm.getView());
+//					scene.getStylesheets().add(cssUrl.toExternalForm());
+//					Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
+//					window.setScene(scene);
+//					window.setMaximized(true);
+//					window.show();
+					//TODO: Perdida de tiempo al pedo con el framework
 				} else {
 					Alert dialogo = new Alert(Alert.AlertType.INFORMATION);
 					dialogo.setTitle("ACCESO");

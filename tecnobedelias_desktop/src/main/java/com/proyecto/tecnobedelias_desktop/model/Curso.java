@@ -35,8 +35,6 @@ public class Curso {
 		this.horarios = horarios;
 	}
 
-
-
 	public Integer getAnio() {
         return anio;
     }

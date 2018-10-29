@@ -61,6 +61,13 @@
 			<artifactId>java-jwt</artifactId>
 			<version>3.4.1</version>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.airhacks/afterburner.fx -->
+		<dependency>
+			<groupId>com.airhacks</groupId>
+			<artifactId>afterburner.fx</artifactId>
+			<version>1.7.0</version>
+		</dependency>
+
 
 	</dependencies>
 

@@ -1,5 +1,8 @@
 package com.proyecto.tecnobedelias_desktop.model;
 
+import com.jfoenix.controls.JFXButton;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 
 public class TablaCurso {
@@ -9,21 +12,23 @@ public class TablaCurso {
 	private SimpleStringProperty colFechaInicio;
 	private SimpleStringProperty colFechaFin;
 	private SimpleStringProperty colSemestre;
-	private SimpleStringProperty colEditar;
-	private SimpleStringProperty colEliminar;
-	private SimpleStringProperty colActa;
+	private ObjectProperty<JFXButton> colEditar;
+	private ObjectProperty<JFXButton> colEliminar;
+	private ObjectProperty<JFXButton> colActa;
+	private ObjectProperty<JFXButton> colCargarCalificaciones;
 
-	public TablaCurso(String colId, String colAsignatura, String colFechaInicio, String colFechaFin, String colSemestre, String colEditar,
-			String colEliminar, String colActa) {
+	public TablaCurso(String colId, String colAsignatura, String colFechaInicio, String colFechaFin, String colSemestre, JFXButton colEditar,
+			JFXButton colEliminar, JFXButton colActa, JFXButton colCargarCalificaciones) {
 		super();
 		this.colId = new SimpleStringProperty(colId);
 		this.colAsignatura = new SimpleStringProperty(colAsignatura);
 		this.colFechaInicio = new SimpleStringProperty(colFechaInicio);
 		this.colFechaFin = new SimpleStringProperty(colFechaFin);
 		this.colSemestre = new SimpleStringProperty(colSemestre);
-		this.colEditar = new SimpleStringProperty(colEditar);
-		this.colEliminar = new SimpleStringProperty(colEliminar);
-		this.colActa = new SimpleStringProperty(colActa);
+		this.colEditar = new SimpleObjectProperty<JFXButton>(colEditar);
+		this.colEliminar = new SimpleObjectProperty<JFXButton>(colEliminar);
+		this.colActa = new SimpleObjectProperty<JFXButton>(colActa);
+		this.colCargarCalificaciones = new SimpleObjectProperty<JFXButton>(colCargarCalificaciones);
 	}
 
 	public TablaCurso(String colId, String colAsignatura, String colFechaInicio, String colFechaFin, String colSemestre) {
@@ -32,6 +37,16 @@ public class TablaCurso {
 		this.colFechaInicio = new SimpleStringProperty(colFechaInicio);
 		this.colFechaFin = new SimpleStringProperty(colFechaFin);
 		this.colSemestre = new SimpleStringProperty(colSemestre);
+		this.colEditar = new SimpleObjectProperty<JFXButton>(new JFXButton("Editar"));
+		this.colEliminar = new SimpleObjectProperty<JFXButton>(new JFXButton("Eliminar"));
+		this.colActa = new SimpleObjectProperty<JFXButton>(new JFXButton("Acta"));
+		this.colCargarCalificaciones = new SimpleObjectProperty<JFXButton>(new JFXButton("Cargar Calificaciones"));
+
+		this.colEditar.get().setStyle("-fx-background-color: yellow;");
+		this.colEliminar.get().setStyle("-fx-background-color: red;");
+		this.colActa.get().setStyle("-fx-background-color: blue;");
+		this.colCargarCalificaciones.get().setStyle("-fx-background-color: orange;");
+
 	}
 
 	public String getColId() {
@@ -74,30 +89,36 @@ public class TablaCurso {
 		this.colSemestre.set(colSemestre);
 	}
 
-	public String getColEditar() {
+	public JFXButton getColEditar() {
 		return this.colEditar.get();
 	}
 
-	public void setColEditar(String colEditar) {
+	public void setColEditar(JFXButton colEditar) {
 		this.colEditar.set(colEditar);
 	}
 
-	public String getColEliminar() {
+	public JFXButton getColEliminar() {
 		return this.colEliminar.get();
 	}
 
-	public void setColEliminar(String colEliminar) {
+	public void setColEliminar(JFXButton colEliminar) {
 		this.colEliminar.set(colEliminar);
 	}
 
-	public String getColActa() {
+	public JFXButton getColActa() {
 		return this.colActa.get();
 	}
 
-	public void setColActa(String colActa) {
+	public void setColActa(JFXButton colActa) {
 		this.colActa.set(colActa);
 	}
 
+	public JFXButton getColCargarCalificaciones() {
+		return this.colCargarCalificaciones.get();
+	}
 
+	public void setColCargarCalificaciones(JFXButton colCargarCalificaciones) {
+		this.colCargarCalificaciones.set(colCargarCalificaciones);
+	}
 
 }
