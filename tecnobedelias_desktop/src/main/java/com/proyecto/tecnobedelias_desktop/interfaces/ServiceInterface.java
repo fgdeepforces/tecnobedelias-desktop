@@ -11,6 +11,7 @@ import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.POST;
+import retrofit2.http.Query;
 
 public interface ServiceInterface{
 
@@ -20,8 +21,14 @@ public interface ServiceInterface{
 	@GET("curso/listar")
 	Call <List<Curso>> obtenerListaCursos(@Header("Authorization") String token);
 
+	@GET("curso/borrar")
+	Call <Boolean> borrarCurso(@Header("Authorization") String token, @Query("cursoId") String idCurso );
+
 	@GET("examen/listar")
 	Call <List<Examen>> obtenerListaExamenes(@Header("Authorization") String token);
+
+	@GET("examen/borrar")
+	Call <Boolean> borrarExamen(@Header("Authorization") String token, @Query("examenId") String idExamen );
 
 	@GET("carrera/listar")
 	Call <List<Carrera>> obtenerListaCarreras(@Header("Authorization") String token);

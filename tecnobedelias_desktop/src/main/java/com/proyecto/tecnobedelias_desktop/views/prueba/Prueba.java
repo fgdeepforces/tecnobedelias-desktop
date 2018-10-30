@@ -38,11 +38,13 @@ public class Prueba implements Initializable{
 	@FXML JFXButton btnVolver;
 	@FXML JFXButton btnCursos;
 	@FXML JFXButton btnExamenes;
+	@FXML JFXButton btnEscolaridades;
 	@FXML JFXButton btnLogout;
 	@FXML JFXButton btnAgregarCurso;
 	@FXML JFXButton btnAgregarExamen;
 	@FXML BorderPane cursosPane;
 	@FXML BorderPane examenesPane;
+	@FXML BorderPane escolaridadesPane;
 	@FXML BorderPane operacionesPane;
 	@FXML AnchorPane listarCarrerasPane;
 	@FXML AnchorPane listarAsignaturasPane;
@@ -73,9 +75,10 @@ public class Prueba implements Initializable{
 	@FXML TableColumn<TablaExamen, String> colActaExamenes;
 	@FXML TableColumn<TablaExamen, String> colCargarCalificacionesExamenes;
 
-	final ObservableList<TablaCurso> dataCurso = FXCollections.observableArrayList();
-	final ObservableList<TablaExamen> dataExamen = FXCollections.observableArrayList();
+	final static ObservableList<TablaCurso> dataCurso = FXCollections.observableArrayList();
+	final static ObservableList<TablaExamen> dataExamen = FXCollections.observableArrayList();
 
+	private static List<Examen> lstExamen;
 
 	@SuppressWarnings("deprecation")
 	public void logoutButtonPushed(ActionEvent event) throws IOException {
@@ -120,6 +123,11 @@ public class Prueba implements Initializable{
 		examenesPaneToFront();
 	}
 
+	public void escolaridadesButtonPushed(ActionEvent event) throws IOException {
+		//TODO: Cambiar Scene del BorderPane.CENTER para carga de ExamenScene
+		escolaridadesPaneToFront();
+	}
+
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		// TODO Auto-generated method stub
@@ -143,7 +151,12 @@ public class Prueba implements Initializable{
 			e.printStackTrace();
 		}
 		tablaCursos.setItems(dataCurso);
+		actualizarDatosTablaCurso();
+		colIdCursos.setVisible(false);
+	}
 
+	public static void actualizarDatosTablaCurso() {
+		dataCurso.clear();
 		CursoService service = new CursoService();
 		List<Curso> lstCurso = service.listarCursosResponse();
 		if(lstCurso != null) {
@@ -154,7 +167,6 @@ public class Prueba implements Initializable{
 				dataCurso.add(entry);
 	        });
 		}
-		colIdCursos.setVisible(false);
 	}
 
 	private void inicializarTablaExamenes() {
@@ -171,9 +183,14 @@ public class Prueba implements Initializable{
 			e.printStackTrace();
 		}
 		tablaExamenes.setItems(dataExamen);
+		actualizarDatosTablaExamen();
+		colIdExamenes.setVisible(false);
+	}
 
+	public static void actualizarDatosTablaExamen() {
+		dataExamen.clear();
 		ExamenService service = new ExamenService();
-		List<Examen> lstExamen = service.listarExamenesResponse();
+		lstExamen = service.listarExamenesResponse();
 		if(lstExamen != null) {
 			lstExamen.forEach(examen->{
 				String id = "" + examen.getId();
@@ -181,7 +198,6 @@ public class Prueba implements Initializable{
 				dataExamen.add(entry);
 	        });
 		}
-		colIdExamenes.setVisible(false);
 	}
 
 	private void cursosPaneToFront() {
@@ -196,6 +212,12 @@ public class Prueba implements Initializable{
 		examenesPane.setVisible(true);
 	}
 
+	private void escolaridadesPaneToFront() {
+		inhabilitarPanelesCentrales();
+		escolaridadesPane.toFront();
+		escolaridadesPane.setVisible(true);
+	}
+
 	private void operacionesPaneToFront() {
 		inhabilitarPanelesCentrales();
 		operacionesPane.toFront();
@@ -205,6 +227,7 @@ public class Prueba implements Initializable{
 	private void inhabilitarPanelesCentrales() {
 		cursosPane.setVisible(false);
 		examenesPane.setVisible(false);
+		escolaridadesPane.setVisible(false);
 		operacionesPane.setVisible(false);
 	}
 
@@ -254,5 +277,8 @@ public class Prueba implements Initializable{
 		ingresarExamenPane.setVisible(true);
 	}
 
+	public static List<Examen> getLstExamen() {
+		return lstExamen;
+	}
 
 }

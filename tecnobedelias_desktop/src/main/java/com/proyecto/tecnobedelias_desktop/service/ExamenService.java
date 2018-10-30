@@ -12,6 +12,7 @@ import retrofit2.Retrofit;
 public class ExamenService {
 
 	List<Examen> data = null;
+	boolean responseServer = false;
 
 	public List<Examen> listarExamenesResponse() {
 
@@ -46,6 +47,42 @@ public class ExamenService {
 			}
 		}
 		return data;
+	}
+
+	public boolean borrarExamenResponse(String idExamen) {
+
+		Retrofit retro = Token.getInstance().getRetro();
+		ServiceInterface interfaz = retro.create(ServiceInterface.class);
+		Call<Boolean> respuesta = interfaz.borrarExamen("Bearer " + Token.getInstance().getToken(), idExamen);
+
+		respuesta.enqueue(new Callback<Boolean>() {
+
+			@Override
+			public void onResponse(Call<Boolean> call, Response<Boolean> response) {
+				if (response.isSuccessful()) {
+					try {
+						responseServer = response.body();
+					}catch(NullPointerException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+
+			@Override
+			public void onFailure(Call<Boolean> call, Throwable t) {
+				t.printStackTrace();
+			}
+
+		});
+		if (respuesta.isExecuted()) {
+			try {
+				Thread.sleep(1000); //AVG 1000
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return responseServer;
 	}
 
 }

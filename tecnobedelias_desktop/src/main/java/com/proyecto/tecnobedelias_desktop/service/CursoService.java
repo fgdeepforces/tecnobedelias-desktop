@@ -1,6 +1,7 @@
 package com.proyecto.tecnobedelias_desktop.service;
 
 import java.util.List;
+import com.google.gson.JsonObject;
 import com.proyecto.tecnobedelias_desktop.global.Token;
 import com.proyecto.tecnobedelias_desktop.interfaces.ServiceInterface;
 import com.proyecto.tecnobedelias_desktop.model.Curso;
@@ -12,6 +13,7 @@ import retrofit2.Retrofit;
 public class CursoService {
 
 	List<Curso> data = null;
+	boolean responseServer = false;
 
 	public List<Curso> listarCursosResponse() {
 
@@ -46,6 +48,42 @@ public class CursoService {
 			}
 		}
 		return data;
+	}
+
+	public boolean borrarCursoResponse(String idCurso) {
+
+		Retrofit retro = Token.getInstance().getRetro();
+		ServiceInterface interfaz = retro.create(ServiceInterface.class);
+		Call<Boolean> respuesta = interfaz.borrarCurso("Bearer " + Token.getInstance().getToken(), idCurso);
+
+		respuesta.enqueue(new Callback<Boolean>() {
+
+			@Override
+			public void onResponse(Call<Boolean> call, Response<Boolean> response) {
+				if (response.isSuccessful()) {
+					try {
+						responseServer = response.body();
+					}catch(NullPointerException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+
+			@Override
+			public void onFailure(Call<Boolean> call, Throwable t) {
+				t.printStackTrace();
+			}
+
+		});
+		if (respuesta.isExecuted()) {
+			try {
+				Thread.sleep(1000); //AVG 1000
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return responseServer;
 	}
 
 }

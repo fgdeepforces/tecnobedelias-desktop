@@ -1,10 +1,25 @@
 package com.proyecto.tecnobedelias_desktop.model;
 
-import com.jfoenix.controls.JFXButton;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
+import com.jfoenix.controls.JFXButton;
+import com.proyecto.tecnobedelias_desktop.service.ExamenService;
+import com.proyecto.tecnobedelias_desktop.views.prueba.Prueba;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonBar.ButtonData;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.GridPane;
+import javafx.util.Callback;
 
 public class TablaExamen {
 
@@ -46,6 +61,85 @@ public class TablaExamen {
 		this.colActaExamen.get().setStyle("-fx-background-color: blue; -fx-pref-width: 130px; -fx-pref-height: 50px;");
 		this.colCargarCalificacioensExamen.get().setStyle("-fx-background-color: orange; -fx-pref-width: 130px; -fx-pref-height: 50px;");
 
+		this.colEliminarExamen.get().setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				alertEliminarExamen();
+			}
+		});
+
+//		this.colCargarCalificacioensExamen.get().setOnAction(new EventHandler<ActionEvent>() {
+//			@Override
+//			public void handle(ActionEvent event) {
+//				dialogCargarCalificacionesCurso();
+//			}
+//		});
+
+	}
+
+	@SuppressWarnings("unlikely-arg-type")
+	private void dialogCargarCalificacionesCurso() {
+		Dialog<Examen> dialog = new Dialog<>();
+		dialog.setTitle("Calificaciones del examen " + this.getColAsignaturaExamen());
+		dialog.setHeaderText("Calificaciones del examen " + this.getColAsignaturaExamen());
+		dialog.setResizable(true);
+		//TODO
+//		Prueba.getLstExamen().get(Prueba.getLstExamen().indexOf(this)).getEstudianteExamen().forEach(estudiante -> {
+//
+//		});
+//		ArrayList<Examen> a = new ArrayList<>();
+//		Prueba.getLstExamen().stream().filter(examen -> examen.getId() == Integer.parseInt(getColIdExamen())).forEach(estudiante -> {
+//			estudiante.
+//		});
+		Label label1 = new Label("Name: ");
+		Label label2 = new Label("Phone: ");
+		TextField text1 = new TextField();
+		TextField text2 = new TextField();
+		GridPane grid = new GridPane();
+		grid.add(label1, 1, 1);
+		grid.add(text1, 2, 1);
+		grid.add(label2, 1, 2);
+		grid.add(text2, 2, 2);
+		dialog.getDialogPane().setContent(grid);
+		ButtonType buttonTypeOk = new ButtonType("Okay", ButtonData.OK_DONE);
+		dialog.getDialogPane().getButtonTypes().add(buttonTypeOk);
+		dialog.setResultConverter(new Callback<ButtonType, Examen>() {
+		    @Override
+		    public Examen call(ButtonType b) {
+		        if (b == buttonTypeOk) {
+		            return new Examen(/*calificaciones*/);
+		        }
+		        return null;
+		    }
+		});
+		Optional<Examen> result = dialog.showAndWait();
+		if (result.isPresent()) {
+			System.out.println("Result: " + result.get());
+		}
+	}
+
+	private void alertEliminarExamen() {
+		Alert dialogo = new Alert(Alert.AlertType.CONFIRMATION);
+		dialogo.setTitle("Eliminar Examen");
+		dialogo.setContentText("Esta seguro de eliminar el examen " + this.getColAsignaturaExamen() + "?");
+		dialogo.showAndWait();
+		if(dialogo.getResult().getText().equalsIgnoreCase("ACEPTAR")){
+			ExamenService cs = new ExamenService();
+			alertConfirmacionEliminarExamen(cs.borrarExamenResponse(getColIdExamen()));
+		}
+	}
+
+	private void alertConfirmacionEliminarExamen(boolean respuesta) {
+		Alert dialogo = new Alert(Alert.AlertType.INFORMATION);
+		dialogo.setTitle("Eliminar Curso");
+
+		if(respuesta) {
+			dialogo.setContentText("Se ha eliminado el examen " + this.getColAsignaturaExamen() + " satisfactoriamente");
+		}else {
+			dialogo.setContentText("No se puede eliminar el examen porque tiene estudiantes inscriptos en el. \nPor favor si desea eliminar el examen intente darle de baja a todos los alumnos de este examen");
+		}
+		Prueba.actualizarDatosTablaExamen();
+		dialogo.showAndWait();
 	}
 
 	public String getColIdExamen() {

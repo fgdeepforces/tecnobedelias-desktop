@@ -1,9 +1,19 @@
 package com.proyecto.tecnobedelias_desktop.model;
 
 import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXDialog;
+import com.jfoenix.controls.JFXDialogLayout;
+import com.proyecto.tecnobedelias_desktop.service.CursoService;
+import com.proyecto.tecnobedelias_desktop.views.prueba.Prueba;
+
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.scene.control.Alert;
+import javafx.scene.text.Text;
 
 public class TablaCurso {
 
@@ -47,6 +57,37 @@ public class TablaCurso {
 		this.colActa.get().setStyle("-fx-background-color: blue; -fx-pref-width: 130px; -fx-pref-height: 50px;");
 		this.colCargarCalificaciones.get().setStyle("-fx-background-color: orange; -fx-pref-width: 130px; -fx-pref-height: 50px;");
 
+		this.colEliminar.get().setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				alertEliminarCurso();
+			}
+		});
+
+	}
+
+	private void alertEliminarCurso() {
+		Alert dialogo = new Alert(Alert.AlertType.CONFIRMATION);
+		dialogo.setTitle("Eliminar Curso");
+		dialogo.setContentText("Esta seguro de eliminar el curso " + this.getColAsignatura() + "?");
+		dialogo.showAndWait();
+		if(dialogo.getResult().getText().equalsIgnoreCase("ACEPTAR")){
+			CursoService cs = new CursoService();
+			alertConfirmacionEliminarCurso(cs.borrarCursoResponse(getColId()));
+		}
+	}
+
+	private void alertConfirmacionEliminarCurso(boolean respuesta) {
+		Alert dialogo = new Alert(Alert.AlertType.INFORMATION);
+		dialogo.setTitle("Eliminar Curso");
+
+		if(respuesta) {
+			dialogo.setContentText("Se ha eliminado el curso " + this.getColAsignatura() + " satisfactoriamente");
+		}else {
+			dialogo.setContentText("No se puede eliminar el curso porque tiene estudiantes inscriptos en el. \nPor favor si desea eliminar el curso intente darle de baja a todos los alumnos de este curso");
+		}
+		Prueba.actualizarDatosTablaCurso();
+		dialogo.showAndWait();
 	}
 
 	public String getColId() {
