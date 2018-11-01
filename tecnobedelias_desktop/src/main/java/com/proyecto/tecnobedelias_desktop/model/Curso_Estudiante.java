@@ -5,17 +5,22 @@ public class Curso_Estudiante {
     private Integer id;
     private String estado;
     private Integer nota;
+    private String nombre;
+    private String apellido;
     private Integer id_curso;
     private Integer id_estudiante;
 
     public Curso_Estudiante() {
 	}
 
-	public Curso_Estudiante(Integer id, String estado, Integer nota, Integer id_curso, Integer id_estudiante) {
+	public Curso_Estudiante(Integer id, String estado, Integer nota, String nombre, String apellido, Integer id_curso,
+			Integer id_estudiante) {
 		super();
 		this.id = id;
 		this.estado = estado;
 		this.nota = nota;
+		this.nombre = nombre;
+		this.apellido = apellido;
 		this.id_curso = id_curso;
 		this.id_estudiante = id_estudiante;
 	}
@@ -60,12 +65,32 @@ public class Curso_Estudiante {
 		this.id_estudiante = id_estudiante;
 	}
 
-	@Override
-	public String toString() {
-		return "Curso_Estudiante [id=" + id + ", estado=" + estado + ", nota=" + nota + ", id_curso=" + id_curso
-				+ ", id_estudiante=" + id_estudiante + "]";
+	public String getNombre() {
+		return nombre;
 	}
 
 
+
+	public void setNombre(String nombre) {
+		this.nombre = nombre;
+	}
+
+
+
+	public String getApellido() {
+		return apellido;
+	}
+
+
+
+	public void setApellido(String apellido) {
+		this.apellido = apellido;
+	}
+
+	@Override
+	public String toString() {
+		return "Curso_Estudiante [id=" + id + ", estado=" + estado + ", nota=" + nota + ", nombre=" + nombre
+				+ ", apellido=" + apellido + ", id_curso=" + id_curso + ", id_estudiante=" + id_estudiante + "]";
+	}
 
 }

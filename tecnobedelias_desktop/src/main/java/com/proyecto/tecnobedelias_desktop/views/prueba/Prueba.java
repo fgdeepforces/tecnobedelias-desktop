@@ -79,6 +79,10 @@ public class Prueba implements Initializable{
 	final static ObservableList<TablaExamen> dataExamen = FXCollections.observableArrayList();
 
 	private static List<Examen> lstExamen;
+	private static List<Curso> lstCurso;
+
+	static TablaCurso entry = null;
+	static int gridPanelHeight = 1;
 
 	@SuppressWarnings("deprecation")
 	public void logoutButtonPushed(ActionEvent event) throws IOException {
@@ -150,20 +154,22 @@ public class Prueba implements Initializable{
 		}catch(NullPointerException e) {
 			e.printStackTrace();
 		}
-		tablaCursos.setItems(dataCurso);
 		actualizarDatosTablaCurso();
+		tablaCursos.setItems(dataCurso);
+
 		colIdCursos.setVisible(false);
 	}
 
 	public static void actualizarDatosTablaCurso() {
 		dataCurso.clear();
+
 		CursoService service = new CursoService();
-		List<Curso> lstCurso = service.listarCursosResponse();
+		lstCurso = service.listarCursosResponse();
 		if(lstCurso != null) {
 			lstCurso.forEach(curso->{
 				String id = "" + curso.getId();
 				String semestre = "" + curso.getSemestre();
-				TablaCurso entry = new TablaCurso(id, curso.getNombreAsignatura(), curso.getFechaInicio(), curso.getFechaFin(), semestre);
+				entry = new TablaCurso(id, curso.getNombreAsignatura(), curso.getFechaInicio(), curso.getFechaFin(), semestre);
 				dataCurso.add(entry);
 	        });
 		}
@@ -279,6 +285,10 @@ public class Prueba implements Initializable{
 
 	public static List<Examen> getLstExamen() {
 		return lstExamen;
+	}
+
+	public static List<Curso> getLstCurso() {
+		return lstCurso;
 	}
 
 }

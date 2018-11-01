@@ -1,9 +1,8 @@
 package com.proyecto.tecnobedelias_desktop.model;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Optional;
-
 import com.jfoenix.controls.JFXButton;
 import com.proyecto.tecnobedelias_desktop.service.ExamenService;
 import com.proyecto.tecnobedelias_desktop.views.prueba.Prueba;
@@ -31,6 +30,12 @@ public class TablaExamen {
 	private ObjectProperty<JFXButton> colEliminarExamen;
 	private ObjectProperty<JFXButton> colActaExamen;
 	private ObjectProperty<JFXButton> colCargarCalificacioensExamen;
+
+	static Label lblNombreEstudiante = null;
+	static TextField txtNota = null;
+	static List<Estudiante_Examen> lstNotasCargadas = null;
+	static int i = 1;
+	static String idExamen = null;
 
 	public TablaExamen(String colIdExamen, String colAsignaturaExamen, String colFechaExamen, String colHoraExamen, JFXButton colEditarExamen,
 			JFXButton colEliminarExamen, JFXButton colActaExamen, JFXButton colCargarCalificacioensExamen) {
@@ -68,54 +73,83 @@ public class TablaExamen {
 			}
 		});
 
-//		this.colCargarCalificacioensExamen.get().setOnAction(new EventHandler<ActionEvent>() {
-//			@Override
-//			public void handle(ActionEvent event) {
-//				dialogCargarCalificacionesCurso();
-//			}
-//		});
+		this.colCargarCalificacioensExamen.get().setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				dialogCargarCalificacionesExamen();
+			}
+		});
 
 	}
 
-	@SuppressWarnings("unlikely-arg-type")
-	private void dialogCargarCalificacionesCurso() {
-		Dialog<Examen> dialog = new Dialog<>();
+	private void dialogCargarCalificacionesExamen() {
+		Dialog<List<Estudiante_Examen>> dialog = new Dialog<>();
+		List<TextField> campos = new ArrayList<>();
+		lstNotasCargadas = new ArrayList<>();
+		GridPane grid = new GridPane();
+		i = 1;
+		idExamen = "";
 		dialog.setTitle("Calificaciones del examen " + this.getColAsignaturaExamen());
 		dialog.setHeaderText("Calificaciones del examen " + this.getColAsignaturaExamen());
 		dialog.setResizable(true);
-		//TODO
-//		Prueba.getLstExamen().get(Prueba.getLstExamen().indexOf(this)).getEstudianteExamen().forEach(estudiante -> {
-//
-//		});
-//		ArrayList<Examen> a = new ArrayList<>();
-//		Prueba.getLstExamen().stream().filter(examen -> examen.getId() == Integer.parseInt(getColIdExamen())).forEach(estudiante -> {
-//			estudiante.
-//		});
-		Label label1 = new Label("Name: ");
-		Label label2 = new Label("Phone: ");
-		TextField text1 = new TextField();
-		TextField text2 = new TextField();
-		GridPane grid = new GridPane();
-		grid.add(label1, 1, 1);
-		grid.add(text1, 2, 1);
-		grid.add(label2, 1, 2);
-		grid.add(text2, 2, 2);
+		try {
+			List<Examen> lstExamenes = Prueba.getLstExamen();
+			if(lstExamenes != null) {
+				if(!lstExamenes.isEmpty()) {
+					Examen examen = lstExamenes.stream().filter(c -> c.getId() == Integer.parseInt(this.getColIdExamen())).findFirst().get();
+					if(examen != null) {
+						idExamen += examen.getId();
+						List<Estudiante_Examen> estudiantes = examen.getEstudianteExamen();
+						if(!estudiantes.isEmpty()) {
+							estudiantes.forEach(estudiante -> {
+								lblNombreEstudiante = new Label(estudiante.getNombre() + " " + estudiante.getApellido());
+								txtNota = new TextField();
+								grid.add(lblNombreEstudiante, 1, i);
+								grid.add(txtNota, 2, i);
+								campos.add(txtNota);
+								lstNotasCargadas.add(new Estudiante_Examen(estudiante.getId(),estudiante.getEstado(),estudiante.getNota(),estudiante.getNombre(),estudiante.getApellido(),estudiante.getId_usuario(),estudiante.getId_examen()));
+								i++;
+							});
+						}
+					}
+				}
+			}
+		}catch(NullPointerException | NumberFormatException e) {
+			e.printStackTrace();
+		}
 		dialog.getDialogPane().setContent(grid);
-		ButtonType buttonTypeOk = new ButtonType("Okay", ButtonData.OK_DONE);
+		ButtonType buttonTypeOk = new ButtonType("Confirmar", ButtonData.OK_DONE);
 		dialog.getDialogPane().getButtonTypes().add(buttonTypeOk);
-		dialog.setResultConverter(new Callback<ButtonType, Examen>() {
+		dialog.setResultConverter(new Callback<ButtonType, List<Estudiante_Examen>>() {
 		    @Override
-		    public Examen call(ButtonType b) {
-		        if (b == buttonTypeOk) {
-		            return new Examen(/*calificaciones*/);
+		    public List<Estudiante_Examen> call(ButtonType b) {
+		        List<Estudiante_Examen> respuesta = null;
+		    	if (b == buttonTypeOk) {
+		    		Iterator<Estudiante_Examen> iter = lstNotasCargadas.iterator();
+		    		campos.forEach(notas -> {
+		    			iter.next().setNota(Integer.parseInt(notas.getText()));
+		    		});
+		    		respuesta = lstNotasCargadas;
+		    		ExamenService cs = new ExamenService();
+		    		alertConfirmacionCargarCalificacionesExamen(cs.cargarCalificacionesExamenResponse(idExamen,respuesta));
 		        }
-		        return null;
+		        return respuesta;
 		    }
 		});
-		Optional<Examen> result = dialog.showAndWait();
-		if (result.isPresent()) {
-			System.out.println("Result: " + result.get());
+		dialog.showAndWait();
+	}
+
+	private void alertConfirmacionCargarCalificacionesExamen(boolean respuesta) {
+		Alert dialogo = new Alert(Alert.AlertType.INFORMATION);
+		dialogo.setTitle("Calificaciones del Examen");
+
+		if(respuesta) {
+			dialogo.setContentText("Se han cargado las calificaciones del examen " + this.getColAsignaturaExamen() + " satisfactoriamente.");
+		}else {
+			dialogo.setContentText("No se pudo cargar las calificaciones del examen.");
 		}
+		Prueba.actualizarDatosTablaCurso();
+		dialogo.showAndWait();
 	}
 
 	private void alertEliminarExamen() {

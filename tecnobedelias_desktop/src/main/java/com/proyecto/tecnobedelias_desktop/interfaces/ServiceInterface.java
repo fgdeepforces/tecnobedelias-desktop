@@ -1,6 +1,8 @@
 package com.proyecto.tecnobedelias_desktop.interfaces;
 
 import java.util.List;
+
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.proyecto.tecnobedelias_desktop.model.Carrera;
 import com.proyecto.tecnobedelias_desktop.model.Curso;
@@ -24,11 +26,17 @@ public interface ServiceInterface{
 	@GET("curso/borrar")
 	Call <Boolean> borrarCurso(@Header("Authorization") String token, @Query("cursoId") String idCurso );
 
+	@POST("inscripcion/ingresarcalificacionescurso")
+	Call <Boolean> cargarCalificacionesCurso(@Header("Authorization") String token, @Body JsonArray DataNotasCurso, @Query("cursoId") String idCurso );
+
 	@GET("examen/listar")
 	Call <List<Examen>> obtenerListaExamenes(@Header("Authorization") String token);
 
 	@GET("examen/borrar")
 	Call <Boolean> borrarExamen(@Header("Authorization") String token, @Query("examenId") String idExamen );
+
+	@POST("inscripcion/ingresarcalificacionesexamen")
+	Call <Boolean> cargarCalificacionesExamen(@Header("Authorization") String token, @Body JsonArray DataNotasExamen, @Query("cursoId") String idExamen );
 
 	@GET("carrera/listar")
 	Call <List<Carrera>> obtenerListaCarreras(@Header("Authorization") String token);

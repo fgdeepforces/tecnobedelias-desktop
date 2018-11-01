@@ -1,19 +1,24 @@
 package com.proyecto.tecnobedelias_desktop.model;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import com.jfoenix.controls.JFXButton;
-import com.jfoenix.controls.JFXDialog;
-import com.jfoenix.controls.JFXDialogLayout;
 import com.proyecto.tecnobedelias_desktop.service.CursoService;
 import com.proyecto.tecnobedelias_desktop.views.prueba.Prueba;
-
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.value.ChangeListener;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Alert;
-import javafx.scene.text.Text;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.control.ButtonBar.ButtonData;
+import javafx.scene.layout.GridPane;
+import javafx.util.Callback;
 
 public class TablaCurso {
 
@@ -26,6 +31,12 @@ public class TablaCurso {
 	private ObjectProperty<JFXButton> colEliminar;
 	private ObjectProperty<JFXButton> colActa;
 	private ObjectProperty<JFXButton> colCargarCalificaciones;
+
+	static Label lblNombreEstudiante = null;
+	static TextField txtNota = null;
+	static List<Curso_Estudiante> lstNotasCargadas = null;
+	static int i = 1;
+	static String idCurso = null;
 
 	public TablaCurso(String colId, String colAsignatura, String colFechaInicio, String colFechaFin, String colSemestre, JFXButton colEditar,
 			JFXButton colEliminar, JFXButton colActa, JFXButton colCargarCalificaciones) {
@@ -64,6 +75,70 @@ public class TablaCurso {
 			}
 		});
 
+		this.colCargarCalificaciones.get().setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				dialogCargarCalificacionesCurso();
+			}
+		});
+
+	}
+
+	private void dialogCargarCalificacionesCurso() {
+		Dialog<List<Curso_Estudiante>> dialog = new Dialog<>();
+		List<TextField> campos = new ArrayList<>();
+		lstNotasCargadas = new ArrayList<>();
+		GridPane grid = new GridPane();
+		i = 1;
+		idCurso = "";
+		dialog.setTitle("Calificaciones del curso " + this.getColAsignatura());
+		dialog.setHeaderText("Calificaciones del curso " + this.getColAsignatura());
+		dialog.setResizable(true);
+		try {
+			List<Curso> lstCursos = Prueba.getLstCurso();
+			if(lstCursos != null) {
+				if(!lstCursos.isEmpty()) {
+					Curso curso = lstCursos.stream().filter(c -> c.getId() == Integer.parseInt(this.getColId())).findFirst().get();
+					if(curso != null) {
+						idCurso += curso.getId();
+						List<Curso_Estudiante> estudiantes = curso.getCursoEstudiante();
+						if(!estudiantes.isEmpty()) {
+							estudiantes.forEach(estudiante -> {
+								lblNombreEstudiante = new Label(estudiante.getNombre() + " " + estudiante.getApellido());
+								txtNota = new TextField();
+								grid.add(lblNombreEstudiante, 1, i);
+								grid.add(txtNota, 2, i);
+								campos.add(txtNota);
+								lstNotasCargadas.add(new Curso_Estudiante(estudiante.getId(),estudiante.getEstado(),estudiante.getNota(),estudiante.getNombre(),estudiante.getApellido(),estudiante.getId_curso(),estudiante.getId_estudiante()));
+								i++;
+							});
+						}
+					}
+				}
+			}
+		}catch(NullPointerException | NumberFormatException e) {
+			e.printStackTrace();
+		}
+		dialog.getDialogPane().setContent(grid);
+		ButtonType buttonTypeOk = new ButtonType("Confirmar", ButtonData.OK_DONE);
+		dialog.getDialogPane().getButtonTypes().add(buttonTypeOk);
+		dialog.setResultConverter(new Callback<ButtonType, List<Curso_Estudiante>>() {
+		    @Override
+		    public List<Curso_Estudiante> call(ButtonType b) {
+		        List<Curso_Estudiante> respuesta = null;
+		    	if (b == buttonTypeOk) {
+		    		Iterator<Curso_Estudiante> iter = lstNotasCargadas.iterator();
+		    		campos.forEach(notas -> {
+		    			iter.next().setNota(Integer.parseInt(notas.getText()));
+		    		});
+		    		respuesta = lstNotasCargadas;
+		    		CursoService cs = new CursoService();
+		    		alertConfirmacionCargarCalificacionesCurso(cs.cargarCalificacionesCursoResponse(idCurso,respuesta));
+		        }
+		        return respuesta;
+		    }
+		});
+		dialog.showAndWait();
 	}
 
 	private void alertEliminarCurso() {
@@ -75,6 +150,19 @@ public class TablaCurso {
 			CursoService cs = new CursoService();
 			alertConfirmacionEliminarCurso(cs.borrarCursoResponse(getColId()));
 		}
+	}
+
+	private void alertConfirmacionCargarCalificacionesCurso(boolean respuesta) {
+		Alert dialogo = new Alert(Alert.AlertType.INFORMATION);
+		dialogo.setTitle("Calificaciones del Curso");
+
+		if(respuesta) {
+			dialogo.setContentText("Se han cargado las calificaciones del curso " + this.getColAsignatura() + " satisfactoriamente.");
+		}else {
+			dialogo.setContentText("No se pudo cargar las calificaciones del curso.");
+		}
+		Prueba.actualizarDatosTablaCurso();
+		dialogo.showAndWait();
 	}
 
 	private void alertConfirmacionEliminarCurso(boolean respuesta) {

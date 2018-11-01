@@ -5,17 +5,22 @@ public class Estudiante_Examen {
     private Integer id;
     private String estado;
     private Integer nota;
+    private String nombre;
+    private String apellido;
     private Integer id_usuario;
     private Integer id_examen;
 
     public Estudiante_Examen() {
 	}
 
-	public Estudiante_Examen(Integer id, String estado, Integer nota, Integer id_usuario, Integer id_examen) {
+	public Estudiante_Examen(Integer id, String estado, Integer nota, String nombre, String apellido,
+			Integer id_usuario, Integer id_examen) {
 		super();
 		this.id = id;
 		this.estado = estado;
 		this.nota = nota;
+		this.nombre = nombre;
+		this.apellido = apellido;
 		this.id_usuario = id_usuario;
 		this.id_examen = id_examen;
 	}
@@ -60,10 +65,26 @@ public class Estudiante_Examen {
 		this.id_examen = id_examen;
 	}
 
+	public String getNombre() {
+		return nombre;
+	}
+
+	public void setNombre(String nombre) {
+		this.nombre = nombre;
+	}
+
+	public String getApellido() {
+		return apellido;
+	}
+
+	public void setApellido(String apellido) {
+		this.apellido = apellido;
+	}
+
 	@Override
 	public String toString() {
-		return "Estudiante_Examen [id=" + id + ", estado=" + estado + ", nota=" + nota + ", id_usuario=" + id_usuario
-				+ ", id_examen=" + id_examen + "]";
+		return "Estudiante_Examen [id=" + id + ", estado=" + estado + ", nota=" + nota + ", nombre=" + nombre
+				+ ", apellido=" + apellido + ", id_usuario=" + id_usuario + ", id_examen=" + id_examen + "]";
 	}
 
 }
