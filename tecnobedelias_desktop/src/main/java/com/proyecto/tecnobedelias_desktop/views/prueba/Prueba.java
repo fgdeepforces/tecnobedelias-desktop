@@ -1,10 +1,20 @@
 package com.proyecto.tecnobedelias_desktop.views.prueba;
 
+import java.awt.Button;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
+
+import javax.swing.plaf.FileChooserUI;
+
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.pdf.PdfWriter;
 import com.jfoenix.controls.JFXButton;
 import com.proyecto.tecnobedelias_desktop.global.Constants;
 import com.proyecto.tecnobedelias_desktop.global.Token;
@@ -30,6 +40,8 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+import javafx.stage.FileChooser;
+import javafx.stage.FileChooser.ExtensionFilter;
 
 public class Prueba implements Initializable{
 
@@ -42,6 +54,7 @@ public class Prueba implements Initializable{
 	@FXML JFXButton btnLogout;
 	@FXML JFXButton btnAgregarCurso;
 	@FXML JFXButton btnAgregarExamen;
+	@FXML JFXButton btnPDF;
 	@FXML BorderPane cursosPane;
 	@FXML BorderPane examenesPane;
 	@FXML BorderPane escolaridadesPane;
@@ -83,6 +96,7 @@ public class Prueba implements Initializable{
 
 	static TablaCurso entry = null;
 	static int gridPanelHeight = 1;
+	
 
 	@SuppressWarnings("deprecation")
 	public void logoutButtonPushed(ActionEvent event) throws IOException {
@@ -102,12 +116,26 @@ public class Prueba implements Initializable{
 			e.printStackTrace();
 		}
 	}
+	
 
 	public void btnAgregarCursoActionListener(ActionEvent event) {
 		operacionesPaneToFront();
 		inicializarOperacion("INGRESAR CURSO");
 		TablaCurso entry = new TablaCurso("curso", "curso", "curso", "curso", "curso");
 		dataCurso.add(entry);
+	}
+	
+	public void btnPdfActionListener(ActionEvent event) throws FileNotFoundException, DocumentException {
+		System.out.println("entre al pdf events");
+		Document document = new Document();
+		@SuppressWarnings("unused")
+		PdfWriter pdfWriter = PdfWriter.getInstance(document, new FileOutputStream("Escolaridad.pdf"));
+		document.open();
+		Paragraph paragraph = new Paragraph();
+		paragraph.add("ESCOLARIDAD");
+		document.add(paragraph);
+		document.close();
+		
 	}
 
 	public void btnAgregarExamenActionListener(ActionEvent event) {
@@ -221,7 +249,7 @@ public class Prueba implements Initializable{
 	private void escolaridadesPaneToFront() {
 		inhabilitarPanelesCentrales();
 		escolaridadesPane.toFront();
-		escolaridadesPane.setVisible(true);
+		escolaridadesPane.setVisible(true);		
 	}
 
 	private void operacionesPaneToFront() {
