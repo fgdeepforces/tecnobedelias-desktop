@@ -144,7 +144,10 @@
                                     <Insets bottom="10.0" top="10.0" />
                                  </BorderPane.margin>
                               </Label>
-                           </top></BorderPane>
+                           </top>
+                           <center>
+                              <JFXButton fx:id="btnPdf" onAction="#btnPdfActionListener" prefHeight="50.0" prefWidth="100.0" styleClass="jfx-button" stylesheets="@Prueba.css" text="Pdf" BorderPane.alignment="CENTER" />
+                           </center></BorderPane>
                      </children>
                   </StackPane>
                </children>
