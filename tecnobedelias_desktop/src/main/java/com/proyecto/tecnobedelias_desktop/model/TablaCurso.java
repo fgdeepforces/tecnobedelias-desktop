@@ -4,33 +4,51 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import com.jfoenix.controls.JFXButton;
+import com.proyecto.tecnobedelias_desktop.global.Variables;
 import com.proyecto.tecnobedelias_desktop.service.CursoService;
 import com.proyecto.tecnobedelias_desktop.views.prueba.Prueba;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ButtonBar.ButtonData;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.util.Callback;
 
 public class TablaCurso {
 
 	private SimpleStringProperty colId;
 	private SimpleStringProperty colAsignatura;
+	private SimpleStringProperty colAnio;
 	private SimpleStringProperty colFechaInicio;
 	private SimpleStringProperty colFechaFin;
 	private SimpleStringProperty colSemestre;
+	private ObjectProperty<JFXButton> colHorarios;
 	private ObjectProperty<JFXButton> colEditar;
 	private ObjectProperty<JFXButton> colEliminar;
 	private ObjectProperty<JFXButton> colActa;
 	private ObjectProperty<JFXButton> colCargarCalificaciones;
+
+	private JFXButton colEditarHorario;
+	private JFXButton colEliminarHorario;
+
+	private ObservableList<TablaHorario> dataHorario = FXCollections.observableArrayList();
+	private TableView<TablaHorario> tablaHorarios = new TableView<>();
 
 	static Label lblNombreEstudiante = null;
 	static TextField txtNota = null;
@@ -38,35 +56,153 @@ public class TablaCurso {
 	static int i = 1;
 	static String idCurso = null;
 
-	public TablaCurso(String colId, String colAsignatura, String colFechaInicio, String colFechaFin, String colSemestre, JFXButton colEditar,
-			JFXButton colEliminar, JFXButton colActa, JFXButton colCargarCalificaciones) {
-		super();
-		this.colId = new SimpleStringProperty(colId);
-		this.colAsignatura = new SimpleStringProperty(colAsignatura);
-		this.colFechaInicio = new SimpleStringProperty(colFechaInicio);
-		this.colFechaFin = new SimpleStringProperty(colFechaFin);
-		this.colSemestre = new SimpleStringProperty(colSemestre);
-		this.colEditar = new SimpleObjectProperty<JFXButton>(colEditar);
-		this.colEliminar = new SimpleObjectProperty<JFXButton>(colEliminar);
-		this.colActa = new SimpleObjectProperty<JFXButton>(colActa);
-		this.colCargarCalificaciones = new SimpleObjectProperty<JFXButton>(colCargarCalificaciones);
+	private void dialogModificarHorario() {
+		Dialog<Horario> dialog = new Dialog<>();
+		Label lblDia = new Label("Dia");
+		Label lblHoraInicio = new Label("Hora de Inicio");
+		Label lblHoraFin = new Label("Hora de Finalizacion");
+		GridPane grid = new GridPane();
+
+		if(getTablaHorarios().getSelectionModel().getSelectedItem() == null) {
+			Alert alerta = new Alert(Alert.AlertType.INFORMATION);
+			alerta.setTitle("Informacion");
+			alerta.setContentText("Debes de seleccionar una fila antes de proceder a editar el horario");
+			alerta.showAndWait();
+		}else {
+			int index = getTablaHorarios().getSelectionModel().getSelectedIndex();
+			TextField txtDia = new TextField(getTablaHorarios().getSelectionModel().getSelectedItem().getColDiaHorario());
+			TextField txtHoraInicio = new TextField(getTablaHorarios().getSelectionModel().getSelectedItem().getColHoraInicioHorario());
+			TextField txtHoraFin = new TextField(getTablaHorarios().getSelectionModel().getSelectedItem().getColHoraFinHorario());
+
+			dialog.setTitle("Modificacion del horario del dia " + getTablaHorarios().getSelectionModel().getSelectedItem().getColDiaHorario());
+			dialog.setHeaderText("Modificacion del horario del dia " + getTablaHorarios().getSelectionModel().getSelectedItem().getColDiaHorario());
+			dialog.setResizable(true);
+
+			grid.add(lblDia, 1, 1);
+			grid.add(txtDia, 2, 1);
+			grid.add(lblHoraInicio, 1, 2);
+			grid.add(txtHoraInicio, 2, 2);
+			grid.add(lblHoraFin, 1, 3);
+			grid.add(txtHoraFin, 2, 3);
+
+			dialog.getDialogPane().setContent(grid);
+			ButtonType buttonTypeOk = new ButtonType("Confirmar", ButtonData.OK_DONE);
+			dialog.getDialogPane().getButtonTypes().add(buttonTypeOk);
+			dialog.setResultConverter(new Callback<ButtonType, Horario>() {
+			    @Override
+			    public Horario call(ButtonType b) {
+			    	if (b == buttonTypeOk) {
+			    		Variables.getLstHorarios().get(index).setDia(txtDia.getText());
+			    		Variables.getLstHorarios().get(index).setHoraInicio(txtHoraInicio.getText());
+			    		Variables.getLstHorarios().get(index).setHoraFin(txtHoraFin.getText());
+			    		alertConfirmacionModificarHorario(true);
+			        }
+			        return null;
+			    }
+			});
+			dialog.showAndWait();
+		}
 	}
 
-	public TablaCurso(String colId, String colAsignatura, String colFechaInicio, String colFechaFin, String colSemestre) {
+	private void alertConfirmacionModificarHorario(boolean respuesta) {
+		Alert dialogo = new Alert(Alert.AlertType.INFORMATION);
+		dialogo.setTitle("Modificacion del Horario");
+
+		if(respuesta) {
+			dialogo.setContentText("Se ha modificado el horario satisfactoriamente.");
+		}else {
+			dialogo.setContentText("No se pudo modificar el horario.");
+		}
+		actualizarDatosTablaHorario();
+		dialogo.showAndWait();
+	}
+
+	private void alertEliminarHorario() {
+		Alert dialogo = new Alert(Alert.AlertType.CONFIRMATION);
+		dialogo.setTitle("Eliminar Horario");
+		if(getTablaHorarios().getSelectionModel().getSelectedItem() == null) {
+			Alert alerta = new Alert(Alert.AlertType.INFORMATION);
+			alerta.setTitle("Informacion");
+			alerta.setContentText("Debes de seleccionar una fila antes de proceder a eliminar el horario");
+			alerta.showAndWait();
+		}else {
+			int index = getTablaHorarios().getSelectionModel().getSelectedIndex();
+			dialogo.setContentText("Esta seguro de eliminar el horario " + getTablaHorarios().getSelectionModel().getSelectedItem().getColDiaHorario() + "?");
+			dialogo.showAndWait();
+			if(dialogo.getResult().getText().equalsIgnoreCase("ACEPTAR")){
+				Variables.getLstHorarios().remove(index);
+				alertConfirmacionEliminarHorario(true);
+			}
+		}
+	}
+
+	private void alertConfirmacionEliminarHorario(boolean respuesta) {
+		Alert dialogo = new Alert(Alert.AlertType.INFORMATION);
+		dialogo.setTitle("Eliminar Horario");
+
+		if(respuesta) {
+			dialogo.setContentText("Se ha eliminado el horario " + getTablaHorarios().getSelectionModel().getSelectedItem().getColDiaHorario() + " satisfactoriamente");
+		}else {
+			dialogo.setContentText("No se puede eliminar el horario");
+		}
+		actualizarDatosTablaHorario();
+		dialogo.showAndWait();
+	}
+
+	public TablaCurso() {
+	}
+
+	public TablaCurso(SimpleStringProperty colId, SimpleStringProperty colAsignatura, SimpleStringProperty colAnio,
+			SimpleStringProperty colFechaInicio, SimpleStringProperty colFechaFin, SimpleStringProperty colSemestre,
+			ObjectProperty<JFXButton> colHorarios, ObjectProperty<JFXButton> colEditar,
+			ObjectProperty<JFXButton> colEliminar, ObjectProperty<JFXButton> colActa,
+			ObjectProperty<JFXButton> colCargarCalificaciones) {
+		super();
+		this.colId = colId;
+		this.colAsignatura = colAsignatura;
+		this.colAnio = colAnio;
+		this.colFechaInicio = colFechaInicio;
+		this.colFechaFin = colFechaFin;
+		this.colSemestre = colSemestre;
+		this.colHorarios = colHorarios;
+		this.colEditar = colEditar;
+		this.colEliminar = colEliminar;
+		this.colActa = colActa;
+		this.colCargarCalificaciones = colCargarCalificaciones;
+	}
+
+	public TablaCurso(String colId, String colAsignatura, String anio, String colFechaInicio, String colFechaFin, String colSemestre) {
 		this.colId = new SimpleStringProperty(colId);
 		this.colAsignatura = new SimpleStringProperty(colAsignatura);
+		this.colAnio = new SimpleStringProperty(anio);
 		this.colFechaInicio = new SimpleStringProperty(colFechaInicio);
 		this.colFechaFin = new SimpleStringProperty(colFechaFin);
 		this.colSemestre = new SimpleStringProperty(colSemestre);
+		this.colHorarios = new SimpleObjectProperty<JFXButton>(new JFXButton("Horarios"));
 		this.colEditar = new SimpleObjectProperty<JFXButton>(new JFXButton("Editar"));
 		this.colEliminar = new SimpleObjectProperty<JFXButton>(new JFXButton("Eliminar"));
 		this.colActa = new SimpleObjectProperty<JFXButton>(new JFXButton("Acta"));
 		this.colCargarCalificaciones = new SimpleObjectProperty<JFXButton>(new JFXButton("Cargar Calificaciones"));
 
-		this.colEditar.get().setStyle("-fx-background-color: yellow; -fx-pref-width: 130px; -fx-pref-height: 50px;");
-		this.colEliminar.get().setStyle("-fx-background-color: red; -fx-pref-width: 130px; -fx-pref-height: 50px;");
-		this.colActa.get().setStyle("-fx-background-color: blue; -fx-pref-width: 130px; -fx-pref-height: 50px;");
-		this.colCargarCalificaciones.get().setStyle("-fx-background-color: orange; -fx-pref-width: 130px; -fx-pref-height: 50px;");
+		this.colHorarios.get().setStyle("-fx-background-color: green; -fx-pref-width: 130px; -fx-pref-height: 40px;");
+		this.colEditar.get().setStyle("-fx-background-color: yellow; -fx-pref-width: 130px; -fx-pref-height: 40px;");
+		this.colEliminar.get().setStyle("-fx-background-color: red; -fx-pref-width: 130px; -fx-pref-height: 40px;");
+		this.colActa.get().setStyle("-fx-background-color: blue; -fx-pref-width: 130px; -fx-pref-height: 40px;");
+		this.colCargarCalificaciones.get().setStyle("-fx-background-color: orange; -fx-pref-width: 130px; -fx-pref-height: 40px;");
+
+		this.colHorarios.get().setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				alertHorariosCurso();
+			}
+		});
+
+		this.colEditar.get().setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				dialogModificarCurso();
+			}
+		});
 
 		this.colEliminar.get().setOnAction(new EventHandler<ActionEvent>() {
 			@Override
@@ -82,6 +218,220 @@ public class TablaCurso {
 			}
 		});
 
+	}
+
+	@SuppressWarnings("unchecked")
+	private void dialogModificarCurso() {
+		Dialog<Curso> dialog = new Dialog<>();
+
+		JFXButton btnIngresarHorario = new JFXButton("Ingresar Horario");
+
+		Label lblNombreAsignatura = new Label("Nombre de la Asignatura");
+		Label lblAnio = new Label("Anio");
+		Label lblFechaInicio = new Label("Fecha de Inicio");
+		Label lblFechaFin = new Label("Fecha de Finalizacion");
+		Label lblSemestre = new Label("Semestre");
+		Label lblHorarios = new Label("Horarios");
+
+		TextField txtNombreAsignatura = new TextField(this.getColAsignatura());
+		TextField txtAnio = new TextField(this.getColAnio());
+		TextField txtFechaInicio = new TextField(this.getColFechaInicio());
+		TextField txtFechaFin = new TextField(this.getColFechaFin());
+		TextField txtSemestre = new TextField(this.getColSemestre());
+
+		VBox box = new VBox();
+		HBox topBox = new HBox();
+		GridPane grid = new GridPane();
+		BorderPane border = new BorderPane();
+
+
+		btnIngresarHorario.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				dialogIngresarHorario();
+			}
+		});
+
+		box.getChildren().addAll(grid,border);
+		dialog.getDialogPane().setContent(box);
+
+		dialog.setTitle("Modificacion del curso " + this.getColAsignatura());
+		dialog.setHeaderText("Modificacion del curso " + this.getColAsignatura());
+		dialog.setResizable(true);
+
+		grid.add(lblNombreAsignatura, 1, 1);
+		grid.add(txtNombreAsignatura, 2, 1);
+		grid.add(lblAnio, 1, 2);
+		grid.add(txtAnio, 2, 2);
+		grid.add(lblFechaInicio, 1, 3);
+		grid.add(txtFechaInicio, 2, 3);
+		grid.add(lblFechaFin, 1, 4);
+		grid.add(txtFechaFin, 2, 4);
+		grid.add(lblSemestre, 1, 5);
+		grid.add(txtSemestre, 2, 5);
+
+		TableColumn<TablaHorario, String> colHorario_id = new TableColumn<>("Id");
+		TableColumn<TablaHorario, String> colHorario_dia = new TableColumn<>("Dia");
+		TableColumn<TablaHorario, String> colHorario_horaInicio = new TableColumn<>("Hora Inicio");
+		TableColumn<TablaHorario, String> colHorario_horaFin = new TableColumn<>("Hora Fin");
+		TableColumn<TablaHorario, String> colHorario_btnEditar = new TableColumn<>();
+		TableColumn<TablaHorario, String> colHorario_btnEliminar = new TableColumn<>();
+		getTablaHorarios().getColumns().clear();
+		getTablaHorarios().getColumns().addAll(colHorario_id, colHorario_dia, colHorario_horaInicio,colHorario_horaFin, colHorario_btnEditar, colHorario_btnEliminar);
+
+		topBox.getChildren().addAll(lblHorarios,btnIngresarHorario);
+
+		border.setTop(topBox);
+		border.setCenter(getTablaHorarios());
+
+		lblHorarios.setAlignment(Pos.CENTER);
+		btnIngresarHorario.setAlignment(Pos.CENTER_RIGHT);
+
+		try {
+			colHorario_id.setCellValueFactory(new PropertyValueFactory<TablaHorario, String>("colIdHorario"));
+			colHorario_dia.setCellValueFactory(new PropertyValueFactory<TablaHorario, String>("colDiaHorario"));
+			colHorario_horaInicio.setCellValueFactory(new PropertyValueFactory<TablaHorario, String>("colHoraInicioHorario"));
+			colHorario_horaFin.setCellValueFactory(new PropertyValueFactory<TablaHorario, String>("colHoraFinHorario"));
+			colHorario_btnEditar.setCellValueFactory(new PropertyValueFactory<TablaHorario, String>("colEditarHorario"));
+			colHorario_btnEliminar.setCellValueFactory(new PropertyValueFactory<TablaHorario, String>("colEliminarHorario"));
+		} catch (NullPointerException e) {
+			e.printStackTrace();
+		}
+		actualizarDatosTablaHorario();
+		colHorario_id.setVisible(false);
+		dialog.getDialogPane().setContent(box);
+		ButtonType buttonTypeOk = new ButtonType("Confirmar", ButtonData.OK_DONE);
+		dialog.getDialogPane().getButtonTypes().add(buttonTypeOk);
+		dialog.setResultConverter(new Callback<ButtonType, Curso>() {
+		    @Override
+		    public Curso call(ButtonType b) {
+		    	if (b == buttonTypeOk) {
+		    		List<Curso> lstCursos = Prueba.getLstCurso();
+		    		if(lstCursos != null) {
+		    			if(!lstCursos.isEmpty()) {
+		    				Curso curso = lstCursos.stream().filter(c -> c.getId() == Integer.parseInt(getColId())).findFirst().get();
+		    				if(curso != null) {
+		    					curso.setAnio(Integer.parseInt(txtAnio.getText()));
+		    					curso.setFechaFin(txtFechaFin.getText());
+		    					curso.setFechaInicio(txtFechaInicio.getText());
+		    					curso.setNombreAsignatura(txtNombreAsignatura.getText());
+		    					curso.setSemestre(Integer.parseInt(txtSemestre.getText()));
+		    					CursoService cs = new CursoService();
+		    		    		alertConfirmacionModificarCurso(cs.modificarCursoResponse(curso));
+		    				}
+		    			}
+		    		}
+		        }
+		        return null;
+		    }
+		});
+		dialog.showAndWait();
+	}
+
+	private void dialogIngresarHorario() {
+		Dialog<Horario> dialog = new Dialog<>();
+
+		GridPane grid = new GridPane();
+
+		Label lblDia = new Label("Dia");
+		Label lblHoraInicio = new Label("Hora inicio");
+		Label lblHoraFin = new Label("Hora fin");
+
+		TextField txtDia = new TextField();
+		TextField txtHoraInicio = new TextField();
+		TextField txtHoraFin = new TextField();
+
+		dialog.setTitle("Horarios");
+		dialog.setHeaderText("Ingreso de nuevo horario");
+		dialog.setResizable(true);
+
+		grid.add(lblDia, 1, 1);
+		grid.add(txtDia, 2, 1);
+		grid.add(lblHoraInicio, 1, 2);
+		grid.add(txtHoraInicio, 2, 2);
+		grid.add(lblHoraFin, 1, 3);
+		grid.add(txtHoraFin, 2, 3);
+
+		dialog.getDialogPane().setContent(grid);
+		ButtonType buttonTypeOk = new ButtonType("Confirmar", ButtonData.OK_DONE);
+		dialog.getDialogPane().getButtonTypes().add(buttonTypeOk);
+		dialog.setResultConverter(new Callback<ButtonType, Horario>() {
+		    @Override
+		    public Horario call(ButtonType b) {
+		    	if (b == buttonTypeOk) {
+		    		Variables.getLstHorarios().add(new Horario(txtDia.getText(),txtHoraFin.getText(),txtHoraInicio.getText()));
+		    		alertConfirmacionIngresarHorario(true);
+		        }
+		        return null;
+		    }
+		});
+		dialog.showAndWait();
+	}
+
+	private void alertConfirmacionIngresarHorario(boolean respuesta) {
+		Alert dialogo = new Alert(Alert.AlertType.INFORMATION);
+		dialogo.setTitle("Ingreso de Horario");
+
+		if(respuesta) {
+			dialogo.setContentText("Se ha ingresado el horario satisfactoriamente.");
+		}else {
+			dialogo.setContentText("No se pudo ingresar el horario.");
+		}
+		actualizarDatosTablaHorario();
+		dialogo.showAndWait();
+	}
+
+	public void actualizarDatosTablaHorario() {
+		getDataHorario().clear();
+		List<Curso> lstCursos = Prueba.getLstCurso();
+		if(lstCursos != null) {
+			if(!lstCursos.isEmpty()) {
+				Curso curso = lstCursos.stream().filter(c -> c.getId() == Integer.parseInt(getColId())).findFirst().get();
+				if(curso != null) {
+					Variables.setLstHorarios(curso.getHorarios());
+					if(Variables.getLstHorarios() != null) {
+						Variables.getLstHorarios().forEach(horario -> {
+							String id = "" + horario.getId();
+							colEditarHorario = new JFXButton("Ediar");
+							colEliminarHorario = new JFXButton("Eliminar");
+
+							this.colEditarHorario.setStyle("-fx-background-color: yellow; -fx-pref-width: 80px; -fx-pref-height: 30px;");
+							this.colEliminarHorario.setStyle("-fx-background-color: red; -fx-pref-width: 80px; -fx-pref-height: 30px;");
+
+							this.colEditarHorario.setOnAction(new EventHandler<ActionEvent>() {
+								@Override
+								public void handle(ActionEvent event) {
+									dialogModificarHorario();
+								}
+							});
+
+							this.colEliminarHorario.setOnAction(new EventHandler<ActionEvent>() {
+								@Override
+								public void handle(ActionEvent event) {
+									alertEliminarHorario();
+								}
+							});
+							TablaHorario entry = new TablaHorario(id, horario.getDia(), horario.getHoraInicio(), horario.getHoraFin(), colEditarHorario, colEliminarHorario);
+							getDataHorario().add(entry);
+						});
+					}
+				}
+			}
+		}
+		getTablaHorarios().setItems(getDataHorario());
+	}
+
+	private void alertConfirmacionModificarCurso(boolean respuesta) {
+		Alert dialogo = new Alert(Alert.AlertType.INFORMATION);
+		dialogo.setTitle("Modificacion del Curso");
+
+		if(respuesta) {
+			dialogo.setContentText("Se ha modificado curso " + this.getColAsignatura() + " satisfactoriamente.");
+		}else {
+			dialogo.setContentText("No se pudo modificar el curso.");
+		}
+		Prueba.actualizarDatosTablaCurso();
+		dialogo.showAndWait();
 	}
 
 	private void dialogCargarCalificacionesCurso() {
@@ -152,6 +502,36 @@ public class TablaCurso {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
+	private void alertHorariosCurso() {
+		Dialog<List<Horario>> dialogo = new Dialog<>();
+		dialogo.setTitle("Horarios Curso");
+		dialogo.setHeaderText("Horarios Curso");
+		dialogo.setResizable(true);
+
+		TableColumn<TablaHorario, String> colHorario_id = new TableColumn<>("Id");
+		TableColumn<TablaHorario, String> colHorario_dia = new TableColumn<>("Dia");
+		TableColumn<TablaHorario, String> colHorario_horaInicio = new TableColumn<>("Hora Inicio");
+		TableColumn<TablaHorario, String> colHorario_horaFin = new TableColumn<>("Hora Fin");
+		getTablaHorarios().getColumns().clear();
+		getTablaHorarios().getColumns().addAll(colHorario_id, colHorario_dia, colHorario_horaInicio,colHorario_horaFin);
+
+		try {
+			colHorario_id.setCellValueFactory(new PropertyValueFactory<TablaHorario, String>("colIdHorario"));
+			colHorario_dia.setCellValueFactory(new PropertyValueFactory<TablaHorario, String>("colDiaHorario"));
+			colHorario_horaInicio.setCellValueFactory(new PropertyValueFactory<TablaHorario, String>("colHoraInicioHorario"));
+			colHorario_horaFin.setCellValueFactory(new PropertyValueFactory<TablaHorario, String>("colHoraFinHorario"));
+		} catch (NullPointerException e) {
+			e.printStackTrace();
+		}
+		actualizarDatosTablaHorario();
+		colHorario_id.setVisible(false);
+		dialogo.getDialogPane().setContent(getTablaHorarios());
+		ButtonType buttonTypeOk = new ButtonType("Volver", ButtonData.BACK_PREVIOUS);
+		dialogo.getDialogPane().getButtonTypes().add(buttonTypeOk);
+		dialogo.showAndWait();
+	}
+
 	private void alertConfirmacionCargarCalificacionesCurso(boolean respuesta) {
 		Alert dialogo = new Alert(Alert.AlertType.INFORMATION);
 		dialogo.setTitle("Calificaciones del Curso");
@@ -179,7 +559,7 @@ public class TablaCurso {
 	}
 
 	public String getColId() {
-		return this.colId.get();
+		return colId.get();
 	}
 
 	public void setColId(String colId) {
@@ -192,6 +572,14 @@ public class TablaCurso {
 
 	public void setColAsignatura(String colAsignatura) {
 		this.colAsignatura.set(colAsignatura);
+	}
+
+	public String getColAnio() {
+		return this.colAnio.get();
+	}
+
+	public void setColAnio(String colAnio) {
+		this.colAnio.set(colAnio);
 	}
 
 	public String getColFechaInicio() {
@@ -216,6 +604,14 @@ public class TablaCurso {
 
 	public void setColSemestre(String colSemestre) {
 		this.colSemestre.set(colSemestre);
+	}
+
+	public JFXButton getColHorarios() {
+		return this.colHorarios.get();
+	}
+
+	public void setColHorarios(JFXButton colHorarios) {
+		this.colHorarios.set(colHorarios);
 	}
 
 	public JFXButton getColEditar() {
@@ -248,6 +644,22 @@ public class TablaCurso {
 
 	public void setColCargarCalificaciones(JFXButton colCargarCalificaciones) {
 		this.colCargarCalificaciones.set(colCargarCalificaciones);
+	}
+
+	public ObservableList<TablaHorario> getDataHorario() {
+		return dataHorario;
+	}
+
+	public void setDataHorario(ObservableList<TablaHorario> dataHorario) {
+		this.dataHorario = dataHorario;
+	}
+
+	public TableView<TablaHorario> getTablaHorarios() {
+		return tablaHorarios;
+	}
+
+	public void setTablaHorarios(TableView<TablaHorario> tablaHorarios) {
+		this.tablaHorarios = tablaHorarios;
 	}
 
 }

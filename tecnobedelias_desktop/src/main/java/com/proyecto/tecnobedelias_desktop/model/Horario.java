@@ -17,6 +17,18 @@ public class Horario {
 		this.horaInicio = horaInicio;
 	}
 
+
+
+	public Horario(String dia, String horaFin, String horaInicio) {
+		super();
+		this.id = 0;
+		this.dia = dia;
+		this.horaFin = horaFin;
+		this.horaInicio = horaInicio;
+	}
+
+
+
 	public boolean isActiva() {
 		return activa;
 	}

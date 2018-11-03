@@ -51,9 +51,11 @@
                                 <columns>
                                   <TableColumn fx:id="colIdCursos" prefWidth="34.0" text="Id" />
                                     <TableColumn fx:id="colAsignaturaCursos" prefWidth="116.0" text="Asignatura" />
+                                    <TableColumn fx:id="colAnioCursos" prefWidth="75.0" text="Año" />
                                     <TableColumn fx:id="colFechaInicioCursos" prefWidth="75.0" text="Fecha Inicio" />
                                     <TableColumn fx:id="colFechaFinCursos" prefWidth="75.0" text="Fecha Fin" />
                                     <TableColumn fx:id="colSemestreCursos" prefWidth="75.0" text="Semestre" />
+                                    <TableColumn fx:id="colHorariosCursos" prefWidth="75.0" />
                                     <TableColumn fx:id="colEditarCursos" prefWidth="75.0" />
                                     <TableColumn fx:id="colEliminarCursos" prefWidth="75.0" />
                                     <TableColumn fx:id="colActaCursos" prefWidth="75.0" />

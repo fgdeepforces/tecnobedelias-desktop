@@ -23,6 +23,9 @@ public interface ServiceInterface{
 	@GET("curso/listar")
 	Call <List<Curso>> obtenerListaCursos(@Header("Authorization") String token);
 
+	@GET("curso/modificar")
+	Call <Boolean> modificarCurso(@Header("Authorization") String token, @Body JsonObject DataCurso, @Query("cursoId") String idCurso );
+
 	@GET("curso/borrar")
 	Call <Boolean> borrarCurso(@Header("Authorization") String token, @Query("cursoId") String idCurso );
 
