@@ -24,7 +24,16 @@ public class CarreraService {
 			public void onResponse(Call<List<Carrera>> call, Response<List<Carrera>> response) {
 				if (response.isSuccessful()) {
 					try {
+						System.out.println("onResponse");
 						data = response.body();
+						if(data != null) {
+							System.out.println("data no es null");
+							data.forEach(carreras -> {
+								System.out.println(carreras.toString());
+							});
+						}else {
+							System.out.println("data es null");
+						}
 					}catch(NullPointerException e) {
 						e.printStackTrace();
 					}
@@ -33,6 +42,7 @@ public class CarreraService {
 
 			@Override
 			public void onFailure(Call<List<Carrera>> call, Throwable t) {
+				System.out.println("onFailure");
 				t.printStackTrace();
 			}
 

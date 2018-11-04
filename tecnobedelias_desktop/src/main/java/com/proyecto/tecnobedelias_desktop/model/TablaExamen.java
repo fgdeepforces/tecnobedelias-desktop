@@ -37,6 +37,71 @@ public class TablaExamen {
 	static int i = 1;
 	static String idExamen = null;
 
+	@SuppressWarnings("unused")
+	private void dialogModificarCurso() {
+		Dialog<Examen> dialog = new Dialog<>();
+
+		Label lblNombreAsignatura = new Label("Nombre de la Asignatura");
+		Label lblFecha = new Label("Fecha");
+		Label lblHora = new Label("Hora");
+
+		TextField txtNombreAsignatura = new TextField(this.getColAsignaturaExamen());
+		TextField txtFecha = new TextField(this.getColFechaExamen());
+		TextField txtHora = new TextField(this.getColHoraExamen());
+
+		GridPane grid = new GridPane();
+
+		dialog.setTitle("Modificacion del examen " + this.getColAsignaturaExamen());
+		dialog.setHeaderText("Modificacion del examen " + this.getColAsignaturaExamen());
+		dialog.setResizable(true);
+
+		grid.add(lblNombreAsignatura, 1, 1);
+		grid.add(txtNombreAsignatura, 2, 1);
+		grid.add(lblFecha, 1, 2);
+		grid.add(txtFecha, 2, 2);
+		grid.add(lblHora, 1, 3);
+		grid.add(txtHora, 2, 3);
+
+		dialog.getDialogPane().setContent(grid);
+		ButtonType buttonTypeOk = new ButtonType("Confirmar", ButtonData.OK_DONE);
+		dialog.getDialogPane().getButtonTypes().add(buttonTypeOk);
+		dialog.setResultConverter(new Callback<ButtonType, Examen>() {
+		    @Override
+		    public Examen call(ButtonType b) {
+		    	if (b == buttonTypeOk) {
+		    		List<Examen> lstExamenes = Prueba.getLstExamen();
+		    		if(lstExamenes != null) {
+		    			if(!lstExamenes.isEmpty()) {
+		    				Examen examen = lstExamenes.stream().filter(c -> c.getId() == Integer.parseInt(getColIdExamen())).findFirst().get();
+		    				if(examen != null) {
+		    					examen.setHora(txtHora.getText());
+		    					examen.setFecha(txtFecha.getText());
+		    					examen.setNombreAsignatura(txtNombreAsignatura.getText());
+		    					ExamenService cs = new ExamenService();
+		    		    		alertConfirmacionModificarExamen(cs.modificarExamenResponse(examen));
+		    				}
+		    			}
+		    		}
+		        }
+		        return null;
+		    }
+		});
+		dialog.showAndWait();
+	}
+
+	private void alertConfirmacionModificarExamen(boolean respuesta) {
+		Alert dialogo = new Alert(Alert.AlertType.INFORMATION);
+		dialogo.setTitle("Modificacion del Examen");
+
+		if(respuesta) {
+			dialogo.setContentText("Se ha modificado examen " + this.getColAsignaturaExamen() + " satisfactoriamente.");
+		}else {
+			dialogo.setContentText("No se pudo modificar el examen.");
+		}
+		Prueba.actualizarDatosTablaCurso();
+		dialogo.showAndWait();
+	}
+
 	public TablaExamen(String colIdExamen, String colAsignaturaExamen, String colFechaExamen, String colHoraExamen, JFXButton colEditarExamen,
 			JFXButton colEliminarExamen, JFXButton colActaExamen, JFXButton colCargarCalificacioensExamen) {
 		super();

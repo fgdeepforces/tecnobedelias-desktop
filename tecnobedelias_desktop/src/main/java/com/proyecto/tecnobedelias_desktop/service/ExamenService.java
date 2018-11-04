@@ -106,7 +106,95 @@ public class ExamenService {
 		ServiceInterface interfaz = retro.create(ServiceInterface.class);
 
 		//TODO: Verificar con Leo como recepciona el JsonArray
-		Call<Boolean> respuesta = interfaz.cargarCalificacionesCurso("Bearer " + Token.getInstance().getToken(), ja ,idExamen);
+		Call<Boolean> respuesta = interfaz.cargarCalificacionesExamen("Bearer " + Token.getInstance().getToken(), ja ,idExamen);
+
+		respuesta.enqueue(new Callback<Boolean>() {
+
+			@Override
+			public void onResponse(Call<Boolean> call, Response<Boolean> response) {
+				if (response.isSuccessful()) {
+					try {
+						responseServer = response.body();
+					}catch(NullPointerException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+
+			@Override
+			public void onFailure(Call<Boolean> call, Throwable t) {
+				t.printStackTrace();
+			}
+
+		});
+		if (respuesta.isExecuted()) {
+			try {
+				Thread.sleep(1000); //AVG 1000
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+		return responseServer;
+	}
+
+	public boolean modificarExamenResponse(Examen examen) {
+		responseServer = false;
+
+		JsonObject jo = new JsonObject();
+		jo.addProperty("fecha", examen.getFecha());
+		jo.addProperty("hora", examen.getHora());
+		jo.addProperty("nombreAsignatura", examen.getNombreAsignatura());
+
+		System.out.println(jo.toString());
+
+		Retrofit retro = Token.getInstance().getRetro();
+		ServiceInterface interfaz = retro.create(ServiceInterface.class);
+
+		Call<Boolean> respuesta = interfaz.modificarExamen("Bearer " + Token.getInstance().getToken(), jo ,examen.getId().toString());
+
+		respuesta.enqueue(new Callback<Boolean>() {
+
+			@Override
+			public void onResponse(Call<Boolean> call, Response<Boolean> response) {
+				if (response.isSuccessful()) {
+					try {
+						responseServer = response.body();
+					}catch(NullPointerException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+
+			@Override
+			public void onFailure(Call<Boolean> call, Throwable t) {
+				t.printStackTrace();
+			}
+
+		});
+		if (respuesta.isExecuted()) {
+			try {
+				Thread.sleep(1000); //AVG 1000
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+		return responseServer;
+	}
+
+	public boolean ingresarExamenResponse(Examen examen) {
+		responseServer = false;
+
+		JsonObject jo = new JsonObject();
+		jo.addProperty("fecha", examen.getFecha());
+		jo.addProperty("hora", examen.getHora());
+		jo.addProperty("nombreAsignatura", examen.getNombreAsignatura());
+
+		System.out.println(jo.toString());
+
+		Retrofit retro = Token.getInstance().getRetro();
+		ServiceInterface interfaz = retro.create(ServiceInterface.class);
+
+		Call<Boolean> respuesta = interfaz.ingresarExamen("Bearer " + Token.getInstance().getToken(), jo ,examen.getNombreAsignatura());
 
 		respuesta.enqueue(new Callback<Boolean>() {
 

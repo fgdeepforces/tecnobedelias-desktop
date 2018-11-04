@@ -1,7 +1,6 @@
 package com.proyecto.tecnobedelias_desktop.interfaces;
 
 import java.util.List;
-
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.proyecto.tecnobedelias_desktop.model.Carrera;
@@ -23,6 +22,9 @@ public interface ServiceInterface{
 	@GET("curso/listar")
 	Call <List<Curso>> obtenerListaCursos(@Header("Authorization") String token);
 
+	@POST("curso/crear")
+	Call <Boolean> ingresarCurso(@Header("Authorization") String token, @Body JsonObject DataCurso, @Query("nombre") String nombre );
+
 	@GET("curso/modificar")
 	Call <Boolean> modificarCurso(@Header("Authorization") String token, @Body JsonObject DataCurso, @Query("cursoId") String idCurso );
 
@@ -32,8 +34,14 @@ public interface ServiceInterface{
 	@POST("inscripcion/ingresarcalificacionescurso")
 	Call <Boolean> cargarCalificacionesCurso(@Header("Authorization") String token, @Body JsonArray DataNotasCurso, @Query("cursoId") String idCurso );
 
+	@POST("curso/crear")
+	Call <Boolean> ingresarExamen(@Header("Authorization") String token, @Body JsonObject DataExamen, @Query("nombre") String nombre );
+
 	@GET("examen/listar")
 	Call <List<Examen>> obtenerListaExamenes(@Header("Authorization") String token);
+
+	@GET("examen/modificar")
+	Call <Boolean> modificarExamen(@Header("Authorization") String token, @Body JsonObject DataExamen, @Query("examenId") String idExamen );
 
 	@GET("examen/borrar")
 	Call <Boolean> borrarExamen(@Header("Authorization") String token, @Query("examenId") String idExamen );
