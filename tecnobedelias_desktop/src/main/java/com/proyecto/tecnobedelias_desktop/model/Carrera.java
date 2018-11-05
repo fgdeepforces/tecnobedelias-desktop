@@ -74,4 +74,11 @@ public class Carrera {
 		this.activa = activa;
 	}
 
+	@Override
+	public String toString() {
+		return nombre;
+	}
+	
+	
+
 }

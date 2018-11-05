@@ -25,7 +25,7 @@ public interface ServiceInterface{
 	@POST("curso/crear")
 	Call <Boolean> ingresarCurso(@Header("Authorization") String token, @Body JsonObject DataCurso, @Query("nombre") String nombre );
 
-	@GET("curso/modificar")
+	@POST("curso/modificar")
 	Call <Boolean> modificarCurso(@Header("Authorization") String token, @Body JsonObject DataCurso, @Query("cursoId") String idCurso );
 
 	@GET("curso/borrar")
@@ -34,13 +34,13 @@ public interface ServiceInterface{
 	@POST("inscripcion/ingresarcalificacionescurso")
 	Call <Boolean> cargarCalificacionesCurso(@Header("Authorization") String token, @Body JsonArray DataNotasCurso, @Query("cursoId") String idCurso );
 
-	@POST("curso/crear")
+	@POST("examen/crear")
 	Call <Boolean> ingresarExamen(@Header("Authorization") String token, @Body JsonObject DataExamen, @Query("nombre") String nombre );
 
 	@GET("examen/listar")
 	Call <List<Examen>> obtenerListaExamenes(@Header("Authorization") String token);
 
-	@GET("examen/modificar")
+	@POST("examen/modificar")
 	Call <Boolean> modificarExamen(@Header("Authorization") String token, @Body JsonObject DataExamen, @Query("examenId") String idExamen );
 
 	@GET("examen/borrar")

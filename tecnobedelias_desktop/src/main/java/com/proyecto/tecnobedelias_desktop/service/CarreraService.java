@@ -29,7 +29,7 @@ public class CarreraService {
 						if(data != null) {
 							System.out.println("data no es null");
 							data.forEach(carreras -> {
-								System.out.println(carreras.toString());
+								System.out.println(carreras.getNombre());
 							});
 						}else {
 							System.out.println("data es null");
@@ -49,7 +49,7 @@ public class CarreraService {
 		});
 		if (respuesta.isExecuted()) {
 			try {
-				Thread.sleep(1000); //AVG 1000
+				Thread.sleep(3000); //AVG 1000
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

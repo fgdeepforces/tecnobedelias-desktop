@@ -174,6 +174,8 @@ public class Prueba implements Initializable {
 	static int gridPanelHeight = 1;
 
 	static String nombreAsignatura;
+	
+	static Carrera carrera;
 
 	@SuppressWarnings("deprecation")
 	public void logoutButtonPushed(ActionEvent event) throws IOException {
@@ -194,6 +196,9 @@ public class Prueba implements Initializable {
 		}
 	}
 
+	/**
+	 * @param event
+	 */
 	@SuppressWarnings("unchecked")
 	public void btnAgregarCursoActionListener(ActionEvent event) {
 		// operacionesPaneToFront();
@@ -205,6 +210,12 @@ public class Prueba implements Initializable {
 		ObservableList<Carrera> dataCarreras = FXCollections.observableArrayList();
 		ObservableList<AsignaturaCarrera> dataAsignaturas = FXCollections.observableArrayList();
 		List<Carrera> carreras = cs.listarCarrerasResponse();
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		Label lblCarreras = new Label("Carrera");
 		Label lblAsignatura = new Label("Asignatura");
 		ComboBox<Carrera> cboCarreras = new ComboBox<>();
@@ -292,29 +303,53 @@ public class Prueba implements Initializable {
 		} else {
 			dataCarreras.addAll(carreras);
 			cboCarreras.getItems().addAll(dataCarreras);
-			Carrera carrera = cboCarreras.getSelectionModel().getSelectedItem();
-			List<AsignaturaCarrera> asignaturasDeCarrera = carrera.getAsignaturaCarrera();
-			if (asignaturasDeCarrera == null) {
-				Alert alerta = new Alert(Alert.AlertType.INFORMATION);
-				alerta.setTitle("Informacion");
-				alerta.setContentText(
-						"No existen asignaturas para la carrera seleccionada en el sistema por favor contactese con el director para que cree alguna");
-				alerta.showAndWait();
-			} else {
-				lblAsignatura.setVisible(true);
-				cboAsignaturas.setVisible(true);
-				dataAsignaturas.addAll(asignaturasDeCarrera);
-				cboAsignaturas.getItems().addAll(dataAsignaturas);
-				nombreAsignatura = cboAsignaturas.getSelectionModel().getSelectedItem().getAsignatura().getNombre();
-				lblAnio.setVisible(true);
-				lblFechaFin.setVisible(true);
-				lblFechaInicio.setVisible(true);
-				lblSemestre.setVisible(true);
-				txtAnio.setVisible(true);
-				txtFechaInicio.setVisible(true);
-				txtFechaFin.setVisible(true);
-				txtSemestre.setVisible(true);
-			}
+			carrera = null;
+			cboCarreras.setOnAction(new EventHandler<ActionEvent>() {
+				
+				@Override
+				public void handle(ActionEvent event) {
+					// TODO Auto-generated method stub
+					carrera = cboCarreras.getSelectionModel().getSelectedItem();
+					System.out.println("Carrera seleccionada: " + carrera.toString());
+					if (carrera != null) {						
+						List<AsignaturaCarrera> asignaturasDeCarrera = carrera.getAsignaturaCarrera();
+						cboAsignaturas.setVisible(true);
+						if (asignaturasDeCarrera == null) {
+							Alert alerta = new Alert(Alert.AlertType.INFORMATION);
+							alerta.setTitle("Informacion");
+							alerta.setContentText(
+									"No existen asignaturas para la carrera seleccionada en el sistema por favor contactese con el director para que cree alguna");
+							alerta.showAndWait();
+						} else {
+							lblAsignatura.setVisible(true);
+							dataAsignaturas.addAll(asignaturasDeCarrera);
+							cboAsignaturas.getItems().addAll(dataAsignaturas);
+							cboAsignaturas.setOnAction(new EventHandler<ActionEvent>() {
+								
+								@Override
+								public void handle(ActionEvent event) {
+									// TODO Auto-generated method stub
+									nombreAsignatura = cboAsignaturas.getSelectionModel().getSelectedItem().getAsignatura().getNombre();
+									lblAnio.setVisible(true);
+									lblFechaFin.setVisible(true);
+									lblFechaInicio.setVisible(true);
+									lblSemestre.setVisible(true);
+									txtAnio.setVisible(true);
+									txtFechaInicio.setVisible(true);
+									txtFechaFin.setVisible(true);
+									txtSemestre.setVisible(true);
+								}
+							});
+						}
+					}else {
+						Alert alerta = new Alert(Alert.AlertType.INFORMATION);
+						alerta.setTitle("Informacion");
+						alerta.setContentText(
+								"no hay carrera");
+						alerta.showAndWait();
+					}
+				}
+			});
 		}
 
 		grid.add(lblCarreras, 1, 1);
@@ -379,8 +414,8 @@ public class Prueba implements Initializable {
 		ComboBox<AsignaturaCarrera> cboAsignaturas = new ComboBox<>();
 		Examen examen = new Examen();
 
-		Label lblFecha = new Label("Año");
-		Label lblHora = new Label("Fecha Fin");
+		Label lblFecha = new Label("Fecha");
+		Label lblHora = new Label("Hora");
 
 		lblAsignatura.setVisible(false);
 		lblFecha.setVisible(false);
@@ -396,8 +431,8 @@ public class Prueba implements Initializable {
 
 		GridPane grid = new GridPane();
 
-		dialog.setTitle("Ingresar Curso");
-		dialog.setHeaderText("Ingresar Curso");
+		dialog.setTitle("Ingresar Examen");
+		dialog.setHeaderText("Ingresar Examen");
 		dialog.setResizable(true);
 
 		if (carreras == null) {
@@ -406,9 +441,10 @@ public class Prueba implements Initializable {
 			alerta.setContentText(
 					"No existen carreras en el sistema por favor contactese con el director para que cree alguna");
 			alerta.showAndWait();
-		} else {
+		}/* else {
 			dataCarreras.addAll(carreras);
 			cboCarreras.getItems().addAll(dataCarreras);
+			carrera = null;
 			Carrera carrera = cboCarreras.getSelectionModel().getSelectedItem();
 			List<AsignaturaCarrera> asignaturasDeCarrera = carrera.getAsignaturaCarrera();
 			if (asignaturasDeCarrera == null) {
@@ -429,6 +465,58 @@ public class Prueba implements Initializable {
 				txtHora.setVisible(true);
 			}
 		}
+		
+		*//*************************************************************************************//*
+		*/
+		 else {
+			dataCarreras.addAll(carreras);
+			cboCarreras.getItems().addAll(dataCarreras);
+			carrera = null;
+			cboCarreras.setOnAction(new EventHandler<ActionEvent>() {
+				
+				@Override
+				public void handle(ActionEvent event) {
+					// TODO Auto-generated method stub
+					carrera = cboCarreras.getSelectionModel().getSelectedItem();
+					System.out.println("Carrera seleccionada: " + carrera.toString());
+					if (carrera != null) {						
+						List<AsignaturaCarrera> asignaturasDeCarrera = carrera.getAsignaturaCarrera();
+						cboAsignaturas.setVisible(true);
+						if (asignaturasDeCarrera == null) {
+							Alert alerta = new Alert(Alert.AlertType.INFORMATION);
+							alerta.setTitle("Informacion");
+							alerta.setContentText(
+									"No existen asignaturas para la carrera seleccionada en el sistema por favor contactese con el director para que cree alguna");
+							alerta.showAndWait();
+						} else {
+							lblAsignatura.setVisible(true);
+							dataAsignaturas.addAll(asignaturasDeCarrera);
+							cboAsignaturas.getItems().addAll(dataAsignaturas);
+							cboAsignaturas.setOnAction(new EventHandler<ActionEvent>() {
+								
+								@Override
+								public void handle(ActionEvent event) {
+									// TODO Auto-generated method stub
+									nombreAsignatura = cboAsignaturas.getSelectionModel().getSelectedItem().getAsignatura().getNombre();
+									lblFecha.setVisible(true);
+									lblHora.setVisible(true);
+									txtFecha.setVisible(true);
+									txtHora.setVisible(true);
+								}
+							});
+						}
+					}else {
+						Alert alerta = new Alert(Alert.AlertType.INFORMATION);
+						alerta.setTitle("Informacion");
+						alerta.setContentText(
+								"no hay carrera");
+						alerta.showAndWait();
+					}
+				}
+			});
+		}
+		
+		/*************************************************************************************/
 
 		grid.add(lblCarreras, 1, 1);
 		grid.add(cboCarreras, 2, 1);
@@ -467,7 +555,7 @@ public class Prueba implements Initializable {
 		} else {
 			dialogo.setContentText("No se pudo ingresar el examen.");
 		}
-		actualizarDatosTablaCurso();
+		actualizarDatosTablaExamen();
 		dialogo.showAndWait();
 	}
 

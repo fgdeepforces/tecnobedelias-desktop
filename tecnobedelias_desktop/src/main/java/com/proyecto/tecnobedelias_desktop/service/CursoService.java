@@ -94,7 +94,7 @@ public class CursoService {
 
 		lstNotasCurso.forEach(estudiante -> {
 			JsonObject jo = new JsonObject();
-			jo.addProperty("id", estudiante.getId_estudiante());
+			jo.addProperty("id", estudiante.getId());
 			jo.addProperty("nota", estudiante.getNota());
 			ja.add(jo);
 		});

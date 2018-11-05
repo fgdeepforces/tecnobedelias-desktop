@@ -2,7 +2,12 @@ package com.proyecto.tecnobedelias_desktop.model;
 
 public class AsignaturaCarrera {
 
-    private Integer id;
+    @Override
+	public String toString() {
+		return asignatura.getNombre();
+	}
+
+	private Integer id;
     private Integer creditos;
     private boolean electiva;
     private Integer notaMaxima;
