@@ -1,10 +1,14 @@
 package com.proyecto.tecnobedelias_desktop.model;
 
+import java.awt.Desktop;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import com.jfoenix.controls.JFXButton;
 import com.proyecto.tecnobedelias_desktop.service.ExamenService;
+import com.proyecto.tecnobedelias_desktop.utils.GeneratePDFFileIText;
 import com.proyecto.tecnobedelias_desktop.views.prueba.Prueba;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -38,7 +42,7 @@ public class TablaExamen {
 	static String idExamen = null;
 
 	@SuppressWarnings("unused")
-	private void dialogModificarCurso() {
+	private void dialogModificarExamen() {
 		Dialog<Examen> dialog = new Dialog<>();
 
 		Label lblNombreAsignatura = new Label("Nombre de la Asignatura");
@@ -131,10 +135,54 @@ public class TablaExamen {
 		this.colActaExamen.get().setStyle("-fx-background-color: blue; -fx-pref-width: 130px; -fx-pref-height: 50px;");
 		this.colCargarCalificacioensExamen.get().setStyle("-fx-background-color: orange; -fx-pref-width: 130px; -fx-pref-height: 50px;");
 
+		this.colEditarExamen.get().setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				dialogModificarExamen();
+			}
+		});
+
 		this.colEliminarExamen.get().setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
 				alertEliminarExamen();
+			}
+		});
+
+		this.colActaExamen.get().setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				alertEliminarExamen();
+			}
+		});
+
+		this.colActaExamen.get().setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				GeneratePDFFileIText generatePDFFileIText = new GeneratePDFFileIText();
+				List<Examen> lstExamenes = Prueba.getLstExamen();
+	    		if(lstExamenes != null) {
+	    			if(!lstExamenes.isEmpty()) {
+	    				Examen examen = lstExamenes.stream().filter(c -> c.getId() == Integer.parseInt(getColIdExamen())).findFirst().get();
+	    				if(examen != null) {
+	    					List<Estudiante_Examen> lstEstudiante = examen.getEstudianteExamen();
+	    					if(lstEstudiante != null && !lstEstudiante.isEmpty()) {
+
+	    						generatePDFFileIText.crearActaFinalDeExamen(examen.getNombreAsignatura(), lstEstudiante);
+	    					}else {
+	    						Alert dialogo = new Alert(Alert.AlertType.INFORMATION);
+	    						dialogo.setTitle("Acta del Examen");
+	    						dialogo.setContentText("El examen de " + examen.getNombreAsignatura() + " no cuenta con estudiantes inscriptos.");
+	    						dialogo.showAndWait();
+	    					}
+	    				}
+	    			}
+	    		}
+		        try {
+					Desktop.getDesktop().open(new File("src/resources/pdf/actaExamen" + colAsignaturaExamen + ".pdf"));
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
 		});
 

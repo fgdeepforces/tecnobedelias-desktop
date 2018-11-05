@@ -1,5 +1,6 @@
 package com.proyecto.tecnobedelias_desktop.views.prueba;
 
+import java.awt.Desktop;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -7,10 +8,21 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
+
+import com.itextpdf.text.Anchor;
+import com.itextpdf.text.BadElementException;
+import com.itextpdf.text.BaseColor;
+import com.itextpdf.text.Chapter;
+import com.itextpdf.text.Chunk;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.Image;
+import com.itextpdf.text.ListItem;
 import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.Section;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.itextpdf.text.pdf.draw.DottedLineSeparator;
 import com.jfoenix.controls.JFXButton;
 import com.proyecto.tecnobedelias_desktop.global.Constants;
 import com.proyecto.tecnobedelias_desktop.global.Token;
@@ -26,6 +38,8 @@ import com.proyecto.tecnobedelias_desktop.model.TablaHorario;
 import com.proyecto.tecnobedelias_desktop.service.CarreraService;
 import com.proyecto.tecnobedelias_desktop.service.CursoService;
 import com.proyecto.tecnobedelias_desktop.service.ExamenService;
+import com.proyecto.tecnobedelias_desktop.utils.GeneratePDFFileIText;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -37,6 +51,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Dialog;
@@ -44,7 +59,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
-import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
@@ -663,17 +677,14 @@ public class Prueba implements Initializable {
 		dialogo.showAndWait();
 	}
 
-	public void btnPdfActionListener(ActionEvent event) throws FileNotFoundException, DocumentException {
-		System.out.println("entre al pdf events");
-		Document document = new Document();
-		@SuppressWarnings("unused")
-		PdfWriter pdfWriter = PdfWriter.getInstance(document, new FileOutputStream("Escolaridad.pdf"));
-		document.open();
-		Paragraph paragraph = new Paragraph();
-		paragraph.add("ESCOLARIDAD");
-		document.add(paragraph);
-		document.close();
-
+	// TODO
+	/**
+	 * @throws IOException **************************************************************************************************/
+	public void btnPdfActionListener(ActionEvent event) throws DocumentException, IOException {
+//		System.out.println("entre al pdf events");
+//		GeneratePDFFileIText generatePDFFileIText = new GeneratePDFFileIText();
+//        generatePDFFileIText.crearActaFinalDeCurso(curso);
+//        Desktop.getDesktop().open(new File("src/resources/pdf/Escolaridad.pdf"));
 	}
 
 //	public void btnAgregarExamenActionListener(ActionEvent event) {
@@ -692,7 +703,6 @@ public class Prueba implements Initializable {
 	}
 
 	public void escolaridadesButtonPushed(ActionEvent event) throws IOException {
-		// TODO: Cambiar Scene del BorderPane.CENTER para carga de ExamenScene
 		escolaridadesPaneToFront();
 	}
 

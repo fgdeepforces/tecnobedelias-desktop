@@ -1,11 +1,15 @@
 package com.proyecto.tecnobedelias_desktop.model;
 
+import java.awt.Desktop;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import com.jfoenix.controls.JFXButton;
 import com.proyecto.tecnobedelias_desktop.global.Variables;
 import com.proyecto.tecnobedelias_desktop.service.CursoService;
+import com.proyecto.tecnobedelias_desktop.utils.GeneratePDFFileIText;
 import com.proyecto.tecnobedelias_desktop.views.prueba.Prueba;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -208,6 +212,30 @@ public class TablaCurso {
 			@Override
 			public void handle(ActionEvent event) {
 				alertEliminarCurso();
+			}
+		});
+
+		this.colActa.get().setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				GeneratePDFFileIText generatePDFFileIText = new GeneratePDFFileIText();
+				List<Curso> lstCursos = Prueba.getLstCurso();
+	    		if(lstCursos != null) {
+	    			if(!lstCursos.isEmpty()) {
+	    				Curso curso = lstCursos.stream().filter(c -> c.getId() == Integer.parseInt(getColId())).findFirst().get();
+	    				if(curso != null) {
+	    					List<Curso_Estudiante> lstEstudiante = curso.getCursoEstudiante();
+	    					if(lstEstudiante != null) {
+	    						generatePDFFileIText.crearActaFinalDeCurso(curso.getNombreAsignatura(), lstEstudiante);
+	    					}
+	    				}
+	    			}
+	    		}
+		        try {
+					Desktop.getDesktop().open(new File("src/resources/pdf/actaCurso" + colAsignatura + ".pdf"));
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
 		});
 

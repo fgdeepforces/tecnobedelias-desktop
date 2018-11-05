@@ -7,6 +7,7 @@ public class Curso_Estudiante {
     private Integer nota;
     private String nombre;
     private String apellido;
+    private String ci;
     private Integer id_curso;
     private Integer id_estudiante;
 
@@ -21,6 +22,19 @@ public class Curso_Estudiante {
 		this.nota = nota;
 		this.nombre = nombre;
 		this.apellido = apellido;
+		this.id_curso = id_curso;
+		this.id_estudiante = id_estudiante;
+	}
+
+	public Curso_Estudiante(Integer id, String estado, Integer nota, String nombre, String apellido, String ci,
+			Integer id_curso, Integer id_estudiante) {
+		super();
+		this.id = id;
+		this.estado = estado;
+		this.nota = nota;
+		this.nombre = nombre;
+		this.apellido = apellido;
+		this.setCi(ci);
 		this.id_curso = id_curso;
 		this.id_estudiante = id_estudiante;
 	}
@@ -91,6 +105,14 @@ public class Curso_Estudiante {
 	public String toString() {
 		return "Curso_Estudiante [id=" + id + ", estado=" + estado + ", nota=" + nota + ", nombre=" + nombre
 				+ ", apellido=" + apellido + ", id_curso=" + id_curso + ", id_estudiante=" + id_estudiante + "]";
+	}
+
+	public String getCi() {
+		return ci;
+	}
+
+	public void setCi(String ci) {
+		this.ci = ci;
 	}
 
 }
