@@ -487,7 +487,7 @@ public class TablaCurso {
 								grid.add(lblNombreEstudiante, 1, i);
 								grid.add(txtNota, 2, i);
 								campos.add(txtNota);
-								lstNotasCargadas.add(new Curso_Estudiante(estudiante.getId(),estudiante.getEstado(),estudiante.getNota(),estudiante.getNombre(),estudiante.getApellido(),estudiante.getId_curso(),estudiante.getId_estudiante()));
+								lstNotasCargadas.add(new Curso_Estudiante(estudiante.getId(),estudiante.getEstado(),estudiante.getNota(),estudiante.getNombre(),estudiante.getApellido(),estudiante.getCedula(),estudiante.getId_curso(),estudiante.getId_estudiante()));
 								i++;
 							});
 						}

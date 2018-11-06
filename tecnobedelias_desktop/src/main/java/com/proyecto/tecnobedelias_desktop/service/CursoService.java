@@ -43,7 +43,7 @@ public class CursoService {
 		});
 		if (respuesta.isExecuted()) {
 			try {
-				Thread.sleep(1000); // AVG 1000
+				Thread.sleep(2000); // AVG 1000
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}

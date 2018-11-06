@@ -3,6 +3,7 @@ package com.proyecto.tecnobedelias_desktop.interfaces;
 import java.util.List;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.proyecto.tecnobedelias_desktop.model.Actividad;
 import com.proyecto.tecnobedelias_desktop.model.Carrera;
 import com.proyecto.tecnobedelias_desktop.model.Curso;
 import com.proyecto.tecnobedelias_desktop.model.Examen;
@@ -51,4 +52,7 @@ public interface ServiceInterface{
 
 	@GET("carrera/listar")
 	Call <List<Carrera>> obtenerListaCarreras(@Header("Authorization") String token);
+
+	@GET("usuario/escolaridad")
+	Call <List<Actividad>> obtenerListaActividades(@Header("Authorization") String token, @Query("cedula") String cedula );
 }

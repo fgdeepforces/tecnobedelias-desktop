@@ -2,31 +2,15 @@ package com.proyecto.tecnobedelias_desktop.views.prueba;
 
 import java.awt.Desktop;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
-
-import com.itextpdf.text.Anchor;
-import com.itextpdf.text.BadElementException;
-import com.itextpdf.text.BaseColor;
-import com.itextpdf.text.Chapter;
-import com.itextpdf.text.Chunk;
-import com.itextpdf.text.Document;
-import com.itextpdf.text.DocumentException;
-import com.itextpdf.text.Element;
-import com.itextpdf.text.Image;
-import com.itextpdf.text.ListItem;
-import com.itextpdf.text.Paragraph;
-import com.itextpdf.text.Section;
-import com.itextpdf.text.pdf.PdfWriter;
-import com.itextpdf.text.pdf.draw.DottedLineSeparator;
 import com.jfoenix.controls.JFXButton;
 import com.proyecto.tecnobedelias_desktop.global.Constants;
 import com.proyecto.tecnobedelias_desktop.global.Token;
 import com.proyecto.tecnobedelias_desktop.global.Variables;
+import com.proyecto.tecnobedelias_desktop.model.Actividad;
 import com.proyecto.tecnobedelias_desktop.model.AsignaturaCarrera;
 import com.proyecto.tecnobedelias_desktop.model.Carrera;
 import com.proyecto.tecnobedelias_desktop.model.Curso;
@@ -38,8 +22,8 @@ import com.proyecto.tecnobedelias_desktop.model.TablaHorario;
 import com.proyecto.tecnobedelias_desktop.service.CarreraService;
 import com.proyecto.tecnobedelias_desktop.service.CursoService;
 import com.proyecto.tecnobedelias_desktop.service.ExamenService;
+import com.proyecto.tecnobedelias_desktop.service.UsuarioService;
 import com.proyecto.tecnobedelias_desktop.utils.GeneratePDFFileIText;
-
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -174,7 +158,7 @@ public class Prueba implements Initializable {
 	static int gridPanelHeight = 1;
 
 	static String nombreAsignatura;
-	
+
 	static Carrera carrera;
 
 	@SuppressWarnings("deprecation")
@@ -213,7 +197,6 @@ public class Prueba implements Initializable {
 		try {
 			Thread.sleep(1000);
 		} catch (InterruptedException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 		Label lblCarreras = new Label("Carrera");
@@ -305,13 +288,12 @@ public class Prueba implements Initializable {
 			cboCarreras.getItems().addAll(dataCarreras);
 			carrera = null;
 			cboCarreras.setOnAction(new EventHandler<ActionEvent>() {
-				
+
 				@Override
 				public void handle(ActionEvent event) {
-					// TODO Auto-generated method stub
 					carrera = cboCarreras.getSelectionModel().getSelectedItem();
 					System.out.println("Carrera seleccionada: " + carrera.toString());
-					if (carrera != null) {						
+					if (carrera != null) {
 						List<AsignaturaCarrera> asignaturasDeCarrera = carrera.getAsignaturaCarrera();
 						cboAsignaturas.setVisible(true);
 						if (asignaturasDeCarrera == null) {
@@ -325,10 +307,9 @@ public class Prueba implements Initializable {
 							dataAsignaturas.addAll(asignaturasDeCarrera);
 							cboAsignaturas.getItems().addAll(dataAsignaturas);
 							cboAsignaturas.setOnAction(new EventHandler<ActionEvent>() {
-								
+
 								@Override
 								public void handle(ActionEvent event) {
-									// TODO Auto-generated method stub
 									nombreAsignatura = cboAsignaturas.getSelectionModel().getSelectedItem().getAsignatura().getNombre();
 									lblAnio.setVisible(true);
 									lblFechaFin.setVisible(true);
@@ -364,9 +345,6 @@ public class Prueba implements Initializable {
 		grid.add(txtFechaFin, 2, 6);
 		grid.add(lblSemestre, 1, 7);
 		grid.add(txtSemestre, 2, 7);
-
-//		TablaCurso entry = new TablaCurso("curso", "curso", "curso", "curso", "curso", "curso");
-//		dataCurso.add(entry);
 
 		btnIngresarHorario.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
@@ -441,45 +419,17 @@ public class Prueba implements Initializable {
 			alerta.setContentText(
 					"No existen carreras en el sistema por favor contactese con el director para que cree alguna");
 			alerta.showAndWait();
-		}/* else {
-			dataCarreras.addAll(carreras);
-			cboCarreras.getItems().addAll(dataCarreras);
-			carrera = null;
-			Carrera carrera = cboCarreras.getSelectionModel().getSelectedItem();
-			List<AsignaturaCarrera> asignaturasDeCarrera = carrera.getAsignaturaCarrera();
-			if (asignaturasDeCarrera == null) {
-				Alert alerta = new Alert(Alert.AlertType.INFORMATION);
-				alerta.setTitle("Informacion");
-				alerta.setContentText(
-						"No existen asignaturas para la carrera seleccionada en el sistema por favor contactese con el director para que cree alguna");
-				alerta.showAndWait();
-			} else {
-				lblAsignatura.setVisible(true);
-				cboAsignaturas.setVisible(true);
-				dataAsignaturas.addAll(asignaturasDeCarrera);
-				cboAsignaturas.getItems().addAll(dataAsignaturas);
-				nombreAsignatura = cboAsignaturas.getSelectionModel().getSelectedItem().getAsignatura().getNombre();
-				lblFecha.setVisible(true);
-				lblHora.setVisible(true);
-				txtFecha.setVisible(true);
-				txtHora.setVisible(true);
-			}
-		}
-		
-		*//*************************************************************************************//*
-		*/
-		 else {
+		}else{
 			dataCarreras.addAll(carreras);
 			cboCarreras.getItems().addAll(dataCarreras);
 			carrera = null;
 			cboCarreras.setOnAction(new EventHandler<ActionEvent>() {
-				
+
 				@Override
 				public void handle(ActionEvent event) {
-					// TODO Auto-generated method stub
 					carrera = cboCarreras.getSelectionModel().getSelectedItem();
 					System.out.println("Carrera seleccionada: " + carrera.toString());
-					if (carrera != null) {						
+					if (carrera != null) {
 						List<AsignaturaCarrera> asignaturasDeCarrera = carrera.getAsignaturaCarrera();
 						cboAsignaturas.setVisible(true);
 						if (asignaturasDeCarrera == null) {
@@ -493,10 +443,9 @@ public class Prueba implements Initializable {
 							dataAsignaturas.addAll(asignaturasDeCarrera);
 							cboAsignaturas.getItems().addAll(dataAsignaturas);
 							cboAsignaturas.setOnAction(new EventHandler<ActionEvent>() {
-								
+
 								@Override
 								public void handle(ActionEvent event) {
-									// TODO Auto-generated method stub
 									nombreAsignatura = cboAsignaturas.getSelectionModel().getSelectedItem().getAsignatura().getNombre();
 									lblFecha.setVisible(true);
 									lblHora.setVisible(true);
@@ -515,8 +464,6 @@ public class Prueba implements Initializable {
 				}
 			});
 		}
-		
-		/*************************************************************************************/
 
 		grid.add(lblCarreras, 1, 1);
 		grid.add(cboCarreras, 2, 1);
@@ -765,23 +712,6 @@ public class Prueba implements Initializable {
 		dialogo.showAndWait();
 	}
 
-	// TODO
-	/**
-	 * @throws IOException **************************************************************************************************/
-	public void btnPdfActionListener(ActionEvent event) throws DocumentException, IOException {
-//		System.out.println("entre al pdf events");
-//		GeneratePDFFileIText generatePDFFileIText = new GeneratePDFFileIText();
-//        generatePDFFileIText.crearActaFinalDeCurso(curso);
-//        Desktop.getDesktop().open(new File("src/resources/pdf/Escolaridad.pdf"));
-	}
-
-//	public void btnAgregarExamenActionListener(ActionEvent event) {
-//		operacionesPaneToFront();
-//		inicializarOperacion("INGRESAR EXAMEN");
-//		TablaExamen entry = new TablaExamen("examen", "examen", "examen", "examen");
-//		dataExamen.add(entry);
-//	}
-
 	public void cursosButtonPushed(ActionEvent event) throws IOException {
 		cursosPaneToFront();
 	}
@@ -792,6 +722,44 @@ public class Prueba implements Initializable {
 
 	public void escolaridadesButtonPushed(ActionEvent event) throws IOException {
 		escolaridadesPaneToFront();
+		Dialog<Actividad> dialog = new Dialog<>();
+		inicializarOperacion("ESCOLARIDADES");
+
+		Label lblCedula = new Label("Cedula");
+		TextField txtCedula = new TextField();
+
+		GridPane grid = new GridPane();
+
+		dialog.setTitle("Escolaridad");
+		dialog.setHeaderText("Escolaridad");
+		dialog.setResizable(true);
+
+		grid.add(lblCedula, 1, 1);
+		grid.add(txtCedula, 2, 1);
+
+		dialog.getDialogPane().setContent(grid);
+		ButtonType buttonTypeOk = new ButtonType("Confirmar", ButtonData.OK_DONE);
+		dialog.getDialogPane().getButtonTypes().add(buttonTypeOk);
+		dialog.setResultConverter(new Callback<ButtonType, Actividad>() {
+			@Override
+			public Actividad call(ButtonType b) {
+				if (b == buttonTypeOk) {
+					UsuarioService us = new UsuarioService();
+					List<Actividad> actividades = us.listarActividadesResponse(txtCedula.getText());
+					if(actividades != null) {
+						GeneratePDFFileIText generatePDFFileIText = new GeneratePDFFileIText();
+						generatePDFFileIText.crearEscolaridad(txtCedula.getText(),actividades);
+						try {
+							Desktop.getDesktop().open(new File("src/resources/pdf/ReporteEscolaridad-DOC" + txtCedula.getText() + ".pdf"));
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+					}
+				}
+				return null;
+			}
+		});
+		dialog.showAndWait();
 	}
 
 	@Override

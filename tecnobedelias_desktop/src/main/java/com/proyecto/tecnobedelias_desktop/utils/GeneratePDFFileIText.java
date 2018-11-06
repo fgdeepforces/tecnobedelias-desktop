@@ -20,10 +20,13 @@ import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.itextpdf.text.pdf.draw.DottedLineSeparator;
+import com.proyecto.tecnobedelias_desktop.model.Actividad;
 import com.proyecto.tecnobedelias_desktop.model.Curso_Estudiante;
 import com.proyecto.tecnobedelias_desktop.model.Estudiante_Examen;
-
 import java.io.*;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 
 /**
  * Example of using the iText library to work with PDF documents on Java, lets
@@ -41,10 +44,21 @@ public class GeneratePDFFileIText {
 
 	private static final Font categoryFont = new Font(Font.FontFamily.TIMES_ROMAN, 18, Font.BOLD);
 	private static final Font subcategoryFont = new Font(Font.FontFamily.TIMES_ROMAN, 16, Font.BOLD);
+	private static final Font escolarityTitleFont = new Font(Font.FontFamily.TIMES_ROMAN, 18, Font.BOLDITALIC + Font.UNDERLINE);
+	private static final Font escolaritySubTitleFont = new Font(Font.FontFamily.TIMES_ROMAN, 14, Font.ITALIC + Font.UNDERLINE);
+	private static final Font escolarityStudentFont = new Font(Font.FontFamily.TIMES_ROMAN, 20, Font.BOLD);
 	private static final Font blueFont = new Font(Font.FontFamily.TIMES_ROMAN, 12, Font.NORMAL, BaseColor.RED);
 	private static final Font smallBold = new Font(Font.FontFamily.TIMES_ROMAN, 12, Font.BOLD);
 
 	private static final String iTextExampleImage = "src/resources/images/TecnoBedeliasLogoPrincipal.PNG";
+
+	static PdfPCell columnCI = null;
+	static PdfPCell columnNombre = null;
+	static PdfPCell columnNota = null;
+	static PdfPCell columnUnidadCurricularBasica = null;
+	static PdfPCell columnCreditos = null;
+	static PdfPCell columnActividad = null;
+	static PdfPCell columnFecha = null;
 
 	/**
 	 * We create a PDF document with iText using different elements to learn to use
@@ -209,13 +223,21 @@ public class GeneratePDFFileIText {
 
 			Integer numColumns = 3;
 			PdfPTable table = new PdfPTable(numColumns);
+
+			table.setWidths(new float[] { 2, 7, 1 });
+
 			PdfPCell columnHeaderCI = new PdfPCell(new Phrase("CI"));
 			PdfPCell columnHeaderNombre = new PdfPCell(new Phrase("Nombres"));
 			PdfPCell columnHeaderNota = new PdfPCell(new Phrase("Nota"));
 
+			columnCI = null;
+			columnNombre = null;
+			columnNota = null;
+
 			columnHeaderCI.setHorizontalAlignment(Element.ALIGN_CENTER);
 			columnHeaderNombre.setHorizontalAlignment(Element.ALIGN_CENTER);
 			columnHeaderNota.setHorizontalAlignment(Element.ALIGN_CENTER);
+
 
 			table.addCell(columnHeaderCI);
 			table.addCell(columnHeaderNombre);
@@ -224,9 +246,16 @@ public class GeneratePDFFileIText {
 			table.setHeaderRows(1);
 
 			lstEstudiantes.forEach(estudiante -> {
-				table.addCell(estudiante.getCi());
-				table.addCell(estudiante.getApellido() + ", " + estudiante.getNombre());
-				table.addCell(estudiante.getNota().toString());
+				columnCI = new PdfPCell(new Phrase(estudiante.getCedula()));
+				columnNombre = new PdfPCell(new Phrase(estudiante.getApellido().toUpperCase() + ", " + estudiante.getNombre().toUpperCase()));
+				columnNota = new PdfPCell(new Phrase(estudiante.getNota().toString()));
+
+				columnCI.setHorizontalAlignment(Element.ALIGN_CENTER);
+				columnNota.setHorizontalAlignment(Element.ALIGN_CENTER);
+
+				table.addCell(columnCI);
+				table.addCell(columnNombre);
+				table.addCell(columnNota);
 			});
 
 			paragraphMore.add(new Paragraph("\n\n"));
@@ -284,12 +313,116 @@ public class GeneratePDFFileIText {
 			table.setHeaderRows(1);
 
 			lstEstudiantes.forEach(estudiante -> {
-				table.addCell(estudiante.getCi());
+				table.addCell(estudiante.getCedula());
 				table.addCell(estudiante.getApellido() + ", " + estudiante.getNombre());
 				table.addCell(estudiante.getNota().toString());
 			});
 
 			paragraphMore.add(new Paragraph("\n\n"));
+			paragraphMore.add(table);
+			document.add(chapter);
+			document.close();
+
+			System.out.println("Your PDF file has been generated!(¡Se ha generado tu hoja PDF!");
+		} catch (DocumentException documentException) {
+			System.out.println(
+					"The file not exists (Se ha producido un error al generar un documento): " + documentException);
+		}
+	}
+
+	public void crearEscolaridad(String ci, java.util.List<Actividad> actividades) {
+		try {
+			Document document = new Document();
+			try {
+				PdfWriter.getInstance(document, new FileOutputStream("src/resources/pdf/ReporteEscolaridad-DOC" + ci + ".pdf"));
+			} catch (FileNotFoundException fileNotFoundException) {
+				System.out.println("No such file was found to generate the PDF "
+						+ "(No se encontró el fichero para generar el pdf)" + fileNotFoundException);
+			}
+			document.open();
+			document.addTitle("ReporteEscolaridad-DOC"+ci);
+			document.addSubject("TecnoBedelias");
+			document.addKeywords("Java, PDF, iText");
+			document.addAuthor("TecnoBedelias");
+			document.addCreator("TecnoBedelias");
+
+			Chunk chunk = new Chunk("CERTIFICADO DE ESCOLARIDAD", escolarityTitleFont);
+			Paragraph preface = new Paragraph(chunk);
+
+			preface.setAlignment(Element.ALIGN_CENTER);
+
+			Chapter chapter = new Chapter(preface, 1);
+			chapter.setNumberDepth(0);
+
+			Section paragraphMore = chapter;
+
+			Integer numColumns = 5;
+			PdfPTable table = new PdfPTable(numColumns);
+			table.setWidthPercentage(90);
+			table.setKeepTogether(true);
+
+			table.setWidths(new float[] { 6, 1, 2, 2, 1 });
+
+			PdfPCell columnHeaderUnidadCurricularBasica = new PdfPCell(new Phrase("Unidad Curricular Basica"));
+			PdfPCell columnHeaderCreditos = new PdfPCell(new Phrase("Cred"));
+			PdfPCell columnHeaderActividad = new PdfPCell(new Phrase("Actividad"));
+			PdfPCell columnHeaderFecha = new PdfPCell(new Phrase("Fecha"));
+			PdfPCell columnHeaderNota = new PdfPCell(new Phrase("Nota"));
+
+			columnUnidadCurricularBasica = null;
+			columnCreditos = null;
+			columnActividad = null;
+			columnFecha = null;
+			columnNota = null;
+
+			columnHeaderCreditos.setHorizontalAlignment(Element.ALIGN_CENTER);
+			columnHeaderActividad.setHorizontalAlignment(Element.ALIGN_CENTER);
+			columnHeaderFecha.setHorizontalAlignment(Element.ALIGN_CENTER);
+			columnHeaderNota.setHorizontalAlignment(Element.ALIGN_CENTER);
+
+			table.addCell(columnHeaderUnidadCurricularBasica);
+			table.addCell(columnHeaderCreditos);
+			table.addCell(columnHeaderActividad);
+			table.addCell(columnHeaderFecha);
+			table.addCell(columnHeaderNota);
+
+			table.setHeaderRows(1);
+
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+
+			actividades.forEach(System.out::println);
+
+			actividades.forEach(actividad -> {
+				columnUnidadCurricularBasica = new PdfPCell(new Phrase(actividad.getAsignatura()));
+				columnCreditos = new PdfPCell(new Phrase(String.valueOf(actividad.getCreditos())));
+				columnActividad = new PdfPCell(new Phrase(actividad.getTipo()));
+				try {
+					columnFecha = new PdfPCell(new Phrase(DateFormat.getDateInstance().format(sdf.parse(actividad.getFecha()))));
+				} catch (ParseException e) {
+					e.printStackTrace();
+				}
+				columnNota = new PdfPCell(new Phrase(actividad.getNota().toString()));
+
+				columnCreditos.setHorizontalAlignment(Element.ALIGN_CENTER);
+				columnActividad.setHorizontalAlignment(Element.ALIGN_CENTER);
+				columnFecha.setHorizontalAlignment(Element.ALIGN_CENTER);
+				columnNota.setHorizontalAlignment(Element.ALIGN_CENTER);
+
+				table.addCell(columnUnidadCurricularBasica);
+				table.addCell(columnCreditos);
+				table.addCell(columnActividad);
+				table.addCell(columnFecha);
+				table.addCell(columnNota);
+			});
+
+			Paragraph subtitulo = new Paragraph("Resultados de cursos y examenes \n\n", escolaritySubTitleFont);
+			subtitulo.setAlignment(Element.ALIGN_CENTER);
+
+			Paragraph estudiante = new Paragraph(ci + " - " + actividades.get(0).getApellido().toUpperCase() + ", " + actividades.get(0).getNombre().toUpperCase() + "\n\n", escolarityStudentFont);
+			estudiante.setAlignment(Element.ALIGN_CENTER);
+
+			paragraphMore.add(subtitulo);
+			paragraphMore.add(estudiante);
 			paragraphMore.add(table);
 			document.add(chapter);
 			document.close();

@@ -220,7 +220,7 @@ public class TablaExamen {
 								grid.add(lblNombreEstudiante, 1, i);
 								grid.add(txtNota, 2, i);
 								campos.add(txtNota);
-								lstNotasCargadas.add(new Estudiante_Examen(estudiante.getId(),estudiante.getEstado(),estudiante.getNota(),estudiante.getNombre(),estudiante.getApellido(),estudiante.getId_usuario(),estudiante.getId_examen()));
+								lstNotasCargadas.add(new Estudiante_Examen(estudiante.getId(),estudiante.getEstado(),estudiante.getNota(),estudiante.getNombre(),estudiante.getApellido(),estudiante.getCedula(),estudiante.getId_usuario(),estudiante.getId_examen()));
 								i++;
 							});
 						}

@@ -7,26 +7,26 @@ public class Estudiante_Examen {
     private Integer nota;
     private String nombre;
     private String apellido;
-    private String ci;
+    private String cedula;
     private Integer id_usuario;
     private Integer id_examen;
 
     public Estudiante_Examen() {
 	}
 
-	public Estudiante_Examen(Integer id, String estado, Integer nota, String nombre, String apellido,
-			Integer id_usuario, Integer id_examen) {
-		super();
-		this.id = id;
-		this.estado = estado;
-		this.nota = nota;
-		this.nombre = nombre;
-		this.apellido = apellido;
-		this.id_usuario = id_usuario;
-		this.id_examen = id_examen;
-	}
+//	public Estudiante_Examen(Integer id, String estado, Integer nota, String nombre, String apellido,
+//			Integer id_usuario, Integer id_examen) {
+//		super();
+//		this.id = id;
+//		this.estado = estado;
+//		this.nota = nota;
+//		this.nombre = nombre;
+//		this.apellido = apellido;
+//		this.id_usuario = id_usuario;
+//		this.id_examen = id_examen;
+//	}
 
-	public Estudiante_Examen(Integer id, String estado, Integer nota, String nombre, String apellido, String ci,
+	public Estudiante_Examen(Integer id, String estado, Integer nota, String nombre, String apellido, String cedula,
 			Integer id_usuario, Integer id_examen) {
 		super();
 		this.id = id;
@@ -34,7 +34,7 @@ public class Estudiante_Examen {
 		this.nota = nota;
 		this.nombre = nombre;
 		this.apellido = apellido;
-		this.setCi(ci);
+		this.cedula = cedula;
 		this.id_usuario = id_usuario;
 		this.id_examen = id_examen;
 	}
@@ -95,18 +95,20 @@ public class Estudiante_Examen {
 		this.apellido = apellido;
 	}
 
+	public String getCedula() {
+		return cedula;
+	}
+
+	public void setCedula(String cedula) {
+		this.cedula = cedula;
+	}
+
 	@Override
 	public String toString() {
 		return "Estudiante_Examen [id=" + id + ", estado=" + estado + ", nota=" + nota + ", nombre=" + nombre
-				+ ", apellido=" + apellido + ", id_usuario=" + id_usuario + ", id_examen=" + id_examen + "]";
+				+ ", apellido=" + apellido + ", cedula=" + cedula + ", id_usuario=" + id_usuario + ", id_examen="
+				+ id_examen + "]";
 	}
 
-	public String getCi() {
-		return ci;
-	}
-
-	public void setCi(String ci) {
-		this.ci = ci;
-	}
 
 }
