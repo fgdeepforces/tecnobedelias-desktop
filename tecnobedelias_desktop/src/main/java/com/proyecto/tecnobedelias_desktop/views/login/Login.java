@@ -54,7 +54,7 @@ public class Login implements Initializable {
 					URL formUrl = new File(Constants.getPruebaPackage() + "Prueba.fxml").toURL();
 					URL cssUrl = new File(Constants.getPruebaPackage() + "Prueba.css").toURL();
 					AnchorPane root = FXMLLoader.load(formUrl);
-					Scene scene = new Scene(root);
+					Scene scene = new Scene(root,400,400);
 					scene.getStylesheets().add(cssUrl.toExternalForm());
 					Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
 					window.setScene(scene);

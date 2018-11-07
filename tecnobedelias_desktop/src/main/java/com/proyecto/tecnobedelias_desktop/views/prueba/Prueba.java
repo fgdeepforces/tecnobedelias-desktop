@@ -169,7 +169,7 @@ public class Prueba implements Initializable {
 			URL formUrl = new File(Constants.getLoginPackage() + "login.fxml").toURL();
 			URL cssUrl = new File(Constants.getLoginPackage() + "login.css").toURL();
 			AnchorPane root = FXMLLoader.load(formUrl);
-			Scene scene = new Scene(root, 600, 400);
+			Scene scene = new Scene(root, 400, 400);
 			scene.getStylesheets().add(cssUrl.toExternalForm());
 			Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
 			window.setScene(scene);
@@ -206,7 +206,7 @@ public class Prueba implements Initializable {
 		Curso curso = new Curso();
 
 		Label lblNombre = new Label("Nombre");
-		Label lblAnio = new Label("Año");
+		Label lblAnio = new Label("Aï¿½o");
 		Label lblFechaFin = new Label("Fecha Fin");
 		Label lblFechaInicio = new Label("Fecha Inicio");
 		Label lblSemestre = new Label("Semestre");
