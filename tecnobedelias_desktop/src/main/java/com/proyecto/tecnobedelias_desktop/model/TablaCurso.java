@@ -3,10 +3,15 @@ package com.proyecto.tecnobedelias_desktop.model;
 import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXDatePicker;
 import com.proyecto.tecnobedelias_desktop.global.Variables;
 import com.proyecto.tecnobedelias_desktop.service.CursoService;
 import com.proyecto.tecnobedelias_desktop.utils.GeneratePDFFileIText;
@@ -39,8 +44,8 @@ public class TablaCurso {
 	private SimpleStringProperty colId;
 	private SimpleStringProperty colAsignatura;
 	private SimpleStringProperty colAnio;
-	private SimpleStringProperty colFechaInicio;
-	private SimpleStringProperty colFechaFin;
+	private ObjectProperty<Date> colFechaInicio;
+	private ObjectProperty<Date> colFechaFin;
 	private SimpleStringProperty colSemestre;
 	private ObjectProperty<JFXButton> colHorarios;
 	private ObjectProperty<JFXButton> colEditar;
@@ -157,7 +162,7 @@ public class TablaCurso {
 	}
 
 	public TablaCurso(SimpleStringProperty colId, SimpleStringProperty colAsignatura, SimpleStringProperty colAnio,
-			SimpleStringProperty colFechaInicio, SimpleStringProperty colFechaFin, SimpleStringProperty colSemestre,
+			ObjectProperty<Date> colFechaInicio, ObjectProperty<Date> colFechaFin, SimpleStringProperty colSemestre,
 			ObjectProperty<JFXButton> colHorarios, ObjectProperty<JFXButton> colEditar,
 			ObjectProperty<JFXButton> colEliminar, ObjectProperty<JFXButton> colActa,
 			ObjectProperty<JFXButton> colCargarCalificaciones) {
@@ -175,12 +180,12 @@ public class TablaCurso {
 		this.colCargarCalificaciones = colCargarCalificaciones;
 	}
 
-	public TablaCurso(String colId, String colAsignatura, String anio, String colFechaInicio, String colFechaFin, String colSemestre) {
+	public TablaCurso(String colId, String colAsignatura, String anio, Date colFechaInicio, Date colFechaFin, String colSemestre) {
 		this.colId = new SimpleStringProperty(colId);
 		this.colAsignatura = new SimpleStringProperty(colAsignatura);
 		this.colAnio = new SimpleStringProperty(anio);
-		this.colFechaInicio = new SimpleStringProperty(colFechaInicio);
-		this.colFechaFin = new SimpleStringProperty(colFechaFin);
+		this.colFechaInicio = new SimpleObjectProperty<Date>(colFechaInicio);
+		this.colFechaFin = new SimpleObjectProperty<Date>(colFechaFin);
 		this.colSemestre = new SimpleStringProperty(colSemestre);
 		this.colHorarios = new SimpleObjectProperty<JFXButton>(new JFXButton("Horarios"));
 		this.colEditar = new SimpleObjectProperty<JFXButton>(new JFXButton("Editar"));
@@ -260,18 +265,33 @@ public class TablaCurso {
 		Label lblFechaFin = new Label("Fecha de Finalizacion");
 		Label lblSemestre = new Label("Semestre");
 		Label lblHorarios = new Label("Horarios");
+		Label vacio1 = new Label("\t");
+		Label vacio2 = new Label("\t");
+		Label vacio3 = new Label("\t");
+		Label vacio4 = new Label("\t");
+		Label vacio5 = new Label("\t");
 
-		TextField txtNombreAsignatura = new TextField(this.getColAsignatura());
-		TextField txtAnio = new TextField(this.getColAnio());
-		TextField txtFechaInicio = new TextField(this.getColFechaInicio());
-		TextField txtFechaFin = new TextField(this.getColFechaFin());
+		Label txtNombreAsignatura = new Label(this.getColAsignatura());
+		Label txtAnio = new Label(this.getColAnio());
+
+		Date dateInicio = this.getColFechaInicio();
+		Instant instantInicio = dateInicio.toInstant();
+		LocalDate localDateInicio = instantInicio.atZone(ZoneId.systemDefault()).toLocalDate();
+
+		JFXDatePicker datePickerFechaInicioFX = new JFXDatePicker(localDateInicio);
+
+		Date dateFin = this.getColFechaInicio();
+		Instant instantFin = dateFin.toInstant();
+		LocalDate localDateFin = instantFin.atZone(ZoneId.systemDefault()).toLocalDate();
+
+		JFXDatePicker datePickerFechaFinFX = new JFXDatePicker(localDateFin);
+
 		TextField txtSemestre = new TextField(this.getColSemestre());
 
 		VBox box = new VBox();
 		HBox topBox = new HBox();
 		GridPane grid = new GridPane();
 		BorderPane border = new BorderPane();
-
 
 		btnIngresarHorario.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
@@ -288,15 +308,20 @@ public class TablaCurso {
 		dialog.setResizable(true);
 
 		grid.add(lblNombreAsignatura, 1, 1);
-		grid.add(txtNombreAsignatura, 2, 1);
+		grid.add(vacio1, 2, 1);
+		grid.add(txtNombreAsignatura, 3, 1);
 		grid.add(lblAnio, 1, 2);
-		grid.add(txtAnio, 2, 2);
+		grid.add(vacio2, 2, 2);
+		grid.add(txtAnio, 3, 2);
 		grid.add(lblFechaInicio, 1, 3);
-		grid.add(txtFechaInicio, 2, 3);
+		grid.add(vacio3, 2, 3);
+		grid.add(datePickerFechaInicioFX, 3, 3);
 		grid.add(lblFechaFin, 1, 4);
-		grid.add(txtFechaFin, 2, 4);
+		grid.add(vacio4, 2, 4);
+		grid.add(datePickerFechaFinFX, 3, 4);
 		grid.add(lblSemestre, 1, 5);
-		grid.add(txtSemestre, 2, 5);
+		grid.add(vacio5, 2, 5);
+		grid.add(txtSemestre, 3, 5);
 
 		TableColumn<TablaHorario, String> colHorario_id = new TableColumn<>("Id");
 		TableColumn<TablaHorario, String> colHorario_dia = new TableColumn<>("Dia");
@@ -339,10 +364,19 @@ public class TablaCurso {
 		    			if(!lstCursos.isEmpty()) {
 		    				Curso curso = lstCursos.stream().filter(c -> c.getId() == Integer.parseInt(getColId())).findFirst().get();
 		    				if(curso != null) {
-		    					curso.setAnio(Integer.parseInt(txtAnio.getText()));
-		    					curso.setFechaFin(txtFechaFin.getText());
-		    					curso.setFechaInicio(txtFechaInicio.getText());
-		    					curso.setNombreAsignatura(txtNombreAsignatura.getText());
+		    					LocalDate localDateInicio = datePickerFechaInicioFX.getValue();
+		    					Instant instantInicio = Instant.from(localDateInicio.atStartOfDay(ZoneId.systemDefault()));
+		    					Date dateInicio = Date.from(instantInicio);
+		    					System.out.println(localDateInicio + "\n" + instantInicio + "\n" + dateInicio);
+
+		    					curso.setFechaInicio(Date.from(instantInicio));
+
+		    					LocalDate localDateFin = datePickerFechaFinFX.getValue();
+		    					Instant instantFin = Instant.from(localDateFin.atStartOfDay(ZoneId.systemDefault()));
+		    					Date dateFin = Date.from(instantFin);
+		    					System.out.println(localDateFin + "\n" + instantFin + "\n" + dateFin);
+
+		    					curso.setFechaFin(Date.from(instantFin));
 		    					curso.setSemestre(Integer.parseInt(txtSemestre.getText()));
 		    					CursoService cs = new CursoService();
 		    		    		alertConfirmacionModificarCurso(cs.modificarCursoResponse(curso));
@@ -449,14 +483,13 @@ public class TablaCurso {
 		getTablaHorarios().setItems(getDataHorario());
 	}
 
-	private void alertConfirmacionModificarCurso(boolean respuesta) {
+	private void alertConfirmacionModificarCurso(ServerResponse respuesta) {
 		Alert dialogo = new Alert(Alert.AlertType.INFORMATION);
 		dialogo.setTitle("Modificacion del Curso");
-
-		if(respuesta) {
-			dialogo.setContentText("Se ha modificado curso " + this.getColAsignatura() + " satisfactoriamente.");
-		}else {
-			dialogo.setContentText("No se pudo modificar el curso.");
+		try {
+			dialogo.setContentText(respuesta.getMensaje());
+		} catch (NullPointerException e) {
+			e.printStackTrace();
 		}
 		Prueba.actualizarDatosTablaCurso();
 		dialogo.showAndWait();
@@ -560,28 +593,18 @@ public class TablaCurso {
 		dialogo.showAndWait();
 	}
 
-	private void alertConfirmacionCargarCalificacionesCurso(boolean respuesta) {
+	private void alertConfirmacionCargarCalificacionesCurso(ServerResponse respuesta) {
 		Alert dialogo = new Alert(Alert.AlertType.INFORMATION);
 		dialogo.setTitle("Calificaciones del Curso");
-
-		if(respuesta) {
-			dialogo.setContentText("Se han cargado las calificaciones del curso " + this.getColAsignatura() + " satisfactoriamente.");
-		}else {
-			dialogo.setContentText("No se pudo cargar las calificaciones del curso.");
-		}
+		dialogo.setContentText(respuesta.getMensaje());
 		Prueba.actualizarDatosTablaCurso();
 		dialogo.showAndWait();
 	}
 
-	private void alertConfirmacionEliminarCurso(boolean respuesta) {
+	private void alertConfirmacionEliminarCurso(ServerResponse respuesta) {
 		Alert dialogo = new Alert(Alert.AlertType.INFORMATION);
 		dialogo.setTitle("Eliminar Curso");
-
-		if(respuesta) {
-			dialogo.setContentText("Se ha eliminado el curso " + this.getColAsignatura() + " satisfactoriamente");
-		}else {
-			dialogo.setContentText("No se puede eliminar el curso porque tiene estudiantes inscriptos en el. \nPor favor si desea eliminar el curso intente darle de baja a todos los alumnos de este curso");
-		}
+		dialogo.setContentText(respuesta.getMensaje());
 		Prueba.actualizarDatosTablaCurso();
 		dialogo.showAndWait();
 	}
@@ -610,19 +633,19 @@ public class TablaCurso {
 		this.colAnio.set(colAnio);
 	}
 
-	public String getColFechaInicio() {
+	public Date getColFechaInicio() {
 		return this.colFechaInicio.get();
 	}
 
-	public void setColFechaInicio(String colFechaInicio) {
+	public void setColFechaInicio(Date colFechaInicio) {
 		this.colFechaInicio.set(colFechaInicio);
 	}
 
-	public String getColFechaFin() {
+	public Date getColFechaFin() {
 		return this.colFechaFin.get();
 	}
 
-	public void setColFechaFin(String colFechaFin) {
+	public void setColFechaFin(Date colFechaFin) {
 		this.colFechaFin.set(colFechaFin);
 	}
 

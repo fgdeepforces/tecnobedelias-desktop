@@ -20,13 +20,13 @@ import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.itextpdf.text.pdf.draw.DottedLineSeparator;
+import com.proyecto.tecnobedelias_desktop.global.Variables;
 import com.proyecto.tecnobedelias_desktop.model.Actividad;
 import com.proyecto.tecnobedelias_desktop.model.Curso_Estudiante;
 import com.proyecto.tecnobedelias_desktop.model.Estudiante_Examen;
 import java.io.*;
 import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 
 /**
  * Example of using the iText library to work with PDF documents on Java, lets
@@ -238,6 +238,9 @@ public class GeneratePDFFileIText {
 			columnHeaderNombre.setHorizontalAlignment(Element.ALIGN_CENTER);
 			columnHeaderNota.setHorizontalAlignment(Element.ALIGN_CENTER);
 
+			columnHeaderCI.setBackgroundColor(BaseColor.GREEN);
+			columnHeaderNombre.setBackgroundColor(BaseColor.GREEN);
+			columnHeaderNota.setBackgroundColor(BaseColor.GREEN);
 
 			table.addCell(columnHeaderCI);
 			table.addCell(columnHeaderNombre);
@@ -305,6 +308,10 @@ public class GeneratePDFFileIText {
 			columnHeaderCI.setHorizontalAlignment(Element.ALIGN_CENTER);
 			columnHeaderNombre.setHorizontalAlignment(Element.ALIGN_CENTER);
 			columnHeaderNota.setHorizontalAlignment(Element.ALIGN_CENTER);
+
+			columnHeaderCI.setBackgroundColor(BaseColor.GREEN);
+			columnHeaderNombre.setBackgroundColor(BaseColor.GREEN);
+			columnHeaderNota.setBackgroundColor(BaseColor.GREEN);
 
 			table.addCell(columnHeaderCI);
 			table.addCell(columnHeaderNombre);
@@ -380,6 +387,12 @@ public class GeneratePDFFileIText {
 			columnHeaderFecha.setHorizontalAlignment(Element.ALIGN_CENTER);
 			columnHeaderNota.setHorizontalAlignment(Element.ALIGN_CENTER);
 
+			columnHeaderUnidadCurricularBasica.setBackgroundColor(BaseColor.GREEN);
+			columnHeaderCreditos.setBackgroundColor(BaseColor.GREEN);
+			columnHeaderActividad.setBackgroundColor(BaseColor.GREEN);
+			columnHeaderFecha.setBackgroundColor(BaseColor.GREEN);
+			columnHeaderNota.setBackgroundColor(BaseColor.GREEN);
+
 			table.addCell(columnHeaderUnidadCurricularBasica);
 			table.addCell(columnHeaderCreditos);
 			table.addCell(columnHeaderActividad);
@@ -388,21 +401,14 @@ public class GeneratePDFFileIText {
 
 			table.setHeaderRows(1);
 
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-
 			actividades.forEach(System.out::println);
 
 			actividades.forEach(actividad -> {
 				columnUnidadCurricularBasica = new PdfPCell(new Phrase(actividad.getAsignatura()));
 				columnCreditos = new PdfPCell(new Phrase(String.valueOf(actividad.getCreditos())));
 				columnActividad = new PdfPCell(new Phrase(actividad.getTipo()));
-				try {
-					columnFecha = new PdfPCell(new Phrase(DateFormat.getDateInstance().format(sdf.parse(actividad.getFecha()))));
-				} catch (ParseException e) {
-					e.printStackTrace();
-				}
+				columnFecha = new PdfPCell(new Phrase(DateFormat.getDateInstance().format(actividad.getFecha())));
 				columnNota = new PdfPCell(new Phrase(actividad.getNota().toString()));
-
 				columnCreditos.setHorizontalAlignment(Element.ALIGN_CENTER);
 				columnActividad.setHorizontalAlignment(Element.ALIGN_CENTER);
 				columnFecha.setHorizontalAlignment(Element.ALIGN_CENTER);

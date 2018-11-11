@@ -1,15 +1,19 @@
 package com.proyecto.tecnobedelias_desktop.model;
 
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import com.proyecto.tecnobedelias_desktop.global.Variables;
 
 public class Curso {
 
     private Integer id;
     private boolean activa;
     private Integer anio;
-    private String fechaFin;
-    private String fechaInicio;
+    private Date fechaFin;
+    private Date fechaInicio;
     private Integer semestre;
     private Integer idAsignatura;
     private String nombreAsignatura;
@@ -19,7 +23,7 @@ public class Curso {
     public Curso() {
 	}
 
-	public Curso(Integer id, boolean activa, Integer anio, String fechaFin, String fechaInicio, Integer semestre,
+	public Curso(Integer id, boolean activa, Integer anio, Date fechaFin, Date fechaInicio, Integer semestre,
 			Integer idAsignatura, String nombreAsignatura, List<Curso_Estudiante> cursoEstudiante,
 			List<Horario> horarios) {
 		super();
@@ -51,19 +55,19 @@ public class Curso {
         this.cursoEstudiante = cursoEstudiante;
     }
 
-    public String getFechaFin() {
+    public Date getFechaFin() {
         return fechaFin;
     }
 
-    public void setFechaFin(String fechaFin) {
+    public void setFechaFin(Date fechaFin) {
         this.fechaFin = fechaFin;
     }
 
-    public String getFechaInicio() {
+    public Date getFechaInicio() {
         return fechaInicio;
     }
 
-    public void setFechaInicio(String fechaInicio) {
+    public void setFechaInicio(Date fechaInicio) {
         this.fechaInicio = fechaInicio;
     }
 

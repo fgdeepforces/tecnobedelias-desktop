@@ -1,19 +1,21 @@
 package com.proyecto.tecnobedelias_desktop.model;
 
+import java.util.Date;
+
 public class Actividad {
 	private String asignatura;
 	private Integer creditos;
 	private String apellido;
 	private String nombre;
 	private String estado;
-	private String fecha;
+	private Date fecha;
 	private Integer id;
 	private Integer nota;
 	private Integer notaMaxima;
 	private String tipo;
 
 
-	public Actividad(String asignatura, Integer creditos, String apellido, String nombre, String estado, String fecha,
+	public Actividad(String asignatura, Integer creditos, String apellido, String nombre, String estado, Date fecha,
 			Integer id, Integer nota, Integer notaMaxima, String tipo) {
 		this.asignatura = asignatura;
 		this.creditos = creditos;
@@ -44,10 +46,10 @@ public class Actividad {
 	public void setEstado(String estado) {
 		this.estado = estado;
 	}
-	public String getFecha() {
+	public Date getFecha() {
 		return fecha;
 	}
-	public void setFecha(String fecha) {
+	public void setFecha(Date fecha) {
 		this.fecha = fecha;
 	}
 	public Integer getId() {

@@ -8,6 +8,8 @@ import com.proyecto.tecnobedelias_desktop.model.Carrera;
 import com.proyecto.tecnobedelias_desktop.model.Curso;
 import com.proyecto.tecnobedelias_desktop.model.Examen;
 import com.proyecto.tecnobedelias_desktop.model.RespuestaApiLogin;
+import com.proyecto.tecnobedelias_desktop.model.ServerResponse;
+
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
@@ -24,31 +26,31 @@ public interface ServiceInterface{
 	Call <List<Curso>> obtenerListaCursos(@Header("Authorization") String token);
 
 	@POST("curso/crear")
-	Call <Boolean> ingresarCurso(@Header("Authorization") String token, @Body JsonObject DataCurso, @Query("nombre") String nombre );
+	Call <ServerResponse> ingresarCurso(@Header("Authorization") String token, @Body JsonObject DataCurso, @Query("nombre") String nombre );
 
 	@POST("curso/modificar")
-	Call <Boolean> modificarCurso(@Header("Authorization") String token, @Body JsonObject DataCurso, @Query("cursoId") String idCurso );
+	Call <ServerResponse> modificarCurso(@Header("Authorization") String token, @Body JsonObject DataCurso, @Query("cursoId") String idCurso );
 
 	@GET("curso/borrar")
-	Call <Boolean> borrarCurso(@Header("Authorization") String token, @Query("cursoId") String idCurso );
+	Call <ServerResponse> borrarCurso(@Header("Authorization") String token, @Query("cursoId") String idCurso );
 
 	@POST("inscripcion/ingresarcalificacionescurso")
-	Call <Boolean> cargarCalificacionesCurso(@Header("Authorization") String token, @Body JsonArray DataNotasCurso, @Query("cursoId") String idCurso );
+	Call <ServerResponse> cargarCalificacionesCurso(@Header("Authorization") String token, @Body JsonArray DataNotasCurso, @Query("cursoId") String idCurso );
 
 	@POST("examen/crear")
-	Call <Boolean> ingresarExamen(@Header("Authorization") String token, @Body JsonObject DataExamen, @Query("nombre") String nombre );
+	Call <ServerResponse> ingresarExamen(@Header("Authorization") String token, @Body JsonObject DataExamen, @Query("nombre") String nombre );
 
 	@GET("examen/listar")
 	Call <List<Examen>> obtenerListaExamenes(@Header("Authorization") String token);
 
 	@POST("examen/modificar")
-	Call <Boolean> modificarExamen(@Header("Authorization") String token, @Body JsonObject DataExamen, @Query("examenId") String idExamen );
+	Call <ServerResponse> modificarExamen(@Header("Authorization") String token, @Body JsonObject DataExamen, @Query("examenId") String idExamen );
 
 	@GET("examen/borrar")
-	Call <Boolean> borrarExamen(@Header("Authorization") String token, @Query("examenId") String idExamen );
+	Call <ServerResponse> borrarExamen(@Header("Authorization") String token, @Query("examenId") String idExamen );
 
 	@POST("inscripcion/ingresarcalificacionesexamen")
-	Call <Boolean> cargarCalificacionesExamen(@Header("Authorization") String token, @Body JsonArray DataNotasExamen, @Query("cursoId") String idExamen );
+	Call <ServerResponse> cargarCalificacionesExamen(@Header("Authorization") String token, @Body JsonArray DataNotasExamen, @Query("cursoId") String idExamen );
 
 	@GET("carrera/listar")
 	Call <List<Carrera>> obtenerListaCarreras(@Header("Authorization") String token);

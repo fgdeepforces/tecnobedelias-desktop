@@ -1,13 +1,17 @@
 package com.proyecto.tecnobedelias_desktop.model;
 
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import com.proyecto.tecnobedelias_desktop.global.Variables;
 
 public class Examen {
 
     private Integer id;
     private boolean activa;
-    private String fecha;
+    private Date fecha;
     private String hora;
     private Integer idAsignatura;
     private String nombreAsignatura;
@@ -16,7 +20,7 @@ public class Examen {
     public Examen() {
 	}
 
-	public Examen(Integer id, boolean activa, String fecha, String hora, Integer idAsignatura, String nombreAsignatura,
+	public Examen(Integer id, boolean activa, Date fecha, String hora, Integer idAsignatura, String nombreAsignatura,
 			List<Estudiante_Examen> estudianteExamen) {
 		super();
 		this.id = id;
@@ -28,11 +32,11 @@ public class Examen {
 		this.estudianteExamen = estudianteExamen;
 	}
 
-    public String getFecha() {
+    public Date getFecha() {
         return fecha;
     }
 
-    public void setFecha(String fecha) {
+    public void setFecha(Date fecha) {
         this.fecha = fecha;
     }
 

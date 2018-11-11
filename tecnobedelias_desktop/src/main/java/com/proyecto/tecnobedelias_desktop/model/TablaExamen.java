@@ -3,10 +3,19 @@ package com.proyecto.tecnobedelias_desktop.model;
 import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXDatePicker;
+import com.jfoenix.controls.JFXTimePicker;
 import com.proyecto.tecnobedelias_desktop.service.ExamenService;
 import com.proyecto.tecnobedelias_desktop.utils.GeneratePDFFileIText;
 import com.proyecto.tecnobedelias_desktop.views.prueba.Prueba;
@@ -15,20 +24,27 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.util.Callback;
 
 public class TablaExamen {
 
 	private SimpleStringProperty colIdExamen;
 	private SimpleStringProperty colAsignaturaExamen;
-	private SimpleStringProperty colFechaExamen;
+	private ObjectProperty<Date> colFechaExamen;
 	private SimpleStringProperty colHoraExamen;
 	private ObjectProperty<JFXButton> colEditarExamen;
 	private ObjectProperty<JFXButton> colEliminarExamen;
@@ -41,77 +57,117 @@ public class TablaExamen {
 	static int i = 1;
 	static String idExamen = null;
 
-	@SuppressWarnings("unused")
+	@SuppressWarnings("deprecation")
 	private void dialogModificarExamen() {
-		Dialog<Examen> dialog = new Dialog<>();
+		Stage primaryStage = new Stage(StageStyle.DECORATED);
+		primaryStage.setHeight(300d);
+		try {
+			FlowPane main = new FlowPane();
+	        main.setVgap(20);
+	        main.setHgap(20);
 
-		Label lblNombreAsignatura = new Label("Nombre de la Asignatura");
-		Label lblFecha = new Label("Fecha");
-		Label lblHora = new Label("Hora");
+	        JFXTimePicker blueTimePicker = new JFXTimePicker();
+			Label lblNombreAsignatura = new Label("Nombre de la Asignatura");
+			Label vacio1 = new Label("\t");
+			Label vacio2 = new Label("\t");
+			Label vacio3 = new Label("\t");
+			Label lblFecha = new Label("Fecha");
+			Label lblHora = new Label("Hora");
+			Label txtNombreAsignatura = new Label(this.getColAsignaturaExamen());
 
-		TextField txtNombreAsignatura = new TextField(this.getColAsignaturaExamen());
-		TextField txtFecha = new TextField(this.getColFechaExamen());
-		TextField txtHora = new TextField(this.getColHoraExamen());
+			Date date = this.getColFechaExamen();
+			Instant instant = date.toInstant();
+			LocalDate localDate = instant.atZone(ZoneId.systemDefault()).toLocalDate();
 
-		GridPane grid = new GridPane();
+			JFXDatePicker datePickerFechaFX = new JFXDatePicker(localDate);
 
-		dialog.setTitle("Modificacion del examen " + this.getColAsignaturaExamen());
-		dialog.setHeaderText("Modificacion del examen " + this.getColAsignaturaExamen());
-		dialog.setResizable(true);
+			SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
 
-		grid.add(lblNombreAsignatura, 1, 1);
-		grid.add(txtNombreAsignatura, 2, 1);
-		grid.add(lblFecha, 1, 2);
-		grid.add(txtFecha, 2, 2);
-		grid.add(lblHora, 1, 3);
-		grid.add(txtHora, 2, 3);
+			try {
+				Date time = sdf.parse(this.getColHoraExamen());
+				blueTimePicker.setValue(LocalTime.of(time.getHours(), time.getMinutes()));
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
 
-		dialog.getDialogPane().setContent(grid);
-		ButtonType buttonTypeOk = new ButtonType("Confirmar", ButtonData.OK_DONE);
-		dialog.getDialogPane().getButtonTypes().add(buttonTypeOk);
-		dialog.setResultConverter(new Callback<ButtonType, Examen>() {
-		    @Override
-		    public Examen call(ButtonType b) {
-		    	if (b == buttonTypeOk) {
-		    		List<Examen> lstExamenes = Prueba.getLstExamen();
+			blueTimePicker.setDefaultColor(Color.valueOf("#3f51b5"));
+			blueTimePicker.setOverLay(true);
+
+			GridPane grid = new GridPane();
+
+			grid.add(lblNombreAsignatura, 1, 1);
+			grid.add(vacio1, 2, 1);
+			grid.add(txtNombreAsignatura, 3, 1);
+			grid.add(lblFecha, 1, 2);
+			grid.add(vacio2, 2, 2);
+			grid.add(datePickerFechaFX, 3, 2);
+			grid.add(lblHora, 1, 3);
+			grid.add(vacio3, 2, 3);
+			grid.add(blueTimePicker, 3, 3);
+
+			JFXButton btnModificar = new JFXButton("Modificar");
+			btnModificar.setStyle("-fx-background-color: green; -fx-pref-width: 100px; -fx-pref-height: 30px;");
+
+			btnModificar.setOnAction(new EventHandler<ActionEvent>() {
+
+				@Override
+				public void handle(ActionEvent event) {
+					List<Examen> lstExamenes = Prueba.getLstExamen();
 		    		if(lstExamenes != null) {
 		    			if(!lstExamenes.isEmpty()) {
 		    				Examen examen = lstExamenes.stream().filter(c -> c.getId() == Integer.parseInt(getColIdExamen())).findFirst().get();
 		    				if(examen != null) {
-		    					examen.setHora(txtHora.getText());
-		    					examen.setFecha(txtFecha.getText());
-		    					examen.setNombreAsignatura(txtNombreAsignatura.getText());
+		    					System.out.println("blueTimePicker: " + blueTimePicker.getValue().toString());
+		    					examen.setHora(blueTimePicker.getValue().toString());
+
+		    					LocalDate localDateFin = datePickerFechaFX.getValue();
+		    					Instant instantFin = Instant.from(localDateFin.atStartOfDay(ZoneId.systemDefault()));
+		    					Date dateFin = Date.from(instantFin);
+		    					System.out.println(localDateFin + "\n" + instantFin + "\n" + dateFin);
+
+		    					examen.setFecha(Date.from(instantFin));
 		    					ExamenService cs = new ExamenService();
 		    		    		alertConfirmacionModificarExamen(cs.modificarExamenResponse(examen));
 		    				}
 		    			}
 		    		}
-		        }
-		        return null;
-		    }
-		});
-		dialog.showAndWait();
+				}
+			});
+
+			main.getChildren().add(grid);
+			main.getChildren().add(btnModificar);
+
+	        StackPane pane = new StackPane();
+	        pane.getChildren().add(main);
+	        StackPane.setMargin(main, new Insets(100));
+	        pane.setStyle("-fx-background-color:WHITE");
+
+	        final Scene scene = new Scene(pane, 400, 700);
+
+	        primaryStage.setTitle("Modificacion del examen " + this.getColAsignaturaExamen());
+	        primaryStage.setScene(scene);
+	        primaryStage.show();
+
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+
 	}
 
-	private void alertConfirmacionModificarExamen(boolean respuesta) {
+	private void alertConfirmacionModificarExamen(ServerResponse respuesta) {
 		Alert dialogo = new Alert(Alert.AlertType.INFORMATION);
 		dialogo.setTitle("Modificacion del Examen");
-
-		if(respuesta) {
-			dialogo.setContentText("Se ha modificado examen " + this.getColAsignaturaExamen() + " satisfactoriamente.");
-		}else {
-			dialogo.setContentText("No se pudo modificar el examen.");
-		}
+		dialogo.setContentText(respuesta.getMensaje());
 		Prueba.actualizarDatosTablaCurso();
 		dialogo.showAndWait();
 	}
 
-	public TablaExamen(String colIdExamen, String colAsignaturaExamen, String colFechaExamen, String colHoraExamen, JFXButton colEditarExamen,
+	public TablaExamen(String colIdExamen, String colAsignaturaExamen, Date colFechaExamen, String colHoraExamen, JFXButton colEditarExamen,
 			JFXButton colEliminarExamen, JFXButton colActaExamen, JFXButton colCargarCalificacioensExamen) {
 		super();
 		this.colIdExamen = new SimpleStringProperty(colIdExamen);
 		this.colAsignaturaExamen = new SimpleStringProperty(colAsignaturaExamen);
-		this.colFechaExamen = new SimpleStringProperty(colFechaExamen);
+		this.colFechaExamen = new SimpleObjectProperty<Date>(colFechaExamen);
 		this.colHoraExamen = new SimpleStringProperty(colHoraExamen);
 		this.colEditarExamen = new SimpleObjectProperty<JFXButton>(colEditarExamen);
 		this.colEliminarExamen = new SimpleObjectProperty<JFXButton>(colEliminarExamen);
@@ -119,10 +175,10 @@ public class TablaExamen {
 		this.colCargarCalificacioensExamen = new SimpleObjectProperty<JFXButton>(colCargarCalificacioensExamen);
 	}
 
-	public TablaExamen(String colIdExamen, String colAsignaturaExamen, String colFechaExamen, String colHoraExamen) {
+	public TablaExamen(String colIdExamen, String colAsignaturaExamen, Date colFechaExamen, String colHoraExamen) {
 		this.colIdExamen = new SimpleStringProperty(colIdExamen);
 		this.colAsignaturaExamen = new SimpleStringProperty(colAsignaturaExamen);
-		this.colFechaExamen = new SimpleStringProperty(colFechaExamen);
+		this.colFechaExamen = new SimpleObjectProperty<Date>(colFechaExamen);
 		this.colHoraExamen = new SimpleStringProperty(colHoraExamen);
 
 		this.colEditarExamen = new SimpleObjectProperty<JFXButton>(new JFXButton("Editar"));
@@ -152,13 +208,6 @@ public class TablaExamen {
 		this.colActaExamen.get().setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
-				alertEliminarExamen();
-			}
-		});
-
-		this.colActaExamen.get().setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent event) {
 				GeneratePDFFileIText generatePDFFileIText = new GeneratePDFFileIText();
 				List<Examen> lstExamenes = Prueba.getLstExamen();
 	    		if(lstExamenes != null) {
@@ -166,25 +215,49 @@ public class TablaExamen {
 	    				Examen examen = lstExamenes.stream().filter(c -> c.getId() == Integer.parseInt(getColIdExamen())).findFirst().get();
 	    				if(examen != null) {
 	    					List<Estudiante_Examen> lstEstudiante = examen.getEstudianteExamen();
-	    					if(lstEstudiante != null && !lstEstudiante.isEmpty()) {
-
+	    					if(lstEstudiante != null) {
 	    						generatePDFFileIText.crearActaFinalDeExamen(examen.getNombreAsignatura(), lstEstudiante);
-	    					}else {
-	    						Alert dialogo = new Alert(Alert.AlertType.INFORMATION);
-	    						dialogo.setTitle("Acta del Examen");
-	    						dialogo.setContentText("El examen de " + examen.getNombreAsignatura() + " no cuenta con estudiantes inscriptos.");
-	    						dialogo.showAndWait();
 	    					}
 	    				}
 	    			}
 	    		}
 		        try {
-					Desktop.getDesktop().open(new File("src/resources/pdf/actaExamen" + colAsignaturaExamen + ".pdf"));
+					Desktop.getDesktop().open(new File("src/resources/pdf/actaCurso" + colAsignaturaExamen + ".pdf"));
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
 			}
 		});
+
+//		this.colActaExamen.get().setOnAction(new EventHandler<ActionEvent>() {
+//			@Override
+//			public void handle(ActionEvent event) {
+//				GeneratePDFFileIText generatePDFFileIText = new GeneratePDFFileIText();
+//				List<Examen> lstExamenes = Prueba.getLstExamen();
+//	    		if(lstExamenes != null) {
+//	    			if(!lstExamenes.isEmpty()) {
+//	    				Examen examen = lstExamenes.stream().filter(c -> c.getId() == Integer.parseInt(getColIdExamen())).findFirst().get();
+//	    				if(examen != null) {
+//	    					List<Estudiante_Examen> lstEstudiante = examen.getEstudianteExamen();
+//	    					if(lstEstudiante != null && !lstEstudiante.isEmpty()) {
+//
+//	    						generatePDFFileIText.crearActaFinalDeExamen(examen.getNombreAsignatura(), lstEstudiante);
+//	    					}else {
+//	    						Alert dialogo = new Alert(Alert.AlertType.INFORMATION);
+//	    						dialogo.setTitle("Acta del Examen");
+//	    						dialogo.setContentText("El examen de " + examen.getNombreAsignatura() + " no cuenta con estudiantes inscriptos.");
+//	    						dialogo.showAndWait();
+//	    					}
+//	    				}
+//	    			}
+//	    		}
+//		        try {
+//					Desktop.getDesktop().open(new File("src/resources/pdf/actaExamen" + colAsignaturaExamen + ".pdf"));
+//				} catch (IOException e) {
+//					e.printStackTrace();
+//				}
+//			}
+//		});
 
 		this.colCargarCalificacioensExamen.get().setOnAction(new EventHandler<ActionEvent>() {
 			@Override
@@ -252,15 +325,10 @@ public class TablaExamen {
 		dialog.showAndWait();
 	}
 
-	private void alertConfirmacionCargarCalificacionesExamen(boolean respuesta) {
+	private void alertConfirmacionCargarCalificacionesExamen(ServerResponse respuesta) {
 		Alert dialogo = new Alert(Alert.AlertType.INFORMATION);
 		dialogo.setTitle("Calificaciones del Examen");
-
-		if(respuesta) {
-			dialogo.setContentText("Se han cargado las calificaciones del examen " + this.getColAsignaturaExamen() + " satisfactoriamente.");
-		}else {
-			dialogo.setContentText("No se pudo cargar las calificaciones del examen.");
-		}
+		dialogo.setContentText(respuesta.getMensaje());
 		Prueba.actualizarDatosTablaCurso();
 		dialogo.showAndWait();
 	}
@@ -276,15 +344,10 @@ public class TablaExamen {
 		}
 	}
 
-	private void alertConfirmacionEliminarExamen(boolean respuesta) {
+	private void alertConfirmacionEliminarExamen(ServerResponse respuesta) {
 		Alert dialogo = new Alert(Alert.AlertType.INFORMATION);
 		dialogo.setTitle("Eliminar Curso");
-
-		if(respuesta) {
-			dialogo.setContentText("Se ha eliminado el examen " + this.getColAsignaturaExamen() + " satisfactoriamente");
-		}else {
-			dialogo.setContentText("No se puede eliminar el examen porque tiene estudiantes inscriptos en el. \nPor favor si desea eliminar el examen intente darle de baja a todos los alumnos de este examen");
-		}
+		dialogo.setContentText(respuesta.getMensaje());
 		Prueba.actualizarDatosTablaExamen();
 		dialogo.showAndWait();
 	}
@@ -305,11 +368,11 @@ public class TablaExamen {
 		this.colAsignaturaExamen.set(colAsignaturaExamen);
 	}
 
-	public String getColFechaExamen() {
+	public Date getColFechaExamen() {
 		return this.colFechaExamen.get();
 	}
 
-	public void setColFechaExamen(String colFechaExamen) {
+	public void setColFechaExamen(Date colFechaExamen) {
 		this.colFechaExamen.set(colFechaExamen);
 	}
 

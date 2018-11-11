@@ -4,9 +4,14 @@ import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
 import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXDatePicker;
 import com.proyecto.tecnobedelias_desktop.global.Constants;
 import com.proyecto.tecnobedelias_desktop.global.Token;
 import com.proyecto.tecnobedelias_desktop.global.Variables;
@@ -16,6 +21,7 @@ import com.proyecto.tecnobedelias_desktop.model.Carrera;
 import com.proyecto.tecnobedelias_desktop.model.Curso;
 import com.proyecto.tecnobedelias_desktop.model.Examen;
 import com.proyecto.tecnobedelias_desktop.model.Horario;
+import com.proyecto.tecnobedelias_desktop.model.ServerResponse;
 import com.proyecto.tecnobedelias_desktop.model.TablaCurso;
 import com.proyecto.tecnobedelias_desktop.model.TablaExamen;
 import com.proyecto.tecnobedelias_desktop.model.TablaHorario;
@@ -188,17 +194,15 @@ public class Prueba implements Initializable {
 		// operacionesPaneToFront();
 		nombreAsignatura = null;
 		Dialog<Curso> dialog = new Dialog<>();
+		JFXDatePicker datePickerFechaInicioFX = new JFXDatePicker();
+		JFXDatePicker datePickerFechaFinFX = new JFXDatePicker();
 		JFXButton btnIngresarHorario = new JFXButton("Ingresar Horario");
 		inicializarOperacion("INGRESAR CURSO");
 		CarreraService cs = new CarreraService();
 		ObservableList<Carrera> dataCarreras = FXCollections.observableArrayList();
 		ObservableList<AsignaturaCarrera> dataAsignaturas = FXCollections.observableArrayList();
 		List<Carrera> carreras = cs.listarCarrerasResponse();
-		try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e1) {
-			e1.printStackTrace();
-		}
+
 		Label lblCarreras = new Label("Carrera");
 		Label lblAsignatura = new Label("Asignatura");
 		ComboBox<Carrera> cboCarreras = new ComboBox<>();
@@ -206,7 +210,7 @@ public class Prueba implements Initializable {
 		Curso curso = new Curso();
 
 		Label lblNombre = new Label("Nombre");
-		Label lblAnio = new Label("Aï¿½o");
+		Label lblAnio = new Label("Año");
 		Label lblFechaFin = new Label("Fecha Fin");
 		Label lblFechaInicio = new Label("Fecha Inicio");
 		Label lblSemestre = new Label("Semestre");
@@ -221,15 +225,17 @@ public class Prueba implements Initializable {
 
 		TextField txtNombre = new TextField();
 		TextField txtAnio = new TextField();
-		TextField txtFechaInicio = new TextField();
-		TextField txtFechaFin = new TextField();
 		TextField txtSemestre = new TextField();
 
 		txtNombre.setVisible(false);
 		txtAnio.setVisible(false);
-		txtFechaInicio.setVisible(false);
-		txtFechaFin.setVisible(false);
 		txtSemestre.setVisible(false);
+
+		datePickerFechaInicioFX.setPromptText("Elige una fecha");
+		datePickerFechaFinFX.setPromptText("Elige una fecha");
+
+		datePickerFechaInicioFX.setVisible(false);
+		datePickerFechaFinFX.setVisible(false);
 
 		cboAsignaturas.setVisible(false);
 
@@ -304,7 +310,9 @@ public class Prueba implements Initializable {
 							alerta.showAndWait();
 						} else {
 							lblAsignatura.setVisible(true);
+							dataAsignaturas.clear();
 							dataAsignaturas.addAll(asignaturasDeCarrera);
+							cboAsignaturas.getItems().clear();
 							cboAsignaturas.getItems().addAll(dataAsignaturas);
 							cboAsignaturas.setOnAction(new EventHandler<ActionEvent>() {
 
@@ -316,8 +324,8 @@ public class Prueba implements Initializable {
 									lblFechaInicio.setVisible(true);
 									lblSemestre.setVisible(true);
 									txtAnio.setVisible(true);
-									txtFechaInicio.setVisible(true);
-									txtFechaFin.setVisible(true);
+									datePickerFechaInicioFX.setVisible(true);
+									datePickerFechaFinFX.setVisible(true);
 									txtSemestre.setVisible(true);
 								}
 							});
@@ -340,9 +348,9 @@ public class Prueba implements Initializable {
 		grid.add(lblAnio, 1, 4);
 		grid.add(txtAnio, 2, 4);
 		grid.add(lblFechaInicio, 1, 5);
-		grid.add(txtFechaInicio, 2, 5);
+		grid.add(datePickerFechaInicioFX, 2, 5);
 		grid.add(lblFechaFin, 1, 6);
-		grid.add(txtFechaFin, 2, 6);
+		grid.add(datePickerFechaFinFX, 2, 6);
 		grid.add(lblSemestre, 1, 7);
 		grid.add(txtSemestre, 2, 7);
 
@@ -364,8 +372,8 @@ public class Prueba implements Initializable {
 			public Curso call(ButtonType b) {
 				if (b == buttonTypeOk) {
 					curso.setAnio(Integer.parseInt(txtAnio.getText()));
-					curso.setFechaFin(txtFechaFin.getText());
-					curso.setFechaInicio(txtFechaInicio.getText());
+					curso.setFechaFin(Date.from(Instant.from(datePickerFechaFinFX.getValue().atStartOfDay(ZoneId.systemDefault()))));
+					curso.setFechaInicio(Date.from(Instant.from(datePickerFechaInicioFX.getValue().atStartOfDay(ZoneId.systemDefault()))));
 					curso.setNombreAsignatura(nombreAsignatura);
 					curso.setSemestre(Integer.parseInt(txtSemestre.getText()));
 					CursoService cs = new CursoService();
@@ -383,6 +391,7 @@ public class Prueba implements Initializable {
 		Dialog<Examen> dialog = new Dialog<>();
 		inicializarOperacion("INGRESAR EXAMEN");
 		CarreraService cs = new CarreraService();
+		JFXDatePicker datePickerFechaFX = new JFXDatePicker();
 		ObservableList<Carrera> dataCarreras = FXCollections.observableArrayList();
 		ObservableList<AsignaturaCarrera> dataAsignaturas = FXCollections.observableArrayList();
 		List<Carrera> carreras = cs.listarCarrerasResponse();
@@ -398,12 +407,9 @@ public class Prueba implements Initializable {
 		lblAsignatura.setVisible(false);
 		lblFecha.setVisible(false);
 		lblHora.setVisible(false);
-
-		TextField txtFecha = new TextField();
 		TextField txtHora = new TextField();
-
-		txtFecha.setVisible(false);
 		txtHora.setVisible(false);
+		datePickerFechaFX.setVisible(false);
 
 		cboAsignaturas.setVisible(false);
 
@@ -439,8 +445,11 @@ public class Prueba implements Initializable {
 									"No existen asignaturas para la carrera seleccionada en el sistema por favor contactese con el director para que cree alguna");
 							alerta.showAndWait();
 						} else {
+							//TODO: FIX BUG
 							lblAsignatura.setVisible(true);
+							dataAsignaturas.clear();
 							dataAsignaturas.addAll(asignaturasDeCarrera);
+							cboAsignaturas.getItems().clear();
 							cboAsignaturas.getItems().addAll(dataAsignaturas);
 							cboAsignaturas.setOnAction(new EventHandler<ActionEvent>() {
 
@@ -449,7 +458,7 @@ public class Prueba implements Initializable {
 									nombreAsignatura = cboAsignaturas.getSelectionModel().getSelectedItem().getAsignatura().getNombre();
 									lblFecha.setVisible(true);
 									lblHora.setVisible(true);
-									txtFecha.setVisible(true);
+									datePickerFechaFX.setVisible(true);
 									txtHora.setVisible(true);
 								}
 							});
@@ -470,7 +479,7 @@ public class Prueba implements Initializable {
 		grid.add(lblAsignatura, 1, 2);
 		grid.add(cboAsignaturas, 2, 2);
 		grid.add(lblFecha, 1, 4);
-		grid.add(txtFecha, 2, 4);
+		grid.add(datePickerFechaFX, 2, 4);
 		grid.add(lblHora, 1, 5);
 		grid.add(txtHora, 2, 5);
 
@@ -481,7 +490,14 @@ public class Prueba implements Initializable {
 			@Override
 			public Examen call(ButtonType b) {
 				if (b == buttonTypeOk) {
-					examen.setFecha(txtFecha.getText());
+
+					LocalDate localDate = datePickerFechaFX.getValue();
+					Instant instant = Instant.from(localDate.atStartOfDay(ZoneId.systemDefault()));
+					Date dateInicio = Date.from(instant);
+					System.out.println(localDate + "\n" + instant + "\n" + dateInicio);
+
+					examen.setFecha(Date.from(instant));
+
 					examen.setHora(txtHora.getText());
 					examen.setNombreAsignatura(nombreAsignatura);
 					ExamenService cs = new ExamenService();
@@ -493,28 +509,18 @@ public class Prueba implements Initializable {
 		dialog.showAndWait();
 	}
 
-	private void alertConfirmacionIngresarExamen(boolean respuesta) {
+	private void alertConfirmacionIngresarExamen(ServerResponse respuesta) {
 		Alert dialogo = new Alert(Alert.AlertType.INFORMATION);
 		dialogo.setTitle("Ingresar Examen");
-
-		if (respuesta) {
-			dialogo.setContentText("Se ha ingresado el examen satisfactoriamente.");
-		} else {
-			dialogo.setContentText("No se pudo ingresar el examen.");
-		}
+		dialogo.setContentText(respuesta.getMensaje());
 		actualizarDatosTablaExamen();
 		dialogo.showAndWait();
 	}
 
-	private void alertConfirmacionIngresarCurso(boolean respuesta) {
+	private void alertConfirmacionIngresarCurso(ServerResponse respuesta) {
 		Alert dialogo = new Alert(Alert.AlertType.INFORMATION);
 		dialogo.setTitle("Ingresar Curso");
-
-		if (respuesta) {
-			dialogo.setContentText("Se ha ingresado el curso satisfactoriamente.");
-		} else {
-			dialogo.setContentText("No se pudo ingresar el curso.");
-		}
+		dialogo.setContentText(respuesta.getMensaje());
 		actualizarDatosTablaCurso();
 		dialogo.showAndWait();
 	}
