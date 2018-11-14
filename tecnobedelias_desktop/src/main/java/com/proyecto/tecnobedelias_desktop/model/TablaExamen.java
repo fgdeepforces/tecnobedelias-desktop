@@ -266,6 +266,13 @@ public class TablaExamen {
 			}
 		});
 
+		Date now = new Date();
+		if(getColFechaExamen().after(now)) {
+			getColCargarCalificacionesExamen().setDisable(true);
+		}else {
+			getColCargarCalificacionesExamen().setDisable(false);
+		}
+
 	}
 
 	private void dialogCargarCalificacionesExamen() {

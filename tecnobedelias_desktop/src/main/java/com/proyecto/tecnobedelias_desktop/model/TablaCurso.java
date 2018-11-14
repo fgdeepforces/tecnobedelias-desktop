@@ -3,15 +3,20 @@ package com.proyecto.tecnobedelias_desktop.model;
 import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXDatePicker;
+import com.jfoenix.controls.JFXTimePicker;
 import com.proyecto.tecnobedelias_desktop.global.Variables;
 import com.proyecto.tecnobedelias_desktop.service.CursoService;
 import com.proyecto.tecnobedelias_desktop.utils.GeneratePDFFileIText;
@@ -23,7 +28,9 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
@@ -34,9 +41,14 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.util.Callback;
 
 public class TablaCurso {
@@ -65,51 +77,92 @@ public class TablaCurso {
 	static int i = 1;
 	static String idCurso = null;
 
+	@SuppressWarnings("deprecation")
 	private void dialogModificarHorario() {
-		Dialog<Horario> dialog = new Dialog<>();
-		Label lblDia = new Label("Dia");
-		Label lblHoraInicio = new Label("Hora de Inicio");
-		Label lblHoraFin = new Label("Hora de Finalizacion");
-		GridPane grid = new GridPane();
+		Stage primaryStage = new Stage(StageStyle.DECORATED);
+		primaryStage.setHeight(300d);
+		try {
+			FlowPane main = new FlowPane();
+	        main.setVgap(20);
+	        main.setHgap(20);
 
-		if(getTablaHorarios().getSelectionModel().getSelectedItem() == null) {
-			Alert alerta = new Alert(Alert.AlertType.INFORMATION);
-			alerta.setTitle("Informacion");
-			alerta.setContentText("Debes de seleccionar una fila antes de proceder a editar el horario");
-			alerta.showAndWait();
-		}else {
-			int index = getTablaHorarios().getSelectionModel().getSelectedIndex();
-			TextField txtDia = new TextField(getTablaHorarios().getSelectionModel().getSelectedItem().getColDiaHorario());
-			TextField txtHoraInicio = new TextField(getTablaHorarios().getSelectionModel().getSelectedItem().getColHoraInicioHorario());
-			TextField txtHoraFin = new TextField(getTablaHorarios().getSelectionModel().getSelectedItem().getColHoraFinHorario());
+	        JFXTimePicker tpHoraInicio = new JFXTimePicker();
+	        JFXTimePicker tpHoraFin = new JFXTimePicker();
+			Label lblDia = new Label("Dia");
+			Label vacio1 = new Label("\t");
+			Label vacio2 = new Label("\t");
+			Label vacio3 = new Label("\t");
+			Label lblHoraInicio = new Label("Hora Inicio");
+			Label lblHoraFin = new Label("Hora Fin");
 
-			dialog.setTitle("Modificacion del horario del dia " + getTablaHorarios().getSelectionModel().getSelectedItem().getColDiaHorario());
-			dialog.setHeaderText("Modificacion del horario del dia " + getTablaHorarios().getSelectionModel().getSelectedItem().getColDiaHorario());
-			dialog.setResizable(true);
+			ObservableList<String> dataDias = FXCollections.observableArrayList();
+			dataDias.add("Lunes");
+			dataDias.add("Martes");
+			dataDias.add("Miercoles");
+			dataDias.add("Jueves");
+			dataDias.add("Viernes");
+
+			JFXComboBox<String> cboDia = new JFXComboBox<>(dataDias);
+
+			SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+
+			try {
+				Date timeInicio = sdf.parse(getTablaHorarios().getSelectionModel().getSelectedItem().getColHoraInicioHorario());
+				tpHoraInicio.setValue(LocalTime.of(timeInicio.getHours(), timeInicio.getMinutes()));
+				Date timeFin = sdf.parse(getTablaHorarios().getSelectionModel().getSelectedItem().getColHoraInicioHorario());
+				tpHoraInicio.setValue(LocalTime.of(timeFin.getHours(), timeFin.getMinutes()));
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
+
+			tpHoraInicio.setDefaultColor(Color.valueOf("#3f51b5"));
+			tpHoraInicio.setOverLay(true);
+			tpHoraFin.setDefaultColor(Color.valueOf("#3f51b5"));
+			tpHoraFin.setOverLay(true);
+
+			GridPane grid = new GridPane();
 
 			grid.add(lblDia, 1, 1);
-			grid.add(txtDia, 2, 1);
+			grid.add(vacio1, 2, 1);
+			grid.add(cboDia, 3, 1);
 			grid.add(lblHoraInicio, 1, 2);
-			grid.add(txtHoraInicio, 2, 2);
+			grid.add(vacio2, 2, 2);
+			grid.add(tpHoraInicio, 3, 2);
 			grid.add(lblHoraFin, 1, 3);
-			grid.add(txtHoraFin, 2, 3);
+			grid.add(vacio3, 2, 3);
+			grid.add(tpHoraFin, 3, 3);
 
-			dialog.getDialogPane().setContent(grid);
-			ButtonType buttonTypeOk = new ButtonType("Confirmar", ButtonData.OK_DONE);
-			dialog.getDialogPane().getButtonTypes().add(buttonTypeOk);
-			dialog.setResultConverter(new Callback<ButtonType, Horario>() {
-			    @Override
-			    public Horario call(ButtonType b) {
-			    	if (b == buttonTypeOk) {
-			    		Variables.getLstHorarios().get(index).setDia(txtDia.getText());
-			    		Variables.getLstHorarios().get(index).setHoraInicio(txtHoraInicio.getText());
-			    		Variables.getLstHorarios().get(index).setHoraFin(txtHoraFin.getText());
-			    		alertConfirmacionModificarHorario(true);
-			        }
-			        return null;
-			    }
+			JFXButton btnModificar = new JFXButton("Modificar");
+			btnModificar.setStyle("-fx-background-color: green; -fx-pref-width: 100px; -fx-pref-height: 30px;");
+
+			btnModificar.setOnAction(new EventHandler<ActionEvent>() {
+
+				@Override
+				public void handle(ActionEvent event) {
+					int index = getTablaHorarios().getSelectionModel().getSelectedIndex();
+					Variables.getLstHorarios().get(index).setDia(cboDia.getSelectionModel().getSelectedItem());
+		    		Variables.getLstHorarios().get(index).setHoraInicio(tpHoraInicio.getValue().toString());
+		    		Variables.getLstHorarios().get(index).setHoraFin(tpHoraFin.getValue().toString());
+		    		alertConfirmacionModificarHorario(true);
+				}
 			});
-			dialog.showAndWait();
+
+			main.getChildren().add(grid);
+			main.getChildren().add(btnModificar);
+
+	        StackPane pane = new StackPane();
+	        pane.getChildren().add(main);
+	        StackPane.setMargin(main, new Insets(100));
+	        pane.setStyle("-fx-background-color:WHITE");
+
+	        final Scene scene = new Scene(pane, 400, 700);
+
+	        primaryStage.setTitle("Modificacion del horario del dia " + getTablaHorarios().getSelectionModel().getSelectedItem().getColDiaHorario());
+	        primaryStage.setScene(scene);
+	        primaryStage.show();
+
+		} catch(Exception e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -251,6 +304,13 @@ public class TablaCurso {
 			}
 		});
 
+		Date now = new Date();
+		if(getColFechaFin().after(now)) {
+			getColCargarCalificaciones().setDisable(true);
+		}else {
+			getColCargarCalificaciones().setDisable(false);
+		}
+
 	}
 
 	@SuppressWarnings("unchecked")
@@ -391,43 +451,116 @@ public class TablaCurso {
 	}
 
 	private void dialogIngresarHorario() {
-		Dialog<Horario> dialog = new Dialog<>();
+		Stage primaryStage = new Stage(StageStyle.DECORATED);
+		primaryStage.setHeight(300d);
+		try {
+			FlowPane main = new FlowPane();
+	        main.setVgap(20);
+	        main.setHgap(20);
 
-		GridPane grid = new GridPane();
+	        JFXTimePicker tpHoraInicio = new JFXTimePicker();
+	        JFXTimePicker tpHoraFin = new JFXTimePicker();
+			Label lblDia = new Label("Dia");
+			Label vacio1 = new Label("\t");
+			Label vacio2 = new Label("\t");
+			Label vacio3 = new Label("\t");
+			Label lblHoraInicio = new Label("Hora Inicio");
+			Label lblHoraFin = new Label("Hora Fin");
 
-		Label lblDia = new Label("Dia");
-		Label lblHoraInicio = new Label("Hora inicio");
-		Label lblHoraFin = new Label("Hora fin");
+			ObservableList<String> dataDias = FXCollections.observableArrayList();
+			dataDias.add("Lunes");
+			dataDias.add("Martes");
+			dataDias.add("Miercoles");
+			dataDias.add("Jueves");
+			dataDias.add("Viernes");
 
-		TextField txtDia = new TextField();
-		TextField txtHoraInicio = new TextField();
-		TextField txtHoraFin = new TextField();
+			JFXComboBox<String> cboDia = new JFXComboBox<>(dataDias);
 
-		dialog.setTitle("Horarios");
-		dialog.setHeaderText("Ingreso de nuevo horario");
-		dialog.setResizable(true);
+			tpHoraInicio.setDefaultColor(Color.valueOf("#3f51b5"));
+			tpHoraInicio.setOverLay(true);
+			tpHoraFin.setDefaultColor(Color.valueOf("#3f51b5"));
+			tpHoraFin.setOverLay(true);
 
-		grid.add(lblDia, 1, 1);
-		grid.add(txtDia, 2, 1);
-		grid.add(lblHoraInicio, 1, 2);
-		grid.add(txtHoraInicio, 2, 2);
-		grid.add(lblHoraFin, 1, 3);
-		grid.add(txtHoraFin, 2, 3);
+			GridPane grid = new GridPane();
 
-		dialog.getDialogPane().setContent(grid);
-		ButtonType buttonTypeOk = new ButtonType("Confirmar", ButtonData.OK_DONE);
-		dialog.getDialogPane().getButtonTypes().add(buttonTypeOk);
-		dialog.setResultConverter(new Callback<ButtonType, Horario>() {
-		    @Override
-		    public Horario call(ButtonType b) {
-		    	if (b == buttonTypeOk) {
-		    		Variables.getLstHorarios().add(new Horario(txtDia.getText(),txtHoraFin.getText(),txtHoraInicio.getText()));
+			grid.add(lblDia, 1, 1);
+			grid.add(vacio1, 2, 1);
+			grid.add(cboDia, 3, 1);
+			grid.add(lblHoraInicio, 1, 2);
+			grid.add(vacio2, 2, 2);
+			grid.add(tpHoraInicio, 3, 2);
+			grid.add(lblHoraFin, 1, 3);
+			grid.add(vacio3, 2, 3);
+			grid.add(tpHoraFin, 3, 3);
+
+			JFXButton btnModificar = new JFXButton("Ingresar");
+			btnModificar.setStyle("-fx-background-color: green; -fx-pref-width: 100px; -fx-pref-height: 30px;");
+
+			btnModificar.setOnAction(new EventHandler<ActionEvent>() {
+
+				@Override
+				public void handle(ActionEvent event) {
+		    		Variables.getLstHorarios().add(new Horario(cboDia.getSelectionModel().getSelectedItem(),tpHoraFin.getValue().toString(),tpHoraInicio.getValue().toString()));
 		    		alertConfirmacionIngresarHorario(true);
-		        }
-		        return null;
-		    }
-		});
-		dialog.showAndWait();
+				}
+			});
+
+			main.getChildren().add(grid);
+			main.getChildren().add(btnModificar);
+
+	        StackPane pane = new StackPane();
+	        pane.getChildren().add(main);
+	        StackPane.setMargin(main, new Insets(100));
+	        pane.setStyle("-fx-background-color:WHITE");
+
+	        final Scene scene = new Scene(pane, 400, 700);
+
+	        primaryStage.setTitle("Ingreso de nuevo horario");
+	        primaryStage.setScene(scene);
+	        primaryStage.show();
+
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+//
+//		//TODO ASD
+//		Dialog<Horario> dialog = new Dialog<>();
+//
+//		GridPane grid = new GridPane();
+//
+//		Label lblDia = new Label("Dia");
+//		Label lblHoraInicio = new Label("Hora inicio");
+//		Label lblHoraFin = new Label("Hora fin");
+//
+//		TextField txtDia = new TextField();
+//		TextField txtHoraInicio = new TextField();
+//		TextField txtHoraFin = new TextField();
+//
+//		dialog.setTitle("Horarios");
+//		dialog.setHeaderText("Ingreso de nuevo horario");
+//		dialog.setResizable(true);
+//
+//		grid.add(lblDia, 1, 1);
+//		grid.add(txtDia, 2, 1);
+//		grid.add(lblHoraInicio, 1, 2);
+//		grid.add(txtHoraInicio, 2, 2);
+//		grid.add(lblHoraFin, 1, 3);
+//		grid.add(txtHoraFin, 2, 3);
+//
+//		dialog.getDialogPane().setContent(grid);
+//		ButtonType buttonTypeOk = new ButtonType("Confirmar", ButtonData.OK_DONE);
+//		dialog.getDialogPane().getButtonTypes().add(buttonTypeOk);
+//		dialog.setResultConverter(new Callback<ButtonType, Horario>() {
+//		    @Override
+//		    public Horario call(ButtonType b) {
+//		    	if (b == buttonTypeOk) {
+//		    		Variables.getLstHorarios().add(new Horario(txtDia.getText(),txtHoraFin.getText(),txtHoraInicio.getText()));
+//		    		alertConfirmacionIngresarHorario(true);
+//		        }
+//		        return null;
+//		    }
+//		});
+//		dialog.showAndWait();
 	}
 
 	private void alertConfirmacionIngresarHorario(boolean respuesta) {

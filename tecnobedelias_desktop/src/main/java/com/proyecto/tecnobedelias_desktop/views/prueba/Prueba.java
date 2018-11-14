@@ -4,14 +4,19 @@ import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
 import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXDatePicker;
+import com.jfoenix.controls.JFXTimePicker;
 import com.proyecto.tecnobedelias_desktop.global.Constants;
 import com.proyecto.tecnobedelias_desktop.global.Token;
 import com.proyecto.tecnobedelias_desktop.global.Variables;
@@ -37,6 +42,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -52,11 +58,14 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.util.Callback;
 
 public class Prueba implements Initializable {
@@ -162,9 +171,7 @@ public class Prueba implements Initializable {
 
 	static TablaCurso entry = null;
 	static int gridPanelHeight = 1;
-
 	static String nombreAsignatura;
-
 	static Carrera carrera;
 
 	@SuppressWarnings("deprecation")
@@ -333,8 +340,7 @@ public class Prueba implements Initializable {
 					}else {
 						Alert alerta = new Alert(Alert.AlertType.INFORMATION);
 						alerta.setTitle("Informacion");
-						alerta.setContentText(
-								"no hay carrera");
+						alerta.setContentText("no hay carrera");
 						alerta.showAndWait();
 					}
 				}
@@ -388,108 +394,124 @@ public class Prueba implements Initializable {
 	public void btnAgregarExamenActionListener(ActionEvent event) {
 		// operacionesPaneToFront();
 		nombreAsignatura = null;
-		Dialog<Examen> dialog = new Dialog<>();
-		inicializarOperacion("INGRESAR EXAMEN");
-		CarreraService cs = new CarreraService();
-		JFXDatePicker datePickerFechaFX = new JFXDatePicker();
-		ObservableList<Carrera> dataCarreras = FXCollections.observableArrayList();
-		ObservableList<AsignaturaCarrera> dataAsignaturas = FXCollections.observableArrayList();
-		List<Carrera> carreras = cs.listarCarrerasResponse();
-		Label lblCarreras = new Label("Carrera");
-		Label lblAsignatura = new Label("Asignatura");
-		ComboBox<Carrera> cboCarreras = new ComboBox<>();
-		ComboBox<AsignaturaCarrera> cboAsignaturas = new ComboBox<>();
-		Examen examen = new Examen();
+		Stage primaryStage = new Stage(StageStyle.DECORATED);
+		primaryStage.setHeight(300d);
+		try {
+			FlowPane main = new FlowPane();
+	        main.setVgap(20);
+	        main.setHgap(20);
 
-		Label lblFecha = new Label("Fecha");
-		Label lblHora = new Label("Hora");
+	        JFXTimePicker tpHora = new JFXTimePicker();
+	        inicializarOperacion("INGRESAR EXAMEN");
+			CarreraService cs = new CarreraService();
+			JFXDatePicker datePickerFechaFX = new JFXDatePicker();
+			ObservableList<Carrera> dataCarreras = FXCollections.observableArrayList();
+			ObservableList<AsignaturaCarrera> dataAsignaturas = FXCollections.observableArrayList();
+			List<Carrera> carreras = cs.listarCarrerasResponse();
+			Label lblCarreras = new Label("Carrera");
+			Label lblAsignatura = new Label("Asignatura");
+			ComboBox<Carrera> cboCarreras = new ComboBox<>();
+			ComboBox<AsignaturaCarrera> cboAsignaturas = new ComboBox<>();
+			Examen examen = new Examen();
 
-		lblAsignatura.setVisible(false);
-		lblFecha.setVisible(false);
-		lblHora.setVisible(false);
-		TextField txtHora = new TextField();
-		txtHora.setVisible(false);
-		datePickerFechaFX.setVisible(false);
+			tpHora.setDefaultColor(Color.valueOf("#3f51b5"));
+			tpHora.setOverLay(true);
 
-		cboAsignaturas.setVisible(false);
+			Label lblFecha = new Label("Fecha");
+			Label lblHora = new Label("Hora");
+			Label vacio1 = new Label("\t");
+			Label vacio2 = new Label("\t");
+			Label vacio3 = new Label("\t");
+			Label vacio4 = new Label("\t");
 
-		GridPane grid = new GridPane();
+			lblAsignatura.setVisible(false);
+//			vacio1.setVisible(false);
+//			vacio2.setVisible(false);
+//			vacio3.setVisible(false);
+//			vacio4.setVisible(false);
+			lblFecha.setVisible(false);
+			lblHora.setVisible(false);
+			tpHora.setVisible(false);
+			datePickerFechaFX.setVisible(false);
 
-		dialog.setTitle("Ingresar Examen");
-		dialog.setHeaderText("Ingresar Examen");
-		dialog.setResizable(true);
+			cboAsignaturas.setVisible(false);
 
-		if (carreras == null) {
-			Alert alerta = new Alert(Alert.AlertType.INFORMATION);
-			alerta.setTitle("Informacion");
-			alerta.setContentText(
-					"No existen carreras en el sistema por favor contactese con el director para que cree alguna");
-			alerta.showAndWait();
-		}else{
-			dataCarreras.addAll(carreras);
-			cboCarreras.getItems().addAll(dataCarreras);
-			carrera = null;
-			cboCarreras.setOnAction(new EventHandler<ActionEvent>() {
+			GridPane grid = new GridPane();
+
+			if (carreras == null) {
+				Alert alerta = new Alert(Alert.AlertType.INFORMATION);
+				alerta.setTitle("Informacion");
+				alerta.setContentText(
+						"No existen carreras en el sistema por favor contactese con el director para que cree alguna");
+				alerta.showAndWait();
+			}else{
+				dataCarreras.addAll(carreras);
+				cboCarreras.getItems().addAll(dataCarreras);
+				carrera = null;
+				cboCarreras.setOnAction(new EventHandler<ActionEvent>() {
+
+					@Override
+					public void handle(ActionEvent event) {
+						carrera = cboCarreras.getSelectionModel().getSelectedItem();
+						System.out.println("Carrera seleccionada: " + carrera.toString());
+						if (carrera != null) {
+							List<AsignaturaCarrera> asignaturasDeCarrera = carrera.getAsignaturaCarrera();
+							cboAsignaturas.setVisible(true);
+							if (asignaturasDeCarrera == null) {
+								Alert alerta = new Alert(Alert.AlertType.INFORMATION);
+								alerta.setTitle("Informacion");
+								alerta.setContentText(
+										"No existen asignaturas para la carrera seleccionada en el sistema por favor contactese con el director para que cree alguna");
+								alerta.showAndWait();
+							} else {
+								//TODO: FIX BUG
+								lblAsignatura.setVisible(true);
+								dataAsignaturas.clear();
+								dataAsignaturas.addAll(asignaturasDeCarrera);
+								cboAsignaturas.getItems().clear();
+								cboAsignaturas.getItems().addAll(dataAsignaturas);
+								cboAsignaturas.setOnAction(new EventHandler<ActionEvent>() {
+
+									@Override
+									public void handle(ActionEvent event) {
+										nombreAsignatura = cboAsignaturas.getSelectionModel().getSelectedItem().getAsignatura().getNombre();
+										lblFecha.setVisible(true);
+										lblHora.setVisible(true);
+										datePickerFechaFX.setVisible(true);
+										tpHora.setVisible(true);
+									}
+								});
+							}
+						}else {
+							Alert alerta = new Alert(Alert.AlertType.INFORMATION);
+							alerta.setTitle("Informacion");
+							alerta.setContentText("no hay carrera");
+							alerta.showAndWait();
+						}
+					}
+				});
+			}
+
+			grid.add(lblCarreras, 1, 1);
+			grid.add(vacio1, 2, 1);
+			grid.add(cboCarreras, 3, 1);
+			grid.add(lblAsignatura, 1, 2);
+			grid.add(vacio2, 2, 2);
+			grid.add(cboAsignaturas, 3, 2);
+			grid.add(lblFecha, 1, 3);
+			grid.add(vacio3, 2, 3);
+			grid.add(datePickerFechaFX, 3, 3);
+			grid.add(lblHora, 1, 4);
+			grid.add(vacio4, 2, 4);
+			grid.add(tpHora, 3, 4);
+
+			JFXButton btnIngresar = new JFXButton("Ingresar");
+			btnIngresar.setStyle("-fx-background-color: green; -fx-pref-width: 100px; -fx-pref-height: 30px;");
+
+			btnIngresar.setOnAction(new EventHandler<ActionEvent>() {
 
 				@Override
 				public void handle(ActionEvent event) {
-					carrera = cboCarreras.getSelectionModel().getSelectedItem();
-					System.out.println("Carrera seleccionada: " + carrera.toString());
-					if (carrera != null) {
-						List<AsignaturaCarrera> asignaturasDeCarrera = carrera.getAsignaturaCarrera();
-						cboAsignaturas.setVisible(true);
-						if (asignaturasDeCarrera == null) {
-							Alert alerta = new Alert(Alert.AlertType.INFORMATION);
-							alerta.setTitle("Informacion");
-							alerta.setContentText(
-									"No existen asignaturas para la carrera seleccionada en el sistema por favor contactese con el director para que cree alguna");
-							alerta.showAndWait();
-						} else {
-							//TODO: FIX BUG
-							lblAsignatura.setVisible(true);
-							dataAsignaturas.clear();
-							dataAsignaturas.addAll(asignaturasDeCarrera);
-							cboAsignaturas.getItems().clear();
-							cboAsignaturas.getItems().addAll(dataAsignaturas);
-							cboAsignaturas.setOnAction(new EventHandler<ActionEvent>() {
-
-								@Override
-								public void handle(ActionEvent event) {
-									nombreAsignatura = cboAsignaturas.getSelectionModel().getSelectedItem().getAsignatura().getNombre();
-									lblFecha.setVisible(true);
-									lblHora.setVisible(true);
-									datePickerFechaFX.setVisible(true);
-									txtHora.setVisible(true);
-								}
-							});
-						}
-					}else {
-						Alert alerta = new Alert(Alert.AlertType.INFORMATION);
-						alerta.setTitle("Informacion");
-						alerta.setContentText(
-								"no hay carrera");
-						alerta.showAndWait();
-					}
-				}
-			});
-		}
-
-		grid.add(lblCarreras, 1, 1);
-		grid.add(cboCarreras, 2, 1);
-		grid.add(lblAsignatura, 1, 2);
-		grid.add(cboAsignaturas, 2, 2);
-		grid.add(lblFecha, 1, 4);
-		grid.add(datePickerFechaFX, 2, 4);
-		grid.add(lblHora, 1, 5);
-		grid.add(txtHora, 2, 5);
-
-		dialog.getDialogPane().setContent(grid);
-		ButtonType buttonTypeOk = new ButtonType("Confirmar", ButtonData.OK_DONE);
-		dialog.getDialogPane().getButtonTypes().add(buttonTypeOk);
-		dialog.setResultConverter(new Callback<ButtonType, Examen>() {
-			@Override
-			public Examen call(ButtonType b) {
-				if (b == buttonTypeOk) {
 
 					LocalDate localDate = datePickerFechaFX.getValue();
 					Instant instant = Instant.from(localDate.atStartOfDay(ZoneId.systemDefault()));
@@ -498,15 +520,154 @@ public class Prueba implements Initializable {
 
 					examen.setFecha(Date.from(instant));
 
-					examen.setHora(txtHora.getText());
+					examen.setHora(tpHora.getValue().toString());
 					examen.setNombreAsignatura(nombreAsignatura);
 					ExamenService cs = new ExamenService();
 					alertConfirmacionIngresarExamen(cs.ingresarExamenResponse(examen));
 				}
-				return null;
-			}
-		});
-		dialog.showAndWait();
+			});
+
+			main.getChildren().add(grid);
+			main.getChildren().add(btnIngresar);
+
+	        StackPane pane = new StackPane();
+	        pane.getChildren().add(main);
+	        StackPane.setMargin(main, new Insets(100));
+	        pane.setStyle("-fx-background-color:WHITE");
+
+	        final Scene scene = new Scene(pane, 400, 700);
+
+	        primaryStage.setTitle("Ingresar Examen");
+	        primaryStage.setScene(scene);
+	        primaryStage.show();
+
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+
+		/***************************************************************/
+//
+//		JFXTimePicker tpHora = new JFXTimePicker();
+//		Dialog<Examen> dialog = new Dialog<>();
+//		inicializarOperacion("INGRESAR EXAMEN");
+//		CarreraService cs = new CarreraService();
+//		JFXDatePicker datePickerFechaFX = new JFXDatePicker();
+//		ObservableList<Carrera> dataCarreras = FXCollections.observableArrayList();
+//		ObservableList<AsignaturaCarrera> dataAsignaturas = FXCollections.observableArrayList();
+//		List<Carrera> carreras = cs.listarCarrerasResponse();
+//		Label lblCarreras = new Label("Carrera");
+//		Label lblAsignatura = new Label("Asignatura");
+//		ComboBox<Carrera> cboCarreras = new ComboBox<>();
+//		ComboBox<AsignaturaCarrera> cboAsignaturas = new ComboBox<>();
+//		Examen examen = new Examen();
+//
+//		tpHora.setDefaultColor(Color.valueOf("#3f51b5"));
+//		tpHora.setOverLay(true);
+//
+//		Label lblFecha = new Label("Fecha");
+//		Label lblHora = new Label("Hora");
+//
+//		lblAsignatura.setVisible(false);
+//		lblFecha.setVisible(false);
+//		lblHora.setVisible(false);
+//		tpHora.setVisible(false);
+//		datePickerFechaFX.setVisible(false);
+//
+//		cboAsignaturas.setVisible(false);
+//
+//		GridPane grid = new GridPane();
+//
+//		dialog.setTitle("Ingresar Examen");
+//		dialog.setHeaderText("Ingresar Examen");
+//		dialog.setResizable(true);
+//
+//		if (carreras == null) {
+//			Alert alerta = new Alert(Alert.AlertType.INFORMATION);
+//			alerta.setTitle("Informacion");
+//			alerta.setContentText(
+//					"No existen carreras en el sistema por favor contactese con el director para que cree alguna");
+//			alerta.showAndWait();
+//		}else{
+//			dataCarreras.addAll(carreras);
+//			cboCarreras.getItems().addAll(dataCarreras);
+//			carrera = null;
+//			cboCarreras.setOnAction(new EventHandler<ActionEvent>() {
+//
+//				@Override
+//				public void handle(ActionEvent event) {
+//					carrera = cboCarreras.getSelectionModel().getSelectedItem();
+//					System.out.println("Carrera seleccionada: " + carrera.toString());
+//					if (carrera != null) {
+//						List<AsignaturaCarrera> asignaturasDeCarrera = carrera.getAsignaturaCarrera();
+//						cboAsignaturas.setVisible(true);
+//						if (asignaturasDeCarrera == null) {
+//							Alert alerta = new Alert(Alert.AlertType.INFORMATION);
+//							alerta.setTitle("Informacion");
+//							alerta.setContentText(
+//									"No existen asignaturas para la carrera seleccionada en el sistema por favor contactese con el director para que cree alguna");
+//							alerta.showAndWait();
+//						} else {
+//							//TODO: FIX BUG
+//							lblAsignatura.setVisible(true);
+//							dataAsignaturas.clear();
+//							dataAsignaturas.addAll(asignaturasDeCarrera);
+//							cboAsignaturas.getItems().clear();
+//							cboAsignaturas.getItems().addAll(dataAsignaturas);
+//							cboAsignaturas.setOnAction(new EventHandler<ActionEvent>() {
+//
+//								@Override
+//								public void handle(ActionEvent event) {
+//									nombreAsignatura = cboAsignaturas.getSelectionModel().getSelectedItem().getAsignatura().getNombre();
+//									lblFecha.setVisible(true);
+//									lblHora.setVisible(true);
+//									datePickerFechaFX.setVisible(true);
+//									tpHora.setVisible(true);
+//								}
+//							});
+//						}
+//					}else {
+//						Alert alerta = new Alert(Alert.AlertType.INFORMATION);
+//						alerta.setTitle("Informacion");
+//						alerta.setContentText("no hay carrera");
+//						alerta.showAndWait();
+//					}
+//				}
+//			});
+//		}
+//
+//		grid.add(lblCarreras, 1, 1);
+//		grid.add(cboCarreras, 2, 1);
+//		grid.add(lblAsignatura, 1, 2);
+//		grid.add(cboAsignaturas, 2, 2);
+//		grid.add(lblFecha, 1, 4);
+//		grid.add(datePickerFechaFX, 2, 4);
+//		grid.add(lblHora, 1, 5);
+//		grid.add(tpHora, 2, 5);
+//
+//		dialog.getDialogPane().setContent(grid);
+//		ButtonType buttonTypeOk = new ButtonType("Confirmar", ButtonData.OK_DONE);
+//		dialog.getDialogPane().getButtonTypes().add(buttonTypeOk);
+//		dialog.setResultConverter(new Callback<ButtonType, Examen>() {
+//			@Override
+//			public Examen call(ButtonType b) {
+//				if (b == buttonTypeOk) {
+//
+//					LocalDate localDate = datePickerFechaFX.getValue();
+//					Instant instant = Instant.from(localDate.atStartOfDay(ZoneId.systemDefault()));
+//					Date dateInicio = Date.from(instant);
+//					System.out.println(localDate + "\n" + instant + "\n" + dateInicio);
+//
+//					examen.setFecha(Date.from(instant));
+//
+//					examen.setHora(tpHora.getValue().toString());
+//					examen.setNombreAsignatura(nombreAsignatura);
+//					ExamenService cs = new ExamenService();
+//					alertConfirmacionIngresarExamen(cs.ingresarExamenResponse(examen));
+//				}
+//				return null;
+//			}
+//		});
+//		dialog.showAndWait();
 	}
 
 	private void alertConfirmacionIngresarExamen(ServerResponse respuesta) {
@@ -526,44 +687,117 @@ public class Prueba implements Initializable {
 	}
 
 	private void dialogIngresarHorario(Curso curso) {
-		Dialog<Horario> dialog = new Dialog<>();
 
-		GridPane grid = new GridPane();
+		Stage primaryStage = new Stage(StageStyle.DECORATED);
+		primaryStage.setHeight(300d);
+		try {
+			FlowPane main = new FlowPane();
+	        main.setVgap(20);
+	        main.setHgap(20);
 
-		Label lblDia = new Label("Dia");
-		Label lblHoraInicio = new Label("Hora inicio");
-		Label lblHoraFin = new Label("Hora fin");
+	        JFXTimePicker tpHoraInicio = new JFXTimePicker();
+	        JFXTimePicker tpHoraFin = new JFXTimePicker();
+			Label lblDia = new Label("Dia");
+			Label vacio1 = new Label("\t");
+			Label vacio2 = new Label("\t");
+			Label vacio3 = new Label("\t");
+			Label lblHoraInicio = new Label("Hora Inicio");
+			Label lblHoraFin = new Label("Hora Fin");
 
-		TextField txtDia = new TextField();
-		TextField txtHoraInicio = new TextField();
-		TextField txtHoraFin = new TextField();
+			ObservableList<String> dataDias = FXCollections.observableArrayList();
+			dataDias.add("Lunes");
+			dataDias.add("Martes");
+			dataDias.add("Miercoles");
+			dataDias.add("Jueves");
+			dataDias.add("Viernes");
 
-		dialog.setTitle("Horarios");
-		dialog.setHeaderText("Ingreso de nuevo horario");
-		dialog.setResizable(true);
+			JFXComboBox<String> cboDia = new JFXComboBox<>(dataDias);
 
-		grid.add(lblDia, 1, 1);
-		grid.add(txtDia, 2, 1);
-		grid.add(lblHoraInicio, 1, 2);
-		grid.add(txtHoraInicio, 2, 2);
-		grid.add(lblHoraFin, 1, 3);
-		grid.add(txtHoraFin, 2, 3);
+			tpHoraInicio.setDefaultColor(Color.valueOf("#3f51b5"));
+			tpHoraInicio.setOverLay(true);
+			tpHoraFin.setDefaultColor(Color.valueOf("#3f51b5"));
+			tpHoraFin.setOverLay(true);
 
-		dialog.getDialogPane().setContent(grid);
-		ButtonType buttonTypeOk = new ButtonType("Confirmar", ButtonData.OK_DONE);
-		dialog.getDialogPane().getButtonTypes().add(buttonTypeOk);
-		dialog.setResultConverter(new Callback<ButtonType, Horario>() {
-			@Override
-			public Horario call(ButtonType b) {
-				if (b == buttonTypeOk) {
-					Variables.getLstHorarios()
-							.add(new Horario(txtDia.getText(), txtHoraFin.getText(), txtHoraInicio.getText()));
-					alertConfirmacionIngresarHorario(true, curso);
+			GridPane grid = new GridPane();
+
+			grid.add(lblDia, 1, 1);
+			grid.add(vacio1, 2, 1);
+			grid.add(cboDia, 3, 1);
+			grid.add(lblHoraInicio, 1, 2);
+			grid.add(vacio2, 2, 2);
+			grid.add(tpHoraInicio, 3, 2);
+			grid.add(lblHoraFin, 1, 3);
+			grid.add(vacio3, 2, 3);
+			grid.add(tpHoraFin, 3, 3);
+
+			JFXButton btnModificar = new JFXButton("Ingresar");
+			btnModificar.setStyle("-fx-background-color: green; -fx-pref-width: 100px; -fx-pref-height: 30px;");
+
+			btnModificar.setOnAction(new EventHandler<ActionEvent>() {
+
+				@Override
+				public void handle(ActionEvent event) {
+		    		Variables.getLstHorarios().add(new Horario(cboDia.getSelectionModel().getSelectedItem(),tpHoraFin.getValue().toString(),tpHoraInicio.getValue().toString()));
+		    		alertConfirmacionIngresarHorario(true, curso);
 				}
-				return null;
-			}
-		});
-		dialog.showAndWait();
+			});
+
+			main.getChildren().add(grid);
+			main.getChildren().add(btnModificar);
+
+	        StackPane pane = new StackPane();
+	        pane.getChildren().add(main);
+	        StackPane.setMargin(main, new Insets(100));
+	        pane.setStyle("-fx-background-color:WHITE");
+
+	        final Scene scene = new Scene(pane, 400, 700);
+
+	        primaryStage.setTitle("Ingreso de nuevo horario");
+	        primaryStage.setScene(scene);
+	        primaryStage.show();
+
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+
+//		Dialog<Horario> dialog = new Dialog<>();
+//
+//		GridPane grid = new GridPane();
+//
+//		Label lblDia = new Label("Dia");
+//		Label lblHoraInicio = new Label("Hora inicio");
+//		Label lblHoraFin = new Label("Hora fin");
+//
+//		TextField txtDia = new TextField();
+//		TextField txtHoraInicio = new TextField();
+//		TextField txtHoraFin = new TextField();
+//
+//		dialog.setTitle("Horarios");
+//		dialog.setHeaderText("Ingreso de nuevo horario");
+//		dialog.setResizable(true);
+//
+//		grid.add(lblDia, 1, 1);
+//		grid.add(txtDia, 2, 1);
+//		grid.add(lblHoraInicio, 1, 2);
+//		grid.add(txtHoraInicio, 2, 2);
+//		grid.add(lblHoraFin, 1, 3);
+//		grid.add(txtHoraFin, 2, 3);
+//
+//		dialog.getDialogPane().setContent(grid);
+//		ButtonType buttonTypeOk = new ButtonType("Confirmar", ButtonData.OK_DONE);
+//		dialog.getDialogPane().getButtonTypes().add(buttonTypeOk);
+//		dialog.setResultConverter(new Callback<ButtonType, Horario>() {
+//			@Override
+//			public Horario call(ButtonType b) {
+//				if (b == buttonTypeOk) {
+//					Variables.getLstHorarios()
+//							.add(new Horario(txtDia.getText(), txtHoraFin.getText(), txtHoraInicio.getText()));
+//					alertConfirmacionIngresarHorario(true, curso);
+//				}
+//				return null;
+//			}
+//		});
+//		dialog.showAndWait();
 	}
 
 	private void alertConfirmacionIngresarHorario(boolean respuesta, Curso curso) {
@@ -652,57 +886,145 @@ public class Prueba implements Initializable {
 		dialogo.showAndWait();
 	}
 
+	@SuppressWarnings("deprecation")
 	private void dialogModificarHorario(Curso curso) {
-		Dialog<Horario> dialog = new Dialog<>();
-		Label lblDia = new Label("Dia");
-		Label lblHoraInicio = new Label("Hora de Inicio");
-		Label lblHoraFin = new Label("Hora de Finalizacion");
-		GridPane grid = new GridPane();
 
-		if (getTablaHorarios().getSelectionModel().getSelectedItem() == null) {
-			Alert alerta = new Alert(Alert.AlertType.INFORMATION);
-			alerta.setTitle("Informacion");
-			alerta.setContentText("Debes de seleccionar una fila antes de proceder a editar el horario");
-			alerta.showAndWait();
-		} else {
-			int index = getTablaHorarios().getSelectionModel().getSelectedIndex();
-			TextField txtDia = new TextField(
-					getTablaHorarios().getSelectionModel().getSelectedItem().getColDiaHorario());
-			TextField txtHoraInicio = new TextField(
-					getTablaHorarios().getSelectionModel().getSelectedItem().getColHoraInicioHorario());
-			TextField txtHoraFin = new TextField(
-					getTablaHorarios().getSelectionModel().getSelectedItem().getColHoraFinHorario());
+		Stage primaryStage = new Stage(StageStyle.DECORATED);
+		primaryStage.setHeight(300d);
+		try {
+			FlowPane main = new FlowPane();
+	        main.setVgap(20);
+	        main.setHgap(20);
 
-			dialog.setTitle("Modificacion del horario del dia "
-					+ getTablaHorarios().getSelectionModel().getSelectedItem().getColDiaHorario());
-			dialog.setHeaderText("Modificacion del horario del dia "
-					+ getTablaHorarios().getSelectionModel().getSelectedItem().getColDiaHorario());
-			dialog.setResizable(true);
+	        JFXTimePicker tpHoraInicio = new JFXTimePicker();
+	        JFXTimePicker tpHoraFin = new JFXTimePicker();
+			Label lblDia = new Label("Dia");
+			Label vacio1 = new Label("\t");
+			Label vacio2 = new Label("\t");
+			Label vacio3 = new Label("\t");
+			Label lblHoraInicio = new Label("Hora Inicio");
+			Label lblHoraFin = new Label("Hora Fin");
+
+			ObservableList<String> dataDias = FXCollections.observableArrayList();
+			dataDias.add("Lunes");
+			dataDias.add("Martes");
+			dataDias.add("Miercoles");
+			dataDias.add("Jueves");
+			dataDias.add("Viernes");
+
+			JFXComboBox<String> cboDia = new JFXComboBox<>(dataDias);
+
+			SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+
+			try {
+				Date timeInicio = sdf.parse(getTablaHorarios().getSelectionModel().getSelectedItem().getColHoraInicioHorario());
+				tpHoraInicio.setValue(LocalTime.of(timeInicio.getHours(), timeInicio.getMinutes()));
+				Date timeFin = sdf.parse(getTablaHorarios().getSelectionModel().getSelectedItem().getColHoraInicioHorario());
+				tpHoraInicio.setValue(LocalTime.of(timeFin.getHours(), timeFin.getMinutes()));
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
+
+			tpHoraInicio.setDefaultColor(Color.valueOf("#3f51b5"));
+			tpHoraInicio.setOverLay(true);
+			tpHoraFin.setDefaultColor(Color.valueOf("#3f51b5"));
+			tpHoraFin.setOverLay(true);
+
+			GridPane grid = new GridPane();
 
 			grid.add(lblDia, 1, 1);
-			grid.add(txtDia, 2, 1);
+			grid.add(vacio1, 2, 1);
+			grid.add(cboDia, 3, 1);
 			grid.add(lblHoraInicio, 1, 2);
-			grid.add(txtHoraInicio, 2, 2);
+			grid.add(vacio2, 2, 2);
+			grid.add(tpHoraInicio, 3, 2);
 			grid.add(lblHoraFin, 1, 3);
-			grid.add(txtHoraFin, 2, 3);
+			grid.add(vacio3, 2, 3);
+			grid.add(tpHoraFin, 3, 3);
 
-			dialog.getDialogPane().setContent(grid);
-			ButtonType buttonTypeOk = new ButtonType("Confirmar", ButtonData.OK_DONE);
-			dialog.getDialogPane().getButtonTypes().add(buttonTypeOk);
-			dialog.setResultConverter(new Callback<ButtonType, Horario>() {
+			JFXButton btnModificar = new JFXButton("Modificar");
+			btnModificar.setStyle("-fx-background-color: green; -fx-pref-width: 100px; -fx-pref-height: 30px;");
+
+			btnModificar.setOnAction(new EventHandler<ActionEvent>() {
+
 				@Override
-				public Horario call(ButtonType b) {
-					if (b == buttonTypeOk) {
-						Variables.getLstHorarios().get(index).setDia(txtDia.getText());
-						Variables.getLstHorarios().get(index).setHoraInicio(txtHoraInicio.getText());
-						Variables.getLstHorarios().get(index).setHoraFin(txtHoraFin.getText());
-						alertConfirmacionModificarHorario(true, curso);
-					}
-					return null;
+				public void handle(ActionEvent event) {
+					int index = getTablaHorarios().getSelectionModel().getSelectedIndex();
+					Variables.getLstHorarios().get(index).setDia(cboDia.getSelectionModel().getSelectedItem());
+		    		Variables.getLstHorarios().get(index).setHoraInicio(tpHoraInicio.getValue().toString());
+		    		Variables.getLstHorarios().get(index).setHoraFin(tpHoraFin.getValue().toString());
+		    		alertConfirmacionModificarHorario(true, curso);
 				}
 			});
-			dialog.showAndWait();
+
+			main.getChildren().add(grid);
+			main.getChildren().add(btnModificar);
+
+	        StackPane pane = new StackPane();
+	        pane.getChildren().add(main);
+	        StackPane.setMargin(main, new Insets(100));
+	        pane.setStyle("-fx-background-color:WHITE");
+
+	        final Scene scene = new Scene(pane, 400, 700);
+
+	        primaryStage.setTitle("Modificacion del horario del dia " + getTablaHorarios().getSelectionModel().getSelectedItem().getColDiaHorario());
+	        primaryStage.setScene(scene);
+	        primaryStage.show();
+
+		} catch(Exception e) {
+			e.printStackTrace();
 		}
+
+//		Dialog<Horario> dialog = new Dialog<>();
+//		Label lblDia = new Label("Dia");
+//		Label lblHoraInicio = new Label("Hora de Inicio");
+//		Label lblHoraFin = new Label("Hora de Finalizacion");
+//		GridPane grid = new GridPane();
+//
+//		if (getTablaHorarios().getSelectionModel().getSelectedItem() == null) {
+//			Alert alerta = new Alert(Alert.AlertType.INFORMATION);
+//			alerta.setTitle("Informacion");
+//			alerta.setContentText("Debes de seleccionar una fila antes de proceder a editar el horario");
+//			alerta.showAndWait();
+//		} else {
+//			int index = getTablaHorarios().getSelectionModel().getSelectedIndex();
+//			TextField txtDia = new TextField(
+//					getTablaHorarios().getSelectionModel().getSelectedItem().getColDiaHorario());
+//			TextField txtHoraInicio = new TextField(
+//					getTablaHorarios().getSelectionModel().getSelectedItem().getColHoraInicioHorario());
+//			TextField txtHoraFin = new TextField(
+//					getTablaHorarios().getSelectionModel().getSelectedItem().getColHoraFinHorario());
+//
+//			dialog.setTitle("Modificacion del horario del dia "
+//					+ getTablaHorarios().getSelectionModel().getSelectedItem().getColDiaHorario());
+//			dialog.setHeaderText("Modificacion del horario del dia "
+//					+ getTablaHorarios().getSelectionModel().getSelectedItem().getColDiaHorario());
+//			dialog.setResizable(true);
+//
+//			grid.add(lblDia, 1, 1);
+//			grid.add(txtDia, 2, 1);
+//			grid.add(lblHoraInicio, 1, 2);
+//			grid.add(txtHoraInicio, 2, 2);
+//			grid.add(lblHoraFin, 1, 3);
+//			grid.add(txtHoraFin, 2, 3);
+//
+//			dialog.getDialogPane().setContent(grid);
+//			ButtonType buttonTypeOk = new ButtonType("Confirmar", ButtonData.OK_DONE);
+//			dialog.getDialogPane().getButtonTypes().add(buttonTypeOk);
+//			dialog.setResultConverter(new Callback<ButtonType, Horario>() {
+//				@Override
+//				public Horario call(ButtonType b) {
+//					if (b == buttonTypeOk) {
+//						Variables.getLstHorarios().get(index).setDia(txtDia.getText());
+//						Variables.getLstHorarios().get(index).setHoraInicio(txtHoraInicio.getText());
+//						Variables.getLstHorarios().get(index).setHoraFin(txtHoraFin.getText());
+//						alertConfirmacionModificarHorario(true, curso);
+//					}
+//					return null;
+//				}
+//			});
+//			dialog.showAndWait();
+//		}
 	}
 
 	private void alertConfirmacionModificarHorario(boolean respuesta, Curso curso) {

@@ -20,13 +20,11 @@ import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.itextpdf.text.pdf.draw.DottedLineSeparator;
-import com.proyecto.tecnobedelias_desktop.global.Variables;
 import com.proyecto.tecnobedelias_desktop.model.Actividad;
 import com.proyecto.tecnobedelias_desktop.model.Curso_Estudiante;
 import com.proyecto.tecnobedelias_desktop.model.Estudiante_Examen;
 import java.io.*;
 import java.text.DateFormat;
-import java.text.ParseException;
 
 /**
  * Example of using the iText library to work with PDF documents on Java, lets
@@ -47,8 +45,8 @@ public class GeneratePDFFileIText {
 	private static final Font escolarityTitleFont = new Font(Font.FontFamily.TIMES_ROMAN, 18, Font.BOLDITALIC + Font.UNDERLINE);
 	private static final Font escolaritySubTitleFont = new Font(Font.FontFamily.TIMES_ROMAN, 14, Font.ITALIC + Font.UNDERLINE);
 	private static final Font escolarityStudentFont = new Font(Font.FontFamily.TIMES_ROMAN, 20, Font.BOLD);
-	private static final Font blueFont = new Font(Font.FontFamily.TIMES_ROMAN, 12, Font.NORMAL, BaseColor.RED);
-	private static final Font smallBold = new Font(Font.FontFamily.TIMES_ROMAN, 12, Font.BOLD);
+//	private static final Font blueFont = new Font(Font.FontFamily.TIMES_ROMAN, 12, Font.NORMAL, BaseColor.RED);
+//	private static final Font smallBold = new Font(Font.FontFamily.TIMES_ROMAN, 12, Font.BOLD);
 
 	private static final String iTextExampleImage = "src/resources/images/TecnoBedeliasLogoPrincipal.PNG";
 

@@ -11,7 +11,6 @@ import com.proyecto.tecnobedelias_desktop.model.Estudiante_Examen;
 import com.proyecto.tecnobedelias_desktop.model.Examen;
 import com.proyecto.tecnobedelias_desktop.model.ServerResponse;
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 

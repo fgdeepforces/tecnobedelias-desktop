@@ -1,11 +1,8 @@
 package com.proyecto.tecnobedelias_desktop.model;
 
-import java.text.DateFormat;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import com.proyecto.tecnobedelias_desktop.global.Variables;
 
 public class Examen {
 
