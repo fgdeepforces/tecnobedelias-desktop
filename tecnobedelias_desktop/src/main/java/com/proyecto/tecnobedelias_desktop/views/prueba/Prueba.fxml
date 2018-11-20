@@ -60,6 +60,7 @@
                                     <TableColumn fx:id="colEliminarCursos" prefWidth="75.0" />
                                     <TableColumn fx:id="colActaCursos" prefWidth="75.0" />
                                     <TableColumn fx:id="colCargarCalificacionesCursos" prefWidth="75.0" />
+                                    <TableColumn fx:id="colEstudiantesCursos" prefWidth="75.0" />
                                 </columns>
                                  <columnResizePolicy>
                                     <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
@@ -88,6 +89,7 @@
                                     <TableColumn fx:id="colEliminarExamenes" prefWidth="75.0" />
                                     <TableColumn fx:id="colActaExamenes" prefWidth="75.0" />
                                     <TableColumn fx:id="colCargarCalificacionesExamenes" prefWidth="75.0" />
+                                    <TableColumn fx:id="colEstudiantesExamenes" prefWidth="75.0" />
                                  </columns>
                               </TableView>
                            </center>

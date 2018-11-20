@@ -62,6 +62,7 @@ public class TablaCurso {
 	private ObjectProperty<JFXButton> colHorarios;
 	private ObjectProperty<JFXButton> colEditar;
 	private ObjectProperty<JFXButton> colEliminar;
+	private ObjectProperty<JFXButton> colEstudiantes;
 	private ObjectProperty<JFXButton> colActa;
 	private ObjectProperty<JFXButton> colCargarCalificaciones;
 
@@ -69,7 +70,9 @@ public class TablaCurso {
 	private JFXButton colEliminarHorario;
 
 	private ObservableList<TablaHorario> dataHorario = FXCollections.observableArrayList();
+	private ObservableList<TablaEstudiantes> dataEstudiantes = FXCollections.observableArrayList();
 	private TableView<TablaHorario> tablaHorarios = new TableView<>();
+	private TableView<TablaEstudiantes> tablaEstudiantes = new TableView<>();
 
 	static Label lblNombreEstudiante = null;
 	static TextField txtNota = null;
@@ -218,7 +221,7 @@ public class TablaCurso {
 			ObjectProperty<Date> colFechaInicio, ObjectProperty<Date> colFechaFin, SimpleStringProperty colSemestre,
 			ObjectProperty<JFXButton> colHorarios, ObjectProperty<JFXButton> colEditar,
 			ObjectProperty<JFXButton> colEliminar, ObjectProperty<JFXButton> colActa,
-			ObjectProperty<JFXButton> colCargarCalificaciones) {
+			ObjectProperty<JFXButton> colCargarCalificaciones, ObjectProperty<JFXButton> colEstudiantes) {
 		super();
 		this.colId = colId;
 		this.colAsignatura = colAsignatura;
@@ -229,6 +232,7 @@ public class TablaCurso {
 		this.colHorarios = colHorarios;
 		this.colEditar = colEditar;
 		this.colEliminar = colEliminar;
+		this.colEstudiantes = colEstudiantes;
 		this.colActa = colActa;
 		this.colCargarCalificaciones = colCargarCalificaciones;
 	}
@@ -245,12 +249,14 @@ public class TablaCurso {
 		this.colEliminar = new SimpleObjectProperty<JFXButton>(new JFXButton("Eliminar"));
 		this.colActa = new SimpleObjectProperty<JFXButton>(new JFXButton("Acta"));
 		this.colCargarCalificaciones = new SimpleObjectProperty<JFXButton>(new JFXButton("Cargar Calificaciones"));
+		this.colEstudiantes = new SimpleObjectProperty<JFXButton>(new JFXButton("Estudiantes"));
 
 		this.colHorarios.get().setStyle("-fx-background-color: green; -fx-pref-width: 130px; -fx-pref-height: 40px;");
 		this.colEditar.get().setStyle("-fx-background-color: yellow; -fx-pref-width: 130px; -fx-pref-height: 40px;");
 		this.colEliminar.get().setStyle("-fx-background-color: red; -fx-pref-width: 130px; -fx-pref-height: 40px;");
 		this.colActa.get().setStyle("-fx-background-color: blue; -fx-pref-width: 130px; -fx-pref-height: 40px;");
 		this.colCargarCalificaciones.get().setStyle("-fx-background-color: orange; -fx-pref-width: 130px; -fx-pref-height: 40px;");
+		this.colEstudiantes.get().setStyle("-fx-background-color: green; -fx-pref-width: 130px; -fx-pref-height: 40px;");
 
 		this.colHorarios.get().setOnAction(new EventHandler<ActionEvent>() {
 			@Override
@@ -301,6 +307,13 @@ public class TablaCurso {
 			@Override
 			public void handle(ActionEvent event) {
 				dialogCargarCalificacionesCurso();
+			}
+		});
+
+		this.colEstudiantes.get().setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				alertEstudiantesCurso();
 			}
 		});
 
@@ -616,6 +629,27 @@ public class TablaCurso {
 		getTablaHorarios().setItems(getDataHorario());
 	}
 
+	public void actualizarDatosTablaEstudiante() {
+		getDataEstudiantes().clear();
+		List<Curso> lstCursos = Prueba.getLstCurso();
+		if(lstCursos != null) {
+			if(!lstCursos.isEmpty()) {
+				Curso curso = lstCursos.stream().filter(c -> c.getId() == Integer.parseInt(getColId())).findFirst().get();
+				if(curso != null) {
+					Variables.setLstEstudiantes(curso.getCursoEstudiante());
+					if(Variables.getLstEstudiantes() != null) {
+						Variables.getLstEstudiantes().forEach(estudiante -> {
+							TablaEstudiantes entry = new TablaEstudiantes(estudiante.getCedula(), estudiante.getApellido().toUpperCase() + ", " + estudiante.getNombre().toUpperCase());
+							getDataEstudiantes().add(entry);
+						});
+					}
+				}
+			}
+		}
+		getTablaEstudiantes().setItems(getDataEstudiantes());
+	}
+
+
 	private void alertConfirmacionModificarCurso(ServerResponse respuesta) {
 		Alert dialogo = new Alert(Alert.AlertType.INFORMATION);
 		dialogo.setTitle("Modificacion del Curso");
@@ -726,6 +760,33 @@ public class TablaCurso {
 		dialogo.showAndWait();
 	}
 
+	@SuppressWarnings("unchecked")
+	private void alertEstudiantesCurso() {
+
+		Dialog<List<Estudiante>> dialogo = new Dialog<>();
+		dialogo.setTitle("Estudiantes del Curso");
+		dialogo.setHeaderText("Estudiantes del Curso");
+		dialogo.setResizable(true);
+
+		TableColumn<TablaEstudiantes, String> colEstudiante_ci = new TableColumn<>("Cedula");
+		TableColumn<TablaEstudiantes, String> colEstudiante_nombre = new TableColumn<>("Nombre");
+		getTablaEstudiantes().getColumns().clear();
+		getTablaEstudiantes().getColumns().addAll(colEstudiante_ci, colEstudiante_nombre);
+
+		try {
+			colEstudiante_ci.setCellValueFactory(new PropertyValueFactory<TablaEstudiantes, String>("colCedulaEstudiante"));
+			colEstudiante_nombre.setCellValueFactory(new PropertyValueFactory<TablaEstudiantes, String>("colNombreEstudiante"));
+		} catch (NullPointerException e) {
+			e.printStackTrace();
+		}
+
+		actualizarDatosTablaEstudiante();
+		dialogo.getDialogPane().setContent(getTablaEstudiantes());
+		ButtonType buttonTypeOk = new ButtonType("Volver", ButtonData.BACK_PREVIOUS);
+		dialogo.getDialogPane().getButtonTypes().add(buttonTypeOk);
+		dialogo.showAndWait();
+	}
+
 	private void alertConfirmacionCargarCalificacionesCurso(ServerResponse respuesta) {
 		Alert dialogo = new Alert(Alert.AlertType.INFORMATION);
 		dialogo.setTitle("Calificaciones del Curso");
@@ -830,6 +891,14 @@ public class TablaCurso {
 		this.colCargarCalificaciones.set(colCargarCalificaciones);
 	}
 
+	public JFXButton getColEstudiantes() {
+		return this.colEstudiantes.get();
+	}
+
+	public void setColEstudiantes(JFXButton colEstudiantes) {
+		this.colEstudiantes.set(colEstudiantes);
+	}
+
 	public ObservableList<TablaHorario> getDataHorario() {
 		return dataHorario;
 	}
@@ -844,6 +913,22 @@ public class TablaCurso {
 
 	public void setTablaHorarios(TableView<TablaHorario> tablaHorarios) {
 		this.tablaHorarios = tablaHorarios;
+	}
+
+	public TableView<TablaEstudiantes> getTablaEstudiantes() {
+		return tablaEstudiantes;
+	}
+
+	public void setTablaEstudiantes(TableView<TablaEstudiantes> tablaEstudiantes) {
+		this.tablaEstudiantes = tablaEstudiantes;
+	}
+
+	public ObservableList<TablaEstudiantes> getDataEstudiantes() {
+		return dataEstudiantes;
+	}
+
+	public void setDataEstudiantes(ObservableList<TablaEstudiantes> dataEstudiantes) {
+		this.dataEstudiantes = dataEstudiantes;
 	}
 
 }

@@ -137,6 +137,8 @@ public class Prueba implements Initializable {
 	TableColumn<TablaCurso, String> colActaCursos;
 	@FXML
 	TableColumn<TablaCurso, String> colCargarCalificacionesCursos;
+	@FXML
+	TableColumn<TablaCurso, String> colEstudiantesCursos;
 
 	@FXML
 	TableView<TablaExamen> tablaExamenes;
@@ -156,6 +158,8 @@ public class Prueba implements Initializable {
 	TableColumn<TablaExamen, String> colActaExamenes;
 	@FXML
 	TableColumn<TablaExamen, String> colCargarCalificacionesExamenes;
+	@FXML
+	TableColumn<TablaExamen, String> colEstudiantesExamenes;
 
 	final static ObservableList<TablaCurso> dataCurso = FXCollections.observableArrayList();
 	final static ObservableList<TablaExamen> dataExamen = FXCollections.observableArrayList();
@@ -1111,6 +1115,7 @@ public class Prueba implements Initializable {
 			colActaCursos.setCellValueFactory(new PropertyValueFactory<TablaCurso, String>("colActa"));
 			colCargarCalificacionesCursos
 					.setCellValueFactory(new PropertyValueFactory<TablaCurso, String>("colCargarCalificaciones"));
+			colEstudiantesCursos.setCellValueFactory(new PropertyValueFactory<TablaCurso, String>("colEstudiantes"));
 		} catch (NullPointerException e) {
 			e.printStackTrace();
 		}
@@ -1147,6 +1152,7 @@ public class Prueba implements Initializable {
 			colActaExamenes.setCellValueFactory(new PropertyValueFactory<TablaExamen, String>("colActaExamen"));
 			colCargarCalificacionesExamenes.setCellValueFactory(
 					new PropertyValueFactory<TablaExamen, String>("colCargarCalificacionesExamen"));
+			colEstudiantesExamenes.setCellValueFactory(new PropertyValueFactory<TablaExamen, String>("colEstudiantesExamen"));
 		} catch (NullPointerException e) {
 			e.printStackTrace();
 		}

@@ -16,21 +16,27 @@ import java.util.List;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXDatePicker;
 import com.jfoenix.controls.JFXTimePicker;
+import com.proyecto.tecnobedelias_desktop.global.Variables;
 import com.proyecto.tecnobedelias_desktop.service.ExamenService;
 import com.proyecto.tecnobedelias_desktop.utils.GeneratePDFFileIText;
 import com.proyecto.tecnobedelias_desktop.views.prueba.Prueba;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonBar.ButtonData;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
@@ -48,8 +54,12 @@ public class TablaExamen {
 	private SimpleStringProperty colHoraExamen;
 	private ObjectProperty<JFXButton> colEditarExamen;
 	private ObjectProperty<JFXButton> colEliminarExamen;
+	private ObjectProperty<JFXButton> colEstudiantesExamen;
 	private ObjectProperty<JFXButton> colActaExamen;
 	private ObjectProperty<JFXButton> colCargarCalificacioensExamen;
+
+	private ObservableList<TablaEstudiantes> dataEstudiantes = FXCollections.observableArrayList();
+	private TableView<TablaEstudiantes> tablaEstudiantes = new TableView<>();
 
 	static Label lblNombreEstudiante = null;
 	static TextField txtNota = null;
@@ -163,7 +173,7 @@ public class TablaExamen {
 	}
 
 	public TablaExamen(String colIdExamen, String colAsignaturaExamen, Date colFechaExamen, String colHoraExamen, JFXButton colEditarExamen,
-			JFXButton colEliminarExamen, JFXButton colActaExamen, JFXButton colCargarCalificacioensExamen) {
+			JFXButton colEliminarExamen, JFXButton colActaExamen, JFXButton colCargarCalificacioensExamen, JFXButton colEstudiantesExamen) {
 		super();
 		this.colIdExamen = new SimpleStringProperty(colIdExamen);
 		this.colAsignaturaExamen = new SimpleStringProperty(colAsignaturaExamen);
@@ -173,6 +183,7 @@ public class TablaExamen {
 		this.colEliminarExamen = new SimpleObjectProperty<JFXButton>(colEliminarExamen);
 		this.colActaExamen = new SimpleObjectProperty<JFXButton>(colActaExamen);
 		this.colCargarCalificacioensExamen = new SimpleObjectProperty<JFXButton>(colCargarCalificacioensExamen);
+		this.colEstudiantesExamen = new SimpleObjectProperty<JFXButton>(colEstudiantesExamen);
 	}
 
 	public TablaExamen(String colIdExamen, String colAsignaturaExamen, Date colFechaExamen, String colHoraExamen) {
@@ -185,11 +196,13 @@ public class TablaExamen {
 		this.colEliminarExamen = new SimpleObjectProperty<JFXButton>(new JFXButton("Eliminar"));
 		this.colActaExamen = new SimpleObjectProperty<JFXButton>(new JFXButton("Acta"));
 		this.colCargarCalificacioensExamen = new SimpleObjectProperty<JFXButton>(new JFXButton("Cargar Calificaciones"));
+		this.colEstudiantesExamen = new SimpleObjectProperty<JFXButton>(new JFXButton("Estudiantes"));
 
-		this.colEditarExamen.get().setStyle("-fx-background-color: yellow; -fx-pref-width: 130px; -fx-pref-height: 50px;");
-		this.colEliminarExamen.get().setStyle("-fx-background-color: red; -fx-pref-width: 130px; -fx-pref-height: 50px;");
-		this.colActaExamen.get().setStyle("-fx-background-color: blue; -fx-pref-width: 130px; -fx-pref-height: 50px;");
-		this.colCargarCalificacioensExamen.get().setStyle("-fx-background-color: orange; -fx-pref-width: 130px; -fx-pref-height: 50px;");
+		this.colEditarExamen.get().setStyle("-fx-background-color: yellow; -fx-pref-width: 130px; -fx-pref-height: 40px;");
+		this.colEliminarExamen.get().setStyle("-fx-background-color: red; -fx-pref-width: 130px; -fx-pref-height: 40px;");
+		this.colActaExamen.get().setStyle("-fx-background-color: blue; -fx-pref-width: 130px; -fx-pref-height: 40px;");
+		this.colCargarCalificacioensExamen.get().setStyle("-fx-background-color: orange; -fx-pref-width: 130px; -fx-pref-height: 40px;");
+		this.colEstudiantesExamen.get().setStyle("-fx-background-color: green; -fx-pref-width: 130px; -fx-pref-height: 40px;");
 
 		this.colEditarExamen.get().setOnAction(new EventHandler<ActionEvent>() {
 			@Override
@@ -266,6 +279,13 @@ public class TablaExamen {
 			}
 		});
 
+		this.colEstudiantesExamen.get().setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				alertEstudiantesExamen();
+			}
+		});
+
 		Date now = new Date();
 		if(getColFechaExamen().after(now)) {
 			getColCargarCalificacionesExamen().setDisable(true);
@@ -330,6 +350,53 @@ public class TablaExamen {
 		    }
 		});
 		dialog.showAndWait();
+	}
+
+	@SuppressWarnings("unchecked")
+	private void alertEstudiantesExamen() {
+
+		Dialog<List<Estudiante>> dialogo = new Dialog<>();
+		dialogo.setTitle("Estudiantes del Examen");
+		dialogo.setHeaderText("Estudiantes del Examen");
+		dialogo.setResizable(true);
+
+		TableColumn<TablaEstudiantes, String> colEstudiante_ci = new TableColumn<>("Cedula");
+		TableColumn<TablaEstudiantes, String> colEstudiante_nombre = new TableColumn<>("Nombre");
+		getTablaEstudiantes().getColumns().clear();
+		getTablaEstudiantes().getColumns().addAll(colEstudiante_ci, colEstudiante_nombre);
+
+		try {
+			colEstudiante_ci.setCellValueFactory(new PropertyValueFactory<TablaEstudiantes, String>("colCedulaEstudiante"));
+			colEstudiante_nombre.setCellValueFactory(new PropertyValueFactory<TablaEstudiantes, String>("colNombreEstudiante"));
+		} catch (NullPointerException e) {
+			e.printStackTrace();
+		}
+
+		actualizarDatosTablaEstudiante();
+		dialogo.getDialogPane().setContent(getTablaEstudiantes());
+		ButtonType buttonTypeOk = new ButtonType("Volver", ButtonData.BACK_PREVIOUS);
+		dialogo.getDialogPane().getButtonTypes().add(buttonTypeOk);
+		dialogo.showAndWait();
+	}
+
+	public void actualizarDatosTablaEstudiante() {
+		getDataEstudiantes().clear();
+		List<Examen> lstExamenes = Prueba.getLstExamen();
+		if(lstExamenes != null) {
+			if(!lstExamenes.isEmpty()) {
+				Examen examen = lstExamenes.stream().filter(e -> e.getId() == Integer.parseInt(getColIdExamen())).findFirst().get();
+				if(examen != null) {
+					Variables.setLstEstudiantesExamen(examen.getEstudianteExamen());
+					if(Variables.getLstEstudiantes() != null) {
+						Variables.getLstEstudiantes().forEach(estudiante -> {
+							TablaEstudiantes entry = new TablaEstudiantes(estudiante.getCedula(), estudiante.getApellido().toUpperCase() + ", " + estudiante.getNombre().toUpperCase());
+							getDataEstudiantes().add(entry);
+						});
+					}
+				}
+			}
+		}
+		getTablaEstudiantes().setItems(getDataEstudiantes());
 	}
 
 	private void alertConfirmacionCargarCalificacionesExamen(ServerResponse respuesta) {
@@ -421,6 +488,30 @@ public class TablaExamen {
 
 	public void setColCargarCalificacionesExamen(JFXButton colCargarCalificacioensExamen) {
 		this.colCargarCalificacioensExamen.set(colCargarCalificacioensExamen);
+	}
+
+	public JFXButton getColEstudiantesExamen() {
+		return this.colEstudiantesExamen.get();
+	}
+
+	public void setColEstudiantesExamen(JFXButton colEstudiantesExamen) {
+		this.colEstudiantesExamen.set(colEstudiantesExamen);
+	}
+
+	public ObservableList<TablaEstudiantes> getDataEstudiantes() {
+		return dataEstudiantes;
+	}
+
+	public void setDataEstudiantes(ObservableList<TablaEstudiantes> dataEstudiantes) {
+		this.dataEstudiantes = dataEstudiantes;
+	}
+
+	public TableView<TablaEstudiantes> getTablaEstudiantes() {
+		return tablaEstudiantes;
+	}
+
+	public void setTablaEstudiantes(TableView<TablaEstudiantes> tablaEstudiantes) {
+		this.tablaEstudiantes = tablaEstudiantes;
 	}
 
 }
