@@ -248,15 +248,15 @@ public class TablaCurso {
 		this.colEditar = new SimpleObjectProperty<JFXButton>(new JFXButton("Editar"));
 		this.colEliminar = new SimpleObjectProperty<JFXButton>(new JFXButton("Eliminar"));
 		this.colActa = new SimpleObjectProperty<JFXButton>(new JFXButton("Acta"));
-		this.colCargarCalificaciones = new SimpleObjectProperty<JFXButton>(new JFXButton("Cargar Calificaciones"));
+		this.colCargarCalificaciones = new SimpleObjectProperty<JFXButton>(new JFXButton("Calificaciones"));
 		this.colEstudiantes = new SimpleObjectProperty<JFXButton>(new JFXButton("Estudiantes"));
 
-		this.colHorarios.get().setStyle("-fx-background-color: green; -fx-pref-width: 130px; -fx-pref-height: 40px;");
-		this.colEditar.get().setStyle("-fx-background-color: yellow; -fx-pref-width: 130px; -fx-pref-height: 40px;");
-		this.colEliminar.get().setStyle("-fx-background-color: red; -fx-pref-width: 130px; -fx-pref-height: 40px;");
-		this.colActa.get().setStyle("-fx-background-color: blue; -fx-pref-width: 130px; -fx-pref-height: 40px;");
-		this.colCargarCalificaciones.get().setStyle("-fx-background-color: orange; -fx-pref-width: 130px; -fx-pref-height: 40px;");
-		this.colEstudiantes.get().setStyle("-fx-background-color: green; -fx-pref-width: 130px; -fx-pref-height: 40px;");
+		this.colHorarios.get().setStyle("-fx-background-color: #00e676; -jfx-button-type: RAISED; -fx-font: bold italic 10.5pt \"Arial\"; -fx-pref-width: 130px; -fx-pref-height: 40px;");
+		this.colEditar.get().setStyle("-fx-background-color: #ffea00; -jfx-button-type: RAISED; -fx-font: bold italic 10.5pt \"Arial\"; -fx-pref-width: 130px; -fx-pref-height: 40px;");
+		this.colEliminar.get().setStyle("-fx-background-color: #f44336; -jfx-button-type: RAISED; -fx-font: bold italic 10.5pt \"Arial\"; -fx-text-fill: white; -fx-pref-width: 130px; -fx-pref-height: 40px;");
+		this.colActa.get().setStyle("-fx-background-color: #2196f3; -jfx-button-type: RAISED; -fx-text-fill: white; -fx-font: bold italic 10.5pt \"Arial\"; -fx-pref-width: 130px; -fx-pref-height: 40px;");
+		this.colCargarCalificaciones.get().setStyle("-fx-background-color: #ff9800; -jfx-button-type: RAISED; -fx-font: bold italic 10.5pt \"Arial\"; -fx-pref-width: 130px; -fx-pref-height: 40px;");
+		this.colEstudiantes.get().setStyle("-fx-background-color: #9c27b0; -jfx-button-type: RAISED; -fx-font: bold italic 10.5pt \"Arial\"; -fx-text-fill: white; -fx-pref-width: 130px; -fx-pref-height: 40px;");
 
 		this.colHorarios.get().setOnAction(new EventHandler<ActionEvent>() {
 			@Override

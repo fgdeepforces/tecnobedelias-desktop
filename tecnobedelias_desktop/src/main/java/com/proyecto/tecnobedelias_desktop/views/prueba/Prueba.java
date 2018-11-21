@@ -190,6 +190,7 @@ public class Prueba implements Initializable {
 			scene.getStylesheets().add(cssUrl.toExternalForm());
 			Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
 			window.setScene(scene);
+			window.setMaximized(false);
 			window.centerOnScreen();
 			window.show();
 		} catch (Exception e) {

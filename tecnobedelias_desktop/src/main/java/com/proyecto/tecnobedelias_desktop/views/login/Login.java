@@ -61,8 +61,6 @@ public class Login implements Initializable {
 					window.setMaximized(true);
 					window.show();
 
-
-
 					//TODO: Perdida de tiempo al pedo con el framework
 //					URL cssUrl = new File(Constants.getMainFormPackage() + "MainForm.css").toURL();
 //					MainFormView mainForm = new MainFormView();
@@ -87,7 +85,7 @@ public class Login implements Initializable {
 			}
 			txtUser.setText("");
 			txtPass.setText("");
-			Token.getInstance().setMensaje(null);
+			//Token.getInstance().setMensaje(null);
 			txtUser.requestFocus();
 		} else {
 			Alert dialogo = new Alert(Alert.AlertType.ERROR);

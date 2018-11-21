@@ -195,14 +195,14 @@ public class TablaExamen {
 		this.colEditarExamen = new SimpleObjectProperty<JFXButton>(new JFXButton("Editar"));
 		this.colEliminarExamen = new SimpleObjectProperty<JFXButton>(new JFXButton("Eliminar"));
 		this.colActaExamen = new SimpleObjectProperty<JFXButton>(new JFXButton("Acta"));
-		this.colCargarCalificacioensExamen = new SimpleObjectProperty<JFXButton>(new JFXButton("Cargar Calificaciones"));
+		this.colCargarCalificacioensExamen = new SimpleObjectProperty<JFXButton>(new JFXButton("Calificaciones"));
 		this.colEstudiantesExamen = new SimpleObjectProperty<JFXButton>(new JFXButton("Estudiantes"));
 
-		this.colEditarExamen.get().setStyle("-fx-background-color: yellow; -fx-pref-width: 130px; -fx-pref-height: 40px;");
-		this.colEliminarExamen.get().setStyle("-fx-background-color: red; -fx-pref-width: 130px; -fx-pref-height: 40px;");
-		this.colActaExamen.get().setStyle("-fx-background-color: blue; -fx-pref-width: 130px; -fx-pref-height: 40px;");
-		this.colCargarCalificacioensExamen.get().setStyle("-fx-background-color: orange; -fx-pref-width: 130px; -fx-pref-height: 40px;");
-		this.colEstudiantesExamen.get().setStyle("-fx-background-color: green; -fx-pref-width: 130px; -fx-pref-height: 40px;");
+		this.colEditarExamen.get().setStyle("-fx-background-color: #ffea00; -jfx-button-type: RAISED; -fx-font: bold italic 10.5pt \"Arial\"; -fx-pref-width: 130px; -fx-pref-height: 40px;");
+		this.colEliminarExamen.get().setStyle("-fx-background-color: #f44336; -jfx-button-type: RAISED; -fx-font: bold italic 10.5pt \"Arial\"; -fx-text-fill: white; -fx-pref-width: 130px; -fx-pref-height: 40px;");
+		this.colActaExamen.get().setStyle("-fx-background-color: #2196f3; -jfx-button-type: RAISED; -fx-text-fill: white; -fx-font: bold italic 10.5pt \"Arial\"; -fx-pref-width: 130px; -fx-pref-height: 40px;");
+		this.colCargarCalificacioensExamen.get().setStyle("-fx-background-color: #ff9800; -jfx-button-type: RAISED; -fx-font: bold italic 10.5pt \"Arial\"; -fx-pref-width: 130px; -fx-pref-height: 40px;");
+		this.colEstudiantesExamen.get().setStyle("-fx-background-color: #9c27b0; -jfx-button-type: RAISED; -fx-font: bold italic 10.5pt \"Arial\"; -fx-text-fill: white; -fx-pref-width: 130px; -fx-pref-height: 40px;");
 
 		this.colEditarExamen.get().setOnAction(new EventHandler<ActionEvent>() {
 			@Override
