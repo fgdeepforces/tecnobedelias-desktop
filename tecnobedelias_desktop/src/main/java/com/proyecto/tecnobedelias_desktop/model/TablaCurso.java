@@ -353,7 +353,7 @@ public class TablaCurso {
 
 		JFXDatePicker datePickerFechaInicioFX = new JFXDatePicker(localDateInicio);
 
-		Date dateFin = this.getColFechaInicio();
+		Date dateFin = this.getColFechaFin();
 		Instant instantFin = dateFin.toInstant();
 		LocalDate localDateFin = instantFin.atZone(ZoneId.systemDefault()).toLocalDate();
 
