@@ -50,7 +50,7 @@ public interface ServiceInterface{
 	Call <ServerResponse> borrarExamen(@Header("Authorization") String token, @Query("examenId") String idExamen );
 
 	@POST("inscripcion/ingresarcalificacionesexamen")
-	Call <ServerResponse> cargarCalificacionesExamen(@Header("Authorization") String token, @Body JsonArray DataNotasExamen, @Query("cursoId") String idExamen );
+	Call <ServerResponse> cargarCalificacionesExamen(@Header("Authorization") String token, @Body JsonArray DataNotasExamen, @Query("examenId") String idExamen );
 
 	@GET("carrera/listar")
 	Call <List<Carrera>> obtenerListaCarreras(@Header("Authorization") String token);

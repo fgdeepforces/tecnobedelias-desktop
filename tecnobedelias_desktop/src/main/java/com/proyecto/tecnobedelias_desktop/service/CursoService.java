@@ -66,8 +66,13 @@ public class CursoService {
 		Call<ServerResponse> respuesta = interfaz.cargarCalificacionesCurso("Bearer " + Token.getInstance().getToken(), ja ,idCurso);
 		try {
 			Response<ServerResponse> response = respuesta.execute();
-			responseServer = response.body();
-		} catch (IOException e) {
+			System.out.println(SERVER + response);
+			while(!response.isSuccessful()) {
+				Thread.sleep(1000);
+			}
+			System.out.println(SERVER + response);
+			responseServer = response.body();	
+		} catch (IOException | InterruptedException e) {
 			e.printStackTrace();
 		}
 		return responseServer;
