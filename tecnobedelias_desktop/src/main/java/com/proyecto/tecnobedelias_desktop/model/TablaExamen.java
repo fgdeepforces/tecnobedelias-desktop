@@ -229,16 +229,24 @@ public class TablaExamen {
 	    				if(examen != null) {
 	    					List<Estudiante_Examen> lstEstudiante = examen.getEstudianteExamen();
 	    					if(lstEstudiante != null) {
-	    						generatePDFFileIText.crearActaFinalDeExamen(examen.getNombreAsignatura(), lstEstudiante);
+	    						if(!lstEstudiante.isEmpty()) {
+	    							generatePDFFileIText.crearActaFinalDeExamen(examen.getNombreAsignatura(), lstEstudiante);
+	    							try {
+	    								Desktop.getDesktop().open(new File("src/resources/pdf/actaExamen" + colAsignaturaExamen + ".pdf"));
+	    							} catch (IOException e) {
+	    								e.printStackTrace();
+	    							}
+	    						}else {
+	    							Alert dialogo = new Alert(Alert.AlertType.INFORMATION);
+	    							dialogo.setTitle("Acta del Examen");
+	    							dialogo.setContentText("Debe de cargar las calificaciones antes para generar el acta.");
+	    							Prueba.actualizarDatosTablaCurso();
+	    							dialogo.showAndWait();
+	    						}
 	    					}
 	    				}
 	    			}
 	    		}
-		        try {
-					Desktop.getDesktop().open(new File("src/resources/pdf/actaCurso" + colAsignaturaExamen + ".pdf"));
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
 			}
 		});
 
@@ -323,6 +331,32 @@ public class TablaExamen {
 								lstNotasCargadas.add(new Estudiante_Examen(estudiante.getId(),estudiante.getEstado(),estudiante.getNota(),estudiante.getNombre(),estudiante.getApellido(),estudiante.getCedula(),estudiante.getId_usuario(),estudiante.getId_examen()));
 								i++;
 							});
+							dialog.getDialogPane().setContent(grid);
+							ButtonType buttonTypeOk = new ButtonType("Confirmar", ButtonData.OK_DONE);
+							dialog.getDialogPane().getButtonTypes().add(buttonTypeOk);
+							dialog.setResultConverter(new Callback<ButtonType, List<Estudiante_Examen>>() {
+							    @Override
+							    public List<Estudiante_Examen> call(ButtonType b) {
+							        List<Estudiante_Examen> respuesta = null;
+							    	if (b == buttonTypeOk) {
+							    		Iterator<Estudiante_Examen> iter = lstNotasCargadas.iterator();
+							    		campos.forEach(notas -> {
+							    			iter.next().setNota(Integer.parseInt(notas.getText()));
+							    		});
+							    		respuesta = lstNotasCargadas;
+							    		ExamenService cs = new ExamenService();
+							    		alertConfirmacionCargarCalificacionesExamen(cs.cargarCalificacionesExamenResponse(idExamen,respuesta));
+							        }
+							        return respuesta;
+							    }
+							});
+							dialog.showAndWait();
+						}else {
+							Alert dialogo = new Alert(Alert.AlertType.INFORMATION);
+							dialogo.setTitle("Acta del Examen");
+							dialogo.setContentText("Debe de haber algun estudiante incripto para cargar las calificaciones.");
+							Prueba.actualizarDatosTablaCurso();
+							dialogo.showAndWait();
 						}
 					}
 				}
@@ -330,26 +364,6 @@ public class TablaExamen {
 		}catch(NullPointerException | NumberFormatException e) {
 			e.printStackTrace();
 		}
-		dialog.getDialogPane().setContent(grid);
-		ButtonType buttonTypeOk = new ButtonType("Confirmar", ButtonData.OK_DONE);
-		dialog.getDialogPane().getButtonTypes().add(buttonTypeOk);
-		dialog.setResultConverter(new Callback<ButtonType, List<Estudiante_Examen>>() {
-		    @Override
-		    public List<Estudiante_Examen> call(ButtonType b) {
-		        List<Estudiante_Examen> respuesta = null;
-		    	if (b == buttonTypeOk) {
-		    		Iterator<Estudiante_Examen> iter = lstNotasCargadas.iterator();
-		    		campos.forEach(notas -> {
-		    			iter.next().setNota(Integer.parseInt(notas.getText()));
-		    		});
-		    		respuesta = lstNotasCargadas;
-		    		ExamenService cs = new ExamenService();
-		    		alertConfirmacionCargarCalificacionesExamen(cs.cargarCalificacionesExamenResponse(idExamen,respuesta));
-		        }
-		        return respuesta;
-		    }
-		});
-		dialog.showAndWait();
 	}
 
 	@SuppressWarnings("unchecked")

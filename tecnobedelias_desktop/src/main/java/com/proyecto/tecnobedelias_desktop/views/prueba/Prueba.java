@@ -10,6 +10,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -30,6 +31,7 @@ import com.proyecto.tecnobedelias_desktop.model.ServerResponse;
 import com.proyecto.tecnobedelias_desktop.model.TablaCurso;
 import com.proyecto.tecnobedelias_desktop.model.TablaExamen;
 import com.proyecto.tecnobedelias_desktop.model.TablaHorario;
+import com.proyecto.tecnobedelias_desktop.model.Usuario;
 import com.proyecto.tecnobedelias_desktop.service.CarreraService;
 import com.proyecto.tecnobedelias_desktop.service.CursoService;
 import com.proyecto.tecnobedelias_desktop.service.ExamenService;
@@ -1055,7 +1057,7 @@ public class Prueba implements Initializable {
 
 	public void escolaridadesButtonPushed(ActionEvent event) throws IOException {
 		escolaridadesPaneToFront();
-		Dialog<Actividad> dialog = new Dialog<>();
+		Dialog<Usuario> dialog = new Dialog<>();
 		inicializarOperacion("ESCOLARIDADES");
 
 		Label lblCedula = new Label("Cedula");
@@ -1073,25 +1075,91 @@ public class Prueba implements Initializable {
 		dialog.getDialogPane().setContent(grid);
 		ButtonType buttonTypeOk = new ButtonType("Confirmar", ButtonData.OK_DONE);
 		dialog.getDialogPane().getButtonTypes().add(buttonTypeOk);
-		dialog.setResultConverter(new Callback<ButtonType, Actividad>() {
+		dialog.setResultConverter(new Callback<ButtonType, Usuario>() {
 			@Override
-			public Actividad call(ButtonType b) {
+			public Usuario call(ButtonType b) {
 				if (b == buttonTypeOk) {
 					UsuarioService us = new UsuarioService();
-					List<Actividad> actividades = us.listarActividadesResponse(txtCedula.getText());
-					if(actividades != null) {
-						GeneratePDFFileIText generatePDFFileIText = new GeneratePDFFileIText();
-						generatePDFFileIText.crearEscolaridad(txtCedula.getText(),actividades);
-						try {
-							Desktop.getDesktop().open(new File("src/resources/pdf/ReporteEscolaridad-DOC" + txtCedula.getText() + ".pdf"));
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
+					Usuario user = us.obtenerUsuarioPorCedulaResponse(txtCedula.getText());
+					if(user != null) {
+						dialogCrearEscolaridad(user);
+//						try {
+//							Desktop.getDesktop().open(new File("src/resources/pdf/ReporteEscolaridad-DOC" + txtCedula.getText() + ".pdf"));
+//						} catch (IOException e) {
+//							e.printStackTrace();
+//						}
 					}
 				}
 				return null;
 			}
 		});
+		dialog.showAndWait();
+	}
+
+	public void dialogCrearEscolaridad(Usuario user){
+		Dialog<Usuario> dialog = new Dialog<>();
+		inicializarOperacion("ESCOLARIDADES");
+
+		JFXButton btnEscolaridad = new JFXButton("Generar Escolaridad");
+		Label vacio = new Label("\t");
+
+		ObservableList<Carrera> dataCarreras = FXCollections.observableArrayList();
+		List<Carrera> carreras = user.getCarreras();
+
+		Label lblCarreras = new Label("Carrera");
+		ComboBox<Carrera> cboCarreras = new ComboBox<>();
+
+		if (carreras == null) {
+			Alert alerta = new Alert(Alert.AlertType.INFORMATION);
+			alerta.setTitle("Informacion");
+			alerta.setContentText(
+					"El estudiante no esta inscripto en ninguna carrera");
+			alerta.showAndWait();
+		} else {
+			dataCarreras.addAll(carreras);
+			cboCarreras.getItems().addAll(dataCarreras);
+			carrera = null;
+			cboCarreras.setOnAction(new EventHandler<ActionEvent>() {
+
+				@Override
+				public void handle(ActionEvent event) {
+					carrera = cboCarreras.getSelectionModel().getSelectedItem();
+					System.out.println("Carrera seleccionada: " + carrera.toString());
+					if (carrera != null) {
+						btnEscolaridad.setVisible(true);
+					}else {
+						Alert alerta = new Alert(Alert.AlertType.INFORMATION);
+						alerta.setTitle("Informacion");
+						alerta.setContentText("no hay carrera");
+						alerta.showAndWait();
+					}
+				}
+			});
+		}
+
+		GridPane grid = new GridPane();
+
+		dialog.setTitle("Escolaridad");
+		dialog.setHeaderText("Escolaridad");
+		dialog.setResizable(true);
+
+		grid.add(lblCarreras, 1, 1);
+		grid.add(cboCarreras, 2, 1);
+		grid.add(vacio, 2, 1);
+		grid.add(btnEscolaridad, 2, 2);
+
+		btnEscolaridad.setOnAction(new EventHandler<ActionEvent>() {
+
+			@Override
+			public void handle(ActionEvent event) {
+				GeneratePDFFileIText generatePDFFileIText = new GeneratePDFFileIText();
+				generatePDFFileIText.crearEscolaridad(carrera, user);
+			}
+		});
+
+		dialog.getDialogPane().setContent(grid);
+		ButtonType buttonTypeOk = new ButtonType("Confirmar", ButtonData.OK_DONE);
+		dialog.getDialogPane().getButtonTypes().add(buttonTypeOk);
 		dialog.showAndWait();
 	}
 

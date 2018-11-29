@@ -290,16 +290,24 @@ public class TablaCurso {
 	    				if(curso != null) {
 	    					List<Curso_Estudiante> lstEstudiante = curso.getCursoEstudiante();
 	    					if(lstEstudiante != null) {
-	    						generatePDFFileIText.crearActaFinalDeCurso(curso.getNombreAsignatura(), lstEstudiante);
+	    						if(!lstEstudiante.isEmpty()) {
+	    							generatePDFFileIText.crearActaFinalDeCurso(curso.getNombreAsignatura(), lstEstudiante);
+	    							try {
+	    								Desktop.getDesktop().open(new File("src/resources/pdf/actaCurso" + colAsignatura + ".pdf"));
+	    							} catch (IOException e) {
+	    								e.printStackTrace();
+	    							}
+	    						}else {
+	    							Alert dialogo = new Alert(Alert.AlertType.INFORMATION);
+	    							dialogo.setTitle("Acta del Examen");
+	    							dialogo.setContentText("Debe de cargar las calificaciones antes para generar el acta.");
+	    							Prueba.actualizarDatosTablaCurso();
+	    							dialogo.showAndWait();
+	    						}
 	    					}
 	    				}
 	    			}
 	    		}
-		        try {
-					Desktop.getDesktop().open(new File("src/resources/pdf/actaCurso" + colAsignatura + ".pdf"));
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
 			}
 		});
 

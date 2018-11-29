@@ -1,0 +1,7 @@
+@charset "ISO-8859-1";
+
+.jfx-button {
+     -jfx-button-type: RAISED;
+     -fx-background-color: blue;
+     -fx-text-fill: white;
+}

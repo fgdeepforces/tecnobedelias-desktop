@@ -21,8 +21,11 @@ import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.itextpdf.text.pdf.draw.DottedLineSeparator;
 import com.proyecto.tecnobedelias_desktop.model.Actividad;
+import com.proyecto.tecnobedelias_desktop.model.Carrera;
 import com.proyecto.tecnobedelias_desktop.model.Curso_Estudiante;
 import com.proyecto.tecnobedelias_desktop.model.Estudiante_Examen;
+import com.proyecto.tecnobedelias_desktop.model.Usuario;
+
 import java.io.*;
 import java.text.DateFormat;
 
@@ -56,6 +59,7 @@ public class GeneratePDFFileIText {
 	static PdfPCell columnUnidadCurricularBasica = null;
 	static PdfPCell columnCreditos = null;
 	static PdfPCell columnActividad = null;
+	static PdfPCell columnEstado = null;
 	static PdfPCell columnFecha = null;
 
 	/**
@@ -236,9 +240,9 @@ public class GeneratePDFFileIText {
 			columnHeaderNombre.setHorizontalAlignment(Element.ALIGN_CENTER);
 			columnHeaderNota.setHorizontalAlignment(Element.ALIGN_CENTER);
 
-			columnHeaderCI.setBackgroundColor(BaseColor.GREEN);
-			columnHeaderNombre.setBackgroundColor(BaseColor.GREEN);
-			columnHeaderNota.setBackgroundColor(BaseColor.GREEN);
+			columnHeaderCI.setBackgroundColor(BaseColor.GRAY);
+			columnHeaderNombre.setBackgroundColor(BaseColor.GRAY);
+			columnHeaderNota.setBackgroundColor(BaseColor.GRAY);
 
 			table.addCell(columnHeaderCI);
 			table.addCell(columnHeaderNombre);
@@ -307,9 +311,9 @@ public class GeneratePDFFileIText {
 			columnHeaderNombre.setHorizontalAlignment(Element.ALIGN_CENTER);
 			columnHeaderNota.setHorizontalAlignment(Element.ALIGN_CENTER);
 
-			columnHeaderCI.setBackgroundColor(BaseColor.GREEN);
-			columnHeaderNombre.setBackgroundColor(BaseColor.GREEN);
-			columnHeaderNota.setBackgroundColor(BaseColor.GREEN);
+			columnHeaderCI.setBackgroundColor(BaseColor.GRAY);
+			columnHeaderNombre.setBackgroundColor(BaseColor.GRAY);
+			columnHeaderNota.setBackgroundColor(BaseColor.GRAY);
 
 			table.addCell(columnHeaderCI);
 			table.addCell(columnHeaderNombre);
@@ -335,11 +339,12 @@ public class GeneratePDFFileIText {
 		}
 	}
 
-	public void crearEscolaridad(String ci, java.util.List<Actividad> actividades) {
+	public void crearEscolaridad(Carrera carrera, Usuario user) {
+		/*
 		try {
 			Document document = new Document();
 			try {
-				PdfWriter.getInstance(document, new FileOutputStream("src/resources/pdf/ReporteEscolaridad-DOC" + ci + ".pdf"));
+				PdfWriter.getInstance(document, new FileOutputStream("src/resources/pdf/ReporteEscolaridad-DOC" + user.getCedula() + "-CARRERA"+ carrera.getNombre() + ".pdf"));
 			} catch (FileNotFoundException fileNotFoundException) {
 				System.out.println("No such file was found to generate the PDF "
 						+ "(No se encontró el fichero para generar el pdf)" + fileNotFoundException);
@@ -361,39 +366,44 @@ public class GeneratePDFFileIText {
 
 			Section paragraphMore = chapter;
 
-			Integer numColumns = 5;
+			Integer numColumns = 6;
 			PdfPTable table = new PdfPTable(numColumns);
 			table.setWidthPercentage(90);
 			table.setKeepTogether(true);
 
-			table.setWidths(new float[] { 6, 1, 2, 2, 1 });
+			table.setWidths(new float[] { 4, 1, 2, 2, 2, 1 });
 
 			PdfPCell columnHeaderUnidadCurricularBasica = new PdfPCell(new Phrase("Unidad Curricular Basica"));
 			PdfPCell columnHeaderCreditos = new PdfPCell(new Phrase("Cred"));
 			PdfPCell columnHeaderActividad = new PdfPCell(new Phrase("Actividad"));
+			PdfPCell columnHeaderEstado = new PdfPCell(new Phrase("Estado"));
 			PdfPCell columnHeaderFecha = new PdfPCell(new Phrase("Fecha"));
 			PdfPCell columnHeaderNota = new PdfPCell(new Phrase("Nota"));
 
 			columnUnidadCurricularBasica = null;
 			columnCreditos = null;
 			columnActividad = null;
+			columnEstado = null;
 			columnFecha = null;
 			columnNota = null;
 
 			columnHeaderCreditos.setHorizontalAlignment(Element.ALIGN_CENTER);
 			columnHeaderActividad.setHorizontalAlignment(Element.ALIGN_CENTER);
+			columnHeaderEstado.setHorizontalAlignment(Element.ALIGN_CENTER);
 			columnHeaderFecha.setHorizontalAlignment(Element.ALIGN_CENTER);
 			columnHeaderNota.setHorizontalAlignment(Element.ALIGN_CENTER);
 
-			columnHeaderUnidadCurricularBasica.setBackgroundColor(BaseColor.GREEN);
-			columnHeaderCreditos.setBackgroundColor(BaseColor.GREEN);
-			columnHeaderActividad.setBackgroundColor(BaseColor.GREEN);
-			columnHeaderFecha.setBackgroundColor(BaseColor.GREEN);
-			columnHeaderNota.setBackgroundColor(BaseColor.GREEN);
+			columnHeaderUnidadCurricularBasica.setBackgroundColor(BaseColor.GRAY);
+			columnHeaderCreditos.setBackgroundColor(BaseColor.GRAY);
+			columnHeaderActividad.setBackgroundColor(BaseColor.GRAY);
+			columnHeaderEstado.setBackgroundColor(BaseColor.GRAY);
+			columnHeaderFecha.setBackgroundColor(BaseColor.GRAY);
+			columnHeaderNota.setBackgroundColor(BaseColor.GRAY);
 
 			table.addCell(columnHeaderUnidadCurricularBasica);
 			table.addCell(columnHeaderCreditos);
 			table.addCell(columnHeaderActividad);
+			table.addCell(columnHeaderEstado);
 			table.addCell(columnHeaderFecha);
 			table.addCell(columnHeaderNota);
 
@@ -405,16 +415,19 @@ public class GeneratePDFFileIText {
 				columnUnidadCurricularBasica = new PdfPCell(new Phrase(actividad.getAsignatura()));
 				columnCreditos = new PdfPCell(new Phrase(String.valueOf(actividad.getCreditos())));
 				columnActividad = new PdfPCell(new Phrase(actividad.getTipo()));
+				columnEstado = new PdfPCell(new Phrase(actividad.getEstado()));
 				columnFecha = new PdfPCell(new Phrase(DateFormat.getDateInstance().format(actividad.getFecha())));
 				columnNota = new PdfPCell(new Phrase(actividad.getNota().toString()));
 				columnCreditos.setHorizontalAlignment(Element.ALIGN_CENTER);
 				columnActividad.setHorizontalAlignment(Element.ALIGN_CENTER);
+				columnEstado.setHorizontalAlignment(Element.ALIGN_CENTER);
 				columnFecha.setHorizontalAlignment(Element.ALIGN_CENTER);
 				columnNota.setHorizontalAlignment(Element.ALIGN_CENTER);
 
 				table.addCell(columnUnidadCurricularBasica);
 				table.addCell(columnCreditos);
 				table.addCell(columnActividad);
+				table.addCell(columnEstado);
 				table.addCell(columnFecha);
 				table.addCell(columnNota);
 			});
@@ -436,6 +449,7 @@ public class GeneratePDFFileIText {
 			System.out.println(
 					"The file not exists (Se ha producido un error al generar un documento): " + documentException);
 		}
+		*/
 	}
 
 }

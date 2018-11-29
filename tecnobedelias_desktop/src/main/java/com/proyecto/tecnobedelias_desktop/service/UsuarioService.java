@@ -1,9 +1,13 @@
 package com.proyecto.tecnobedelias_desktop.service;
 
+import java.io.IOException;
 import java.util.List;
 import com.proyecto.tecnobedelias_desktop.global.Token;
 import com.proyecto.tecnobedelias_desktop.interfaces.ServiceInterface;
 import com.proyecto.tecnobedelias_desktop.model.Actividad;
+import com.proyecto.tecnobedelias_desktop.model.Curso;
+import com.proyecto.tecnobedelias_desktop.model.Usuario;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -54,6 +58,20 @@ public class UsuarioService {
 			}
 		}
 		return data;
+	}
+
+	public Usuario obtenerUsuarioPorCedulaResponse(String cedula) {
+		Usuario user = null;
+		Retrofit retro = Token.getInstance().getRetro();
+		ServiceInterface interfaz = retro.create(ServiceInterface.class);
+		Call<Usuario> respuesta = interfaz.obtenerUsuarioPorCedula("Bearer " + Token.getInstance().getToken(), cedula);
+		try {
+			Response<Usuario> response = respuesta.execute();
+			user = response.body();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return user;
 	}
 
 }

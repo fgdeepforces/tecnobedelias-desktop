@@ -9,6 +9,7 @@ import com.proyecto.tecnobedelias_desktop.model.Curso;
 import com.proyecto.tecnobedelias_desktop.model.Examen;
 import com.proyecto.tecnobedelias_desktop.model.RespuestaApiLogin;
 import com.proyecto.tecnobedelias_desktop.model.ServerResponse;
+import com.proyecto.tecnobedelias_desktop.model.Usuario;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -57,4 +58,7 @@ public interface ServiceInterface{
 
 	@GET("usuario/escolaridad")
 	Call <List<Actividad>> obtenerListaActividades(@Header("Authorization") String token, @Query("cedula") String cedula );
+
+	@GET("usuario/estudiante/cedula")
+	Call <Usuario> obtenerUsuarioPorCedula(@Header("Authorization") String token, @Query("cedula") String cedula );
 }
