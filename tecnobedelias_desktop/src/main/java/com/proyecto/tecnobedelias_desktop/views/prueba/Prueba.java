@@ -827,7 +827,7 @@ public class Prueba implements Initializable {
 			if (Variables.getLstHorarios() != null) {
 				Variables.getLstHorarios().forEach(horario -> {
 					String id = "" + horario.getId();
-					colEditarHorario = new JFXButton("Ediar");
+					colEditarHorario = new JFXButton("Editar");
 					colEliminarHorario = new JFXButton("Eliminar");
 
 					this.colEditarHorario

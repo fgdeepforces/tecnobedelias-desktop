@@ -168,7 +168,7 @@ public class TablaExamen {
 		Alert dialogo = new Alert(Alert.AlertType.INFORMATION);
 		dialogo.setTitle("Modificacion del Examen");
 		dialogo.setContentText(respuesta.getMensaje());
-		Prueba.actualizarDatosTablaCurso();
+		Prueba.actualizarDatosTablaExamen();
 		dialogo.showAndWait();
 	}
 
@@ -230,7 +230,8 @@ public class TablaExamen {
 	    					List<Estudiante_Examen> lstEstudiante = examen.getEstudianteExamen();
 	    					if(lstEstudiante != null) {
 	    						if(!lstEstudiante.isEmpty()) {
-	    							generatePDFFileIText.crearActaFinalDeExamen(examen.getNombreAsignatura(), lstEstudiante);
+	    							String fechaexamen = new SimpleDateFormat("dd/MM/yyyy").format(examen.getFecha());
+	    							generatePDFFileIText.crearActaFinalDeExamen(examen.getNombreAsignatura(), fechaexamen, lstEstudiante);
 	    							try {
 	    								Desktop.getDesktop().open(new File("src/resources/pdf/actaExamen" + colAsignaturaExamen + ".pdf"));
 	    							} catch (IOException e) {
@@ -240,7 +241,7 @@ public class TablaExamen {
 	    							Alert dialogo = new Alert(Alert.AlertType.INFORMATION);
 	    							dialogo.setTitle("Acta del Examen");
 	    							dialogo.setContentText("Debe de cargar las calificaciones antes para generar el acta.");
-	    							Prueba.actualizarDatosTablaCurso();
+	    							Prueba.actualizarDatosTablaExamen();
 	    							dialogo.showAndWait();
 	    						}
 	    					}
@@ -355,7 +356,7 @@ public class TablaExamen {
 							Alert dialogo = new Alert(Alert.AlertType.INFORMATION);
 							dialogo.setTitle("Acta del Examen");
 							dialogo.setContentText("Debe de haber algun estudiante incripto para cargar las calificaciones.");
-							Prueba.actualizarDatosTablaCurso();
+							Prueba.actualizarDatosTablaExamen();
 							dialogo.showAndWait();
 						}
 					}
@@ -401,8 +402,8 @@ public class TablaExamen {
 				Examen examen = lstExamenes.stream().filter(e -> e.getId() == Integer.parseInt(getColIdExamen())).findFirst().get();
 				if(examen != null) {
 					Variables.setLstEstudiantesExamen(examen.getEstudianteExamen());
-					if(Variables.getLstEstudiantes() != null) {
-						Variables.getLstEstudiantes().forEach(estudiante -> {
+					if(Variables.getLstEstudiantesExamen() != null) {
+						Variables.getLstEstudiantesExamen().forEach(estudiante -> {
 							TablaEstudiantes entry = new TablaEstudiantes(estudiante.getCedula(), estudiante.getApellido().toUpperCase() + ", " + estudiante.getNombre().toUpperCase());
 							getDataEstudiantes().add(entry);
 						});
@@ -417,7 +418,7 @@ public class TablaExamen {
 		Alert dialogo = new Alert(Alert.AlertType.INFORMATION);
 		dialogo.setTitle("Calificaciones del Examen");
 		dialogo.setContentText(respuesta.getMensaje());
-		Prueba.actualizarDatosTablaCurso();
+		Prueba.actualizarDatosTablaExamen();
 		dialogo.showAndWait();
 	}
 
@@ -434,7 +435,7 @@ public class TablaExamen {
 
 	private void alertConfirmacionEliminarExamen(ServerResponse respuesta) {
 		Alert dialogo = new Alert(Alert.AlertType.INFORMATION);
-		dialogo.setTitle("Eliminar Curso");
+		dialogo.setTitle("Eliminar Examen");
 		dialogo.setContentText(respuesta.getMensaje());
 		Prueba.actualizarDatosTablaExamen();
 		dialogo.showAndWait();

@@ -291,7 +291,7 @@ public class TablaCurso {
 	    					List<Curso_Estudiante> lstEstudiante = curso.getCursoEstudiante();
 	    					if(lstEstudiante != null) {
 	    						if(!lstEstudiante.isEmpty()) {
-	    							generatePDFFileIText.crearActaFinalDeCurso(curso.getNombreAsignatura(), lstEstudiante);
+	    							generatePDFFileIText.crearActaFinalDeCurso(curso.getNombreAsignatura(), curso.getSemestre(), curso.getAnio(), lstEstudiante);
 	    							try {
 	    								Desktop.getDesktop().open(new File("src/resources/pdf/actaCurso" + colAsignatura + ".pdf"));
 	    							} catch (IOException e) {
@@ -608,7 +608,7 @@ public class TablaCurso {
 					if(Variables.getLstHorarios() != null) {
 						Variables.getLstHorarios().forEach(horario -> {
 							String id = "" + horario.getId();
-							colEditarHorario = new JFXButton("Ediar");
+							colEditarHorario = new JFXButton("Editar");
 							colEliminarHorario = new JFXButton("Eliminar");
 
 							this.colEditarHorario.setStyle("-fx-background-color: yellow; -fx-pref-width: 80px; -fx-pref-height: 30px;");

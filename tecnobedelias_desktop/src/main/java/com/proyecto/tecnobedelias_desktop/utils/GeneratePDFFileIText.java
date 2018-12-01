@@ -197,7 +197,7 @@ public class GeneratePDFFileIText {
 		}
 	}
 
-	public void crearActaFinalDeCurso(String nombre, java.util.List<Curso_Estudiante> lstEstudiantes) {
+	public void crearActaFinalDeCurso(String nombre, int semestre, int anio, java.util.List<Curso_Estudiante> lstEstudiantes) {
 		try {
 			Document document = new Document();
 			try {
@@ -207,13 +207,13 @@ public class GeneratePDFFileIText {
 						+ "(No se encontró el fichero para generar el pdf)" + fileNotFoundException);
 			}
 			document.open();
-			document.addTitle("Acta final del curso " + nombre);
+			document.addTitle("Acta de fin del curso de " + nombre + " del semestre " + semestre + " del año " + anio);
 			document.addSubject("TecnoBedelias");
 			document.addKeywords("Java, PDF, iText");
 			document.addAuthor("TecnoBedelias");
 			document.addCreator("TecnoBedelias");
 
-			Chunk chunk = new Chunk("Acta final del curso " + nombre, chapterFont);
+			Chunk chunk = new Chunk("Acta de fin del curso de " + nombre + " del semestre " + semestre + " del año " + anio, chapterFont);
 			Paragraph preface = new Paragraph(chunk);
 
 			preface.setAlignment(Element.ALIGN_CENTER);
@@ -229,8 +229,8 @@ public class GeneratePDFFileIText {
 			table.setWidths(new float[] { 2, 7, 1 });
 
 			PdfPCell columnHeaderCI = new PdfPCell(new Phrase("CI"));
-			PdfPCell columnHeaderNombre = new PdfPCell(new Phrase("Nombres"));
-			PdfPCell columnHeaderNota = new PdfPCell(new Phrase("Nota"));
+			PdfPCell columnHeaderNombre = new PdfPCell(new Phrase("NOMBRE"));
+			PdfPCell columnHeaderNota = new PdfPCell(new Phrase("NOTA"));
 
 			columnCI = null;
 			columnNombre = null;
@@ -275,7 +275,7 @@ public class GeneratePDFFileIText {
 		}
 	}
 
-	public void crearActaFinalDeExamen(String nombre, java.util.List<Estudiante_Examen> lstEstudiantes) {
+	public void crearActaFinalDeExamen(String nombre, String fecha, java.util.List<Estudiante_Examen> lstEstudiantes) {
 		try {
 			Document document = new Document();
 			try {
@@ -285,13 +285,13 @@ public class GeneratePDFFileIText {
 						+ "(No se encontró el fichero para generar el pdf)" + fileNotFoundException);
 			}
 			document.open();
-			document.addTitle("Acta final del examen " + nombre);
+			document.addTitle("Acta del examen de " + nombre + " del " + fecha);
 			document.addSubject("TecnoBedelias");
 			document.addKeywords("Java, PDF, iText");
 			document.addAuthor("TecnoBedelias");
 			document.addCreator("TecnoBedelias");
 
-			Chunk chunk = new Chunk("Acta final del examen " + nombre, chapterFont);
+			Chunk chunk = new Chunk("Acta del examen de " + nombre + " del " + fecha, chapterFont);
 			Paragraph preface = new Paragraph(chunk);
 
 			preface.setAlignment(Element.ALIGN_CENTER);
@@ -300,11 +300,16 @@ public class GeneratePDFFileIText {
 			chapter.setNumberDepth(0);
 
 			Section paragraphMore = chapter;
+			
+			columnCI = null;
+			columnNombre = null;
+			columnNota = null;
 
 			Integer numColumns = 3;
 			PdfPTable table = new PdfPTable(numColumns);
+			table.setWidths(new float[] { 2, 7, 1 });
 			PdfPCell columnHeaderCI = new PdfPCell(new Phrase("CI"));
-			PdfPCell columnHeaderNombre = new PdfPCell(new Phrase("NOMBRES"));
+			PdfPCell columnHeaderNombre = new PdfPCell(new Phrase("NOMBRE"));
 			PdfPCell columnHeaderNota = new PdfPCell(new Phrase("NOTA"));
 
 			columnHeaderCI.setHorizontalAlignment(Element.ALIGN_CENTER);
@@ -322,9 +327,19 @@ public class GeneratePDFFileIText {
 			table.setHeaderRows(1);
 
 			lstEstudiantes.forEach(estudiante -> {
-				table.addCell(estudiante.getCedula());
-				table.addCell(estudiante.getApellido() + ", " + estudiante.getNombre());
-				table.addCell(estudiante.getNota().toString());
+				/*table.addCell(estudiante.getCedula());
+				table.addCell(estudiante.getApellido().toUpperCase() + ", " + estudiante.getNombre().toUpperCase());
+				table.addCell(estudiante.getNota().toString());*/
+				columnCI = new PdfPCell(new Phrase(estudiante.getCedula()));
+				columnNombre = new PdfPCell(new Phrase(estudiante.getApellido().toUpperCase() + ", " + estudiante.getNombre().toUpperCase()));
+				columnNota = new PdfPCell(new Phrase(estudiante.getNota().toString()));
+
+				columnCI.setHorizontalAlignment(Element.ALIGN_CENTER);
+				columnNota.setHorizontalAlignment(Element.ALIGN_CENTER);
+
+				table.addCell(columnCI);
+				table.addCell(columnNombre);
+				table.addCell(columnNota);
 			});
 
 			paragraphMore.add(new Paragraph("\n\n"));
