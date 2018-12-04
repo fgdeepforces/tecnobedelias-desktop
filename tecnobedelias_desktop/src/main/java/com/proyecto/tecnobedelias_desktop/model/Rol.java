@@ -2,13 +2,13 @@ package com.proyecto.tecnobedelias_desktop.model;
 
 public class Rol {
 
-	private String descripcion;
 	private Integer id;
-	private Integer nombre;
+	private String descripcion;
+	private String nombre;
 	public Rol() {
 		super();
 	}
-	public Rol(String descripcion, Integer id, Integer nombre) {
+	public Rol(String descripcion, Integer id, String nombre) {
 		super();
 		this.descripcion = descripcion;
 		this.id = id;
@@ -26,10 +26,10 @@ public class Rol {
 	public void setId(Integer id) {
 		this.id = id;
 	}
-	public Integer getNombre() {
+	public String getNombre() {
 		return nombre;
 	}
-	public void setNombre(Integer nombre) {
+	public void setNombre(String nombre) {
 		this.nombre = nombre;
 	}
 	@Override

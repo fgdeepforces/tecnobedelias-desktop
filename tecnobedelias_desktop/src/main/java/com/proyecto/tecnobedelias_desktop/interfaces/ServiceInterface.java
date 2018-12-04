@@ -1,6 +1,8 @@
 package com.proyecto.tecnobedelias_desktop.interfaces;
 
 import java.util.List;
+import java.util.Optional;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.proyecto.tecnobedelias_desktop.model.Actividad;

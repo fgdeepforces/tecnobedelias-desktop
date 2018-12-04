@@ -22,12 +22,18 @@ import com.itextpdf.text.pdf.PdfWriter;
 import com.itextpdf.text.pdf.draw.DottedLineSeparator;
 import com.proyecto.tecnobedelias_desktop.model.Actividad;
 import com.proyecto.tecnobedelias_desktop.model.Carrera;
+import com.proyecto.tecnobedelias_desktop.model.Curso;
 import com.proyecto.tecnobedelias_desktop.model.Curso_Estudiante;
 import com.proyecto.tecnobedelias_desktop.model.Estudiante_Examen;
+import com.proyecto.tecnobedelias_desktop.model.Rol;
 import com.proyecto.tecnobedelias_desktop.model.Usuario;
 
 import java.io.*;
 import java.text.DateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 /**
  * Example of using the iText library to work with PDF documents on Java, lets
@@ -46,6 +52,7 @@ public class GeneratePDFFileIText {
 	private static final Font categoryFont = new Font(Font.FontFamily.TIMES_ROMAN, 18, Font.BOLD);
 	private static final Font subcategoryFont = new Font(Font.FontFamily.TIMES_ROMAN, 16, Font.BOLD);
 	private static final Font escolarityTitleFont = new Font(Font.FontFamily.TIMES_ROMAN, 18, Font.BOLDITALIC + Font.UNDERLINE);
+	private static final Font escolarityCarreerTitleFont = new Font(Font.FontFamily.TIMES_ROMAN, 18, Font.BOLDITALIC);
 	private static final Font escolaritySubTitleFont = new Font(Font.FontFamily.TIMES_ROMAN, 14, Font.ITALIC + Font.UNDERLINE);
 	private static final Font escolarityStudentFont = new Font(Font.FontFamily.TIMES_ROMAN, 20, Font.BOLD);
 //	private static final Font blueFont = new Font(Font.FontFamily.TIMES_ROMAN, 12, Font.NORMAL, BaseColor.RED);
@@ -61,6 +68,17 @@ public class GeneratePDFFileIText {
 	static PdfPCell columnActividad = null;
 	static PdfPCell columnEstado = null;
 	static PdfPCell columnFecha = null;
+
+	private String asignatura = null;
+	private Integer creditos = null;
+	private String apellido = null;
+	private String nombre = null;
+	private String estado = null;
+	private Date fecha = null;
+	private Integer id = null;
+	private Integer nota = null;
+	private Integer notaMaxima = null;
+	private String tipo = null;
 
 	/**
 	 * We create a PDF document with iText using different elements to learn to use
@@ -300,7 +318,7 @@ public class GeneratePDFFileIText {
 			chapter.setNumberDepth(0);
 
 			Section paragraphMore = chapter;
-			
+
 			columnCI = null;
 			columnNombre = null;
 			columnNota = null;
@@ -355,7 +373,7 @@ public class GeneratePDFFileIText {
 	}
 
 	public void crearEscolaridad(Carrera carrera, Usuario user) {
-		/*
+
 		try {
 			Document document = new Document();
 			try {
@@ -365,7 +383,7 @@ public class GeneratePDFFileIText {
 						+ "(No se encontró el fichero para generar el pdf)" + fileNotFoundException);
 			}
 			document.open();
-			document.addTitle("ReporteEscolaridad-DOC"+ci);
+			document.addTitle("ReporteEscolaridad-DOC"+user.getCedula());
 			document.addSubject("TecnoBedelias");
 			document.addKeywords("Java, PDF, iText");
 			document.addAuthor("TecnoBedelias");
@@ -424,6 +442,8 @@ public class GeneratePDFFileIText {
 
 			table.setHeaderRows(1);
 
+			java.util.List<Actividad> actividades = generarListaActividades(carrera, user);
+
 			actividades.forEach(System.out::println);
 
 			actividades.forEach(actividad -> {
@@ -450,10 +470,14 @@ public class GeneratePDFFileIText {
 			Paragraph subtitulo = new Paragraph("Resultados de cursos y examenes \n\n", escolaritySubTitleFont);
 			subtitulo.setAlignment(Element.ALIGN_CENTER);
 
-			Paragraph estudiante = new Paragraph(ci + " - " + actividades.get(0).getApellido().toUpperCase() + ", " + actividades.get(0).getNombre().toUpperCase() + "\n\n", escolarityStudentFont);
+			Paragraph subtitulo2 = new Paragraph(carrera.getNombre() + "\n\n", escolarityCarreerTitleFont);
+			subtitulo2.setAlignment(Element.ALIGN_CENTER);
+
+			Paragraph estudiante = new Paragraph(user.getCedula() + " - " + user.getApellido().toUpperCase() + ", " + user.getNombre().toUpperCase() + "\n\n", escolarityStudentFont);
 			estudiante.setAlignment(Element.ALIGN_CENTER);
 
 			paragraphMore.add(subtitulo);
+			paragraphMore.add(subtitulo2);
 			paragraphMore.add(estudiante);
 			paragraphMore.add(table);
 			document.add(chapter);
@@ -464,7 +488,62 @@ public class GeneratePDFFileIText {
 			System.out.println(
 					"The file not exists (Se ha producido un error al generar un documento): " + documentException);
 		}
-		*/
+
+	}
+
+	private java.util.List<Actividad> generarListaActividades(Carrera carrera, Usuario user) {
+		java.util.List<Actividad> actividades = new ArrayList<>();
+
+		Carrera car =  user.getCarreras().stream().filter(r -> r.getNombre().equals(carrera.getNombre())).findFirst().get();
+
+		nombre = user.getNombre();
+		apellido = user.getApellido();
+
+		car.getAsignaturaCarrera().forEach(asignaturas -> {
+			notaMaxima = asignaturas.getNotaMaxima();
+			creditos = asignaturas.getCreditos();
+			asignatura = asignaturas.getAsignatura().getNombre();
+			asignaturas.getAsignatura().getCursos().forEach(cursos -> {
+				fecha = cursos.getFechaFin();
+				tipo = "CURSO";
+				Stream<Curso_Estudiante> streamCestudiante = cursos.getCursoEstudiante().stream().filter(e -> e.getCedula().equals(user.getCedula()));
+				if(streamCestudiante != null) {
+					Optional<Curso_Estudiante> ocestudiante = streamCestudiante.findFirst();
+					if(ocestudiante.isPresent()) {
+						Curso_Estudiante cestudiante = ocestudiante.get();
+						if (cestudiante != null) {
+							id = cestudiante.getId();
+							nota = cestudiante.getNota();
+							estado = cestudiante.getEstado();
+							actividades.add(new Actividad(asignatura, creditos, apellido, nombre, estado, fecha, id, nota, notaMaxima, tipo));
+						}
+					}else {
+						System.out.println("El estudiante no pertenece al curso de " + asignatura);
+					}
+				}
+			});
+			asignaturas.getAsignatura().getExamenes().forEach(examenes -> {
+				fecha = examenes.getFecha();
+				tipo = "EXAMEN";
+				Stream<Estudiante_Examen> streamEestudiante = examenes.getEstudianteExamen().stream().filter(e -> e.getCedula().equals(user.getCedula()));
+				if(streamEestudiante != null) {
+					Optional<Estudiante_Examen> oeestudiante = streamEestudiante.findFirst();
+					if(oeestudiante.isPresent()) {
+						Estudiante_Examen eestudiante = oeestudiante.get();
+						if (eestudiante != null) {
+							id = eestudiante.getId();
+							nota = eestudiante.getNota();
+							estado = eestudiante.getEstado();
+							actividades.add(new Actividad(asignatura, creditos, apellido, nombre, estado, fecha, id, nota, notaMaxima, tipo));
+						}
+					}else {
+						System.out.println("El estudiante no pertenece al examen de " + asignatura);
+					}
+				}
+			});
+		});
+
+		return actividades;
 	}
 
 }

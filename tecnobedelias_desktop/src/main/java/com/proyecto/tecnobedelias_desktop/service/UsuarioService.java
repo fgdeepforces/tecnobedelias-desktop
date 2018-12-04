@@ -2,10 +2,14 @@ package com.proyecto.tecnobedelias_desktop.service;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
+
+import com.itextpdf.text.log.SysoCounter;
 import com.proyecto.tecnobedelias_desktop.global.Token;
 import com.proyecto.tecnobedelias_desktop.interfaces.ServiceInterface;
 import com.proyecto.tecnobedelias_desktop.model.Actividad;
 import com.proyecto.tecnobedelias_desktop.model.Curso;
+import com.proyecto.tecnobedelias_desktop.model.ServerResponse;
 import com.proyecto.tecnobedelias_desktop.model.Usuario;
 
 import retrofit2.Call;
@@ -16,6 +20,7 @@ import retrofit2.Retrofit;
 public class UsuarioService {
 
 	List<Actividad> data = null;
+	Usuario user = null;
 
 	public List<Actividad> listarActividadesResponse(String cedula) {
 
@@ -61,14 +66,18 @@ public class UsuarioService {
 	}
 
 	public Usuario obtenerUsuarioPorCedulaResponse(String cedula) {
-		Usuario user = null;
+		user = null;
 		Retrofit retro = Token.getInstance().getRetro();
 		ServiceInterface interfaz = retro.create(ServiceInterface.class);
 		Call<Usuario> respuesta = interfaz.obtenerUsuarioPorCedula("Bearer " + Token.getInstance().getToken(), cedula);
 		try {
 			Response<Usuario> response = respuesta.execute();
+			while(!response.isSuccessful()) {
+				System.out.println("respuesta fallida");
+				Thread.sleep(1000);
+			}
 			user = response.body();
-		} catch (IOException e) {
+		} catch (IOException | InterruptedException e) {
 			e.printStackTrace();
 		}
 		return user;

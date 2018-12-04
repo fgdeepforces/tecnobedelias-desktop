@@ -1058,7 +1058,7 @@ public class Prueba implements Initializable {
 	public void escolaridadesButtonPushed(ActionEvent event) throws IOException {
 		escolaridadesPaneToFront();
 		Dialog<Usuario> dialog = new Dialog<>();
-		inicializarOperacion("ESCOLARIDADES");
+		//inicializarOperacion("ESCOLARIDADES");
 
 		Label lblCedula = new Label("Cedula");
 		TextField txtCedula = new TextField();
@@ -1082,12 +1082,19 @@ public class Prueba implements Initializable {
 					UsuarioService us = new UsuarioService();
 					Usuario user = us.obtenerUsuarioPorCedulaResponse(txtCedula.getText());
 					if(user != null) {
-						dialogCrearEscolaridad(user);
-//						try {
-//							Desktop.getDesktop().open(new File("src/resources/pdf/ReporteEscolaridad-DOC" + txtCedula.getText() + ".pdf"));
-//						} catch (IOException e) {
-//							e.printStackTrace();
-//						}
+						if((user.getRoles().get(0).getNombre().equalsIgnoreCase("ESTUDIANTE"))) {
+							dialogCrearEscolaridad(user);
+						}else {
+							Alert alerta = new Alert(Alert.AlertType.INFORMATION);
+							alerta.setTitle("Informacion");
+							alerta.setContentText("La cedula ingresada no corresponde con un estudiante inscripto en esta institución");
+							alerta.showAndWait();
+						}
+					}else {
+						Alert alerta = new Alert(Alert.AlertType.INFORMATION);
+						alerta.setTitle("Informacion");
+						alerta.setContentText("La cedula ingresada no es correcta");
+						alerta.showAndWait();
 					}
 				}
 				return null;
@@ -1098,10 +1105,10 @@ public class Prueba implements Initializable {
 
 	public void dialogCrearEscolaridad(Usuario user){
 		Dialog<Usuario> dialog = new Dialog<>();
-		inicializarOperacion("ESCOLARIDADES");
+		//inicializarOperacion("ESCOLARIDADES");
 
-		JFXButton btnEscolaridad = new JFXButton("Generar Escolaridad");
-		Label vacio = new Label("\t");
+//		JFXButton btnEscolaridad = new JFXButton("Generar Escolaridad");
+//		Label vacio = new Label("\t");
 
 		ObservableList<Carrera> dataCarreras = FXCollections.observableArrayList();
 		List<Carrera> carreras = user.getCarreras();
@@ -1124,13 +1131,13 @@ public class Prueba implements Initializable {
 				@Override
 				public void handle(ActionEvent event) {
 					carrera = cboCarreras.getSelectionModel().getSelectedItem();
-					System.out.println("Carrera seleccionada: " + carrera.toString());
 					if (carrera != null) {
-						btnEscolaridad.setVisible(true);
+						System.out.println("Carrera seleccionada: " + carrera.toString());
+//						btnEscolaridad.setVisible(true);
 					}else {
 						Alert alerta = new Alert(Alert.AlertType.INFORMATION);
 						alerta.setTitle("Informacion");
-						alerta.setContentText("no hay carrera");
+						alerta.setContentText("Debes de seleccionar una carrera para continuar");
 						alerta.showAndWait();
 					}
 				}
@@ -1145,21 +1152,56 @@ public class Prueba implements Initializable {
 
 		grid.add(lblCarreras, 1, 1);
 		grid.add(cboCarreras, 2, 1);
-		grid.add(vacio, 2, 1);
-		grid.add(btnEscolaridad, 2, 2);
+//		grid.add(vacio, 2, 1);
+//		grid.add(btnEscolaridad, 2, 2);
 
-		btnEscolaridad.setOnAction(new EventHandler<ActionEvent>() {
-
-			@Override
-			public void handle(ActionEvent event) {
-				GeneratePDFFileIText generatePDFFileIText = new GeneratePDFFileIText();
-				generatePDFFileIText.crearEscolaridad(carrera, user);
-			}
-		});
+//		btnEscolaridad.setOnAction(new EventHandler<ActionEvent>() {
+//
+//			@Override
+//			public void handle(ActionEvent event) {
+//				GeneratePDFFileIText generatePDFFileIText = new GeneratePDFFileIText();
+//				generatePDFFileIText.crearEscolaridad(carrera, user);
+//			}
+//		});
 
 		dialog.getDialogPane().setContent(grid);
-		ButtonType buttonTypeOk = new ButtonType("Confirmar", ButtonData.OK_DONE);
+		ButtonType buttonTypeOk = new ButtonType("Generar Escolaridad", ButtonData.OK_DONE);
 		dialog.getDialogPane().getButtonTypes().add(buttonTypeOk);
+		dialog.setResultConverter(new Callback<ButtonType, Usuario>() {
+			@Override
+			public Usuario call(ButtonType b) {
+				if (b == buttonTypeOk) {
+
+					if (carrera == null) {
+						Alert alerta = new Alert(Alert.AlertType.INFORMATION);
+						alerta.setTitle("Informacion");
+						alerta.setContentText("Debes de seleccionar una carrera para continuar, vuelve a intentarlo");
+						alerta.showAndWait();
+					}else {
+						System.out.println("Carrera seleccionada: " + carrera.toString());
+						GeneratePDFFileIText generatePDFFileIText = new GeneratePDFFileIText();
+						generatePDFFileIText.crearEscolaridad(carrera, user);
+						try {
+							Desktop.getDesktop().open(new File("src/resources/pdf/ReporteEscolaridad-DOC" + user.getCedula() + "-CARRERA" + carrera + ".pdf"));
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+					}
+
+//					UsuarioService us = new UsuarioService();
+//					Usuario user = us.obtenerUsuarioPorCedulaResponse(txtCedula.getText());
+//					if(user != null) {
+//						dialogCrearEscolaridad(user);
+//						try {
+//							Desktop.getDesktop().open(new File("src/resources/pdf/ReporteEscolaridad-DOC" + txtCedula.getText() + ".pdf"));
+//						} catch (IOException e) {
+//							e.printStackTrace();
+//						}
+//					}
+				}
+				return null;
+			}
+		});
 		dialog.showAndWait();
 	}
 
@@ -1246,12 +1288,14 @@ public class Prueba implements Initializable {
 
 	private void cursosPaneToFront() {
 		inhabilitarPanelesCentrales();
+		actualizarDatosTablaCurso();
 		cursosPane.toFront();
 		cursosPane.setVisible(true);
 	}
 
 	private void examenesPaneToFront() {
 		inhabilitarPanelesCentrales();
+		actualizarDatosTablaExamen();
 		examenesPane.toFront();
 		examenesPane.setVisible(true);
 	}
