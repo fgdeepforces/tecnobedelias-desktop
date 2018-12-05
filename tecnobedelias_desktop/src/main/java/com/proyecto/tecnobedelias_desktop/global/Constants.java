@@ -8,7 +8,8 @@ public class Constants {
 	private static final String MAIN_FORM_PACKAGE = "src/main/java/com/proyecto/tecnobedelias_desktop/views/main_form/";
 	private static final String LOGIN_SERVICE_URL = "login";
 	private static final String LISTAR_CURSOS_SERVICE_URL = "curso/listar";
-	private static final String URL_BASE = "http://localhost:8080/";
+	//private static final String URL_BASE = "http://localhost:8080/";
+	private static final String URL_BASE = "http://ec2-3-16-143-114.us-east-2.compute.amazonaws.com:8080/tecnobedelias/";	
 
 	public static String getLoginPackage() {
 		return LOGIN_PACKAGE;
